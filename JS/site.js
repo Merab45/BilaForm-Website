@@ -49,6 +49,9 @@ function updateRunway() {
 // Keep the mobile menu's visual and accessibility states in sync.
 const menuButton = document.querySelector('.menu');
 const nav = document.querySelector('#primary-navigation');
+const accountNotice = document.querySelector('.account-notice');
+const accountNoticeTitle = document.querySelector('#account-notice-title');
+const accountNoticeMessage = document.querySelector('#account-notice-message');
 
 function closeMenu() {
   nav.classList.remove('open');
@@ -69,6 +72,29 @@ document.addEventListener('keydown', (event) => {
     closeMenu();
     menuButton.focus();
   }
+});
+
+// Be transparent that the prototype has no authentication backend yet.
+document.querySelectorAll('[data-account-mode]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const isSignIn = button.dataset.accountMode === 'signin';
+    accountNoticeTitle.textContent = isSignIn
+      ? 'Sign-in is not available yet.'
+      : 'Registration is not available yet.';
+    accountNoticeMessage.textContent = isSignIn
+      ? 'BilaForm does not have user accounts in this demo yet. You can explore the interactive budgeting tools without signing in.'
+      : 'BilaForm does not have account registration in this demo yet. You can explore the interactive budgeting tools without creating an account.';
+    accountNotice.showModal();
+  });
+});
+
+document.querySelector('.account-notice-close').addEventListener('click', () => {
+  accountNotice.close();
+});
+
+accountNotice.addEventListener('click', (event) => {
+  // Clicking the dimmed area outside the panel dismisses the notice.
+  if (event.target === accountNotice) accountNotice.close();
 });
 
 // Highlight the navigation item for the section currently in view.
@@ -142,7 +168,18 @@ syncBackToTop();
 
 // Show installation only after the browser confirms it can install the app.
 const installButton = document.querySelector('.install-button');
+const headerActions = document.querySelector('.header-actions');
+const installInMobileMenu = window.matchMedia('(max-width: 650px)');
 let installPrompt;
+
+function placeInstallButton() {
+  // On narrow screens, keep installation inside the collapsible menu so the
+  // account buttons and menu control have enough room in the header.
+  (installInMobileMenu.matches ? nav : headerActions).append(installButton);
+}
+
+placeInstallButton();
+installInMobileMenu.addEventListener('change', placeInstallButton);
 
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();

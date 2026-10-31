@@ -22,14 +22,27 @@
 </head>
 <body>
   <header class="header">
-    <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a><button class="menu" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+    <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
     <nav id="primary-navigation" aria-label="Main navigation">
-      <a href="#top">Home</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#vuka">VukaMonth</a><a href="#faq-title">FAQs</a>
+      <a href="#top">Home</a><a href="#about">About</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#faq-title">FAQs</a><a href="#contact">Contact</a>
     </nav>
-    <button class="install-button" type="button" hidden>Install BilaForm</button>
+    <div class="header-controls">
+      <button class="menu" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+      <div class="header-actions" aria-label="Account and app actions">
+        <button class="account-button account-signin navbar-login" type="button" data-account-mode="signin">Log in</button>
+        <button class="install-button" type="button" hidden>Install BilaForm</button>
+      </div>
+    </div>
   </header>
+  <dialog class="account-notice" aria-labelledby="account-notice-title" aria-describedby="account-notice-message">
+    <button class="account-notice-close" type="button" aria-label="Close">×</button>
+    <span class="eyebrow">BILAFORM ACCOUNT</span>
+    <h2 id="account-notice-title">Account access is coming later.</h2>
+    <p id="account-notice-message">BilaForm account sign-in and registration are not available on this website yet. You can still use the budgeting tools without an account.</p>
+    <a class="btn account-planner-link" href="../BilaForm-Android-Prototype/index.html">Explore the spending planner <span aria-hidden="true">→</span></a>
+  </dialog>
   <main id="top">
-    <!-- Main introduction and app demo link. -->
+<!-- Main introduction and primary account action. -->
     <section class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
@@ -40,7 +53,13 @@
           <p class="lead">
           A daily money runway for real life. Know what’s safe to spend, see the trade-off before you tap, and reset without the guilt trip.</p>
         <div class="actions">
-          <a class="btn lime" href="../BilaForm-Android-Prototype/index.html">Try the interactive demo<b class="arrow-up" aria-hidden="true"></b></a><a class="hero-link" href="#how">See how it works<b class="arrow-down" aria-hidden="true"></b></a></div>
+          <button class="account-button account-signup" type="button" data-account-mode="signup">
+            <span class="account-action-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 8.5h16v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-10Zm0 0 2-4h12l2 4M15.5 13.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="account-action-copy"><strong>Start your money plan today</strong></span>
+          </button>
+        </div>
         <div class="hero-points">
           <span><i aria-hidden="true"></i>Daily spending guide</span><span><i aria-hidden="true"></i>No shame, just the math</span></div>
         <p class="note">
@@ -83,6 +102,21 @@ Check the trade-off before a want becomes a regret.</p></article>
   Peace of mind</h3>
 <p>
 Make a realistic plan and move through the month with confidence.</p></article></div></div></section>
+<!-- About BilaForm and the practical ideas behind the product concept. -->
+<section class="about-section" id="about" aria-labelledby="about-title">
+  <div class="wrap">
+    <div class="section-heading about-heading">
+      <span class="eyebrow">ABOUT BILAFORM</span>
+      <h2 id="about-title">Money planning for <em>real life.</em></h2>
+      <p>BilaForm is a personal finance platform for the everyday choices between income days. Its planning tools help you see what is available, make room for essentials, and think through what to spend next.</p>
+    </div>
+    <div class="about-grid">
+      <article class="about-card"><span>01</span><h3>Plan day by day</h3><p>Use the money runway to estimate a daily guide after setting aside essentials and a buffer.</p></article>
+      <article class="about-card"><span>02</span><h3>Keep essentials in view</h3><p>Make room for everyday needs such as food, transport and bills in your monthly plan.</p></article>
+      <article class="about-card"><span>03</span><h3>See the trade-offs</h3><p>Explore how a planned purchase or recurring small expense could affect the money left.</p></article>
+    </div>
+  </div>
+</section>
 <!-- Three-step overview. -->
 <section class="how-section" id="how" aria-labelledby="how-title">
   <div class="wrap how-layout">
@@ -114,15 +148,15 @@ Record expenses and spot the habits shaping your month.</p></div></li>
     Plan until payday</h3>
   <p>
 See a daily guide and what to reserve for essentials.</p></div></li></ol></div></div></section>
-<!-- BilaForm tools and features. -->
+<!-- Feature cards explain the ways BilaForm can help with everyday planning. -->
 <section class="features" id="features" aria-labelledby="features-title">
   <div class="wrap">
     <div class="section-heading feature-heading">
-      <span class="eyebrow">TOOLS FOR REAL LIFE</span>
+      <span class="eyebrow">FEATURES FOR EVERYDAY MONEY</span>
       <h2 id="features-title">
         Small moves. <em>Big difference.</em></h2>
       <p>
-    Practical tools to help your money make it through the month.</p></div>
+    A closer look at how each feature can help you plan the month.</p></div>
 <div class="feature-grid">
   <article class="feature-card feature-primary">
     <img src="Assets/Assets/runway.svg" alt="Daily money runway visual" loading="lazy">
@@ -131,7 +165,7 @@ See a daily guide and what to reserve for essentials.</p></div></li></ol></div><
       <h3>
       PangaSiku</h3>
     <p>
-    Set what you have and how many days it needs to last. Get a clear daily guide with the calculation shown.</p><a class="tool-launch" href="tools.html#pangasiku">Calculate My Daily Budget <span aria-hidden="true">→</span></a></div></article>
+    PangaSiku estimates a daily spending guide from the money available after essentials and a buffer, divided across the days until your next income.</p></div></article>
 <article class="feature-card">
   <img src="Assets/Assets/simulator.svg" alt="Purchase trade-off visual" loading="lazy">
   <div>
@@ -139,7 +173,7 @@ See a daily guide and what to reserve for essentials.</p></div></li></ol></div><
     <h3>
     Can I afford this?</h3>
     <p>
-Enter your balance, planned purchase and essentials to see the trade-off before you buy.</p><a class="tool-launch" href="tools.html#affordability">Check Before Buying <span aria-hidden="true">→</span></a></div></article>
+Compare your balance with a planned purchase and essential expenses to see how much would remain and whether the choice could feel tight.</p></div></article>
 <article class="feature-card">
   <img src="Assets/Assets/micro-leaks.svg" alt="Small expenses adding up over time" loading="lazy">
   <div>
@@ -147,7 +181,7 @@ Enter your balance, planned purchase and essentials to see the trade-off before 
     <h3>
     Micro-leak finder</h3>
     <p>
-Add recurring small spends and see their daily, weekly and monthly impact, with ideas for reducing them.</p><a class="tool-launch" href="tools.html#micro-leaks">Find My Spending Leaks <span aria-hidden="true">→</span></a></div></article>
+Micro-leak Finder adds recurring small expenses across daily, weekly and monthly views so you can spot costs you may want to reduce.</p></div></article>
 <article class="feature-card">
   <img src="Assets/Assets/budget-rival.svg" alt="Two people keeping each other accountable to a budget" loading="lazy">
   <div>
@@ -155,7 +189,7 @@ Add recurring small spends and see their daily, weekly and monthly impact, with 
     <h3>
     BudgetRival</h3>
     <p>
-Set a savings or spending goal, track progress and compare manually with a friend.</p><a class="tool-launch" href="tools.html#budget-rival">Start a Budget Challenge <span aria-hidden="true">→</span></a></div></article>
+Set a savings or spending goal, track your progress and compare updates entered manually with a friend.</p></div></article>
 <article class="feature-card feature-vuka">
   <img src="Assets/Illustrations/african-shopping.svg" alt="Essentials protected in a monthly budget" loading="lazy">
   <div>
@@ -163,7 +197,7 @@ Set a savings or spending goal, track progress and compare manually with a frien
     <h3>
     VukaMonth</h3>
   <p>
-  Plan monthly essentials, check your remaining balance and see when allocations exceed income.</p><a class="tool-launch" href="tools.html#vukamonth">Plan My Essentials <span aria-hidden="true">→</span></a></div></article></div></div></section>
+  VukaMonth helps allocate monthly income across essentials, shows the remaining balance and flags when planned allocations exceed income.</p></div></article></div></div></section>
 <!-- Interactive daily spending calculator. -->
 <section class="calculator-section" id="calculator" aria-labelledby="calculator-title">
   <div class="wrap calculator-layout">
@@ -199,7 +233,7 @@ All amounts are in KES. Estimate only; real costs can change.</p></div></div></s
       <h2 id="preview-title">
         Your month, <em>at a glance.</em></h2>
       <p>
-      See your balance, daily guide, and spending categories in one simple view. Figures shown are examples for illustration only.</p>
+      See your balance, daily guide, and spending categories in one simple view. Figures shown are sample values for illustration.</p>
     <ul>
       <li>
       Balance and income overview</li>
@@ -237,7 +271,7 @@ Simple category and spending chart</li></ul><a class="text-link" href="#preview-
     <h3>
     Get started</h3>
   <p>
-Open the BilaForm demo and take a look around.</p></li>
+Open the BilaForm spending planner and take a look around.</p></li>
 <li>
   <img src="Assets/Illustrations/income-step.svg" alt="" loading="lazy"><span>02</span>
   <h3>
@@ -262,11 +296,11 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
   <div class="faq-list">
     <div class="faq-item">
       <button class="faq-question" id="faq-question-1" type="button" aria-expanded="false" aria-controls="faq-answer-1">What is BilaForm?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-question-1" aria-hidden="true"><div class="faq-answer-inner"><p>BilaForm is a personal budgeting concept that helps you plan spending between income days and make everyday money choices with more clarity.</p></div></div>
+      <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-question-1" aria-hidden="true"><div class="faq-answer-inner"><p>BilaForm is a personal finance platform with planning tools to help you manage spending between income days and make everyday money choices with more clarity.</p></div></div>
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-2" type="button" aria-expanded="false" aria-controls="faq-answer-2">How does BilaForm help me manage my money?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true"><div class="faq-answer-inner"><p>You can enter your available money, upcoming essentials, a buffer and days to payday to get a simple daily spending estimate. The demo also shows ways to think about spending habits and trade-offs.</p></div></div>
+      <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true"><div class="faq-answer-inner"><p>Enter your available money, upcoming essentials, a buffer and days to payday to get a daily spending estimate. The other planning features help you review recurring expenses and consider purchase trade-offs.</p></div></div>
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-3" type="button" aria-expanded="false" aria-controls="faq-answer-3">Is BilaForm suitable for people earning monthly salaries?<span aria-hidden="true"></span></button>
@@ -274,7 +308,7 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-4" type="button" aria-expanded="false" aria-controls="faq-answer-4">Can I use BilaForm to track daily expenses?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true"><div class="faq-answer-inner"><p>The current website is a concept demo. It illustrates expense logging and spending insights, but it does not connect to a bank or store live transactions.</p></div></div>
+      <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true"><div class="faq-answer-inner"><p>You can enter and review expenses in the spending planner. Entries stay in your browser and are not imported from a bank or stored as live transactions.</p></div></div>
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-5" type="button" aria-expanded="false" aria-controls="faq-answer-5">What is PangaSiku?<span aria-hidden="true"></span></button>
@@ -282,23 +316,32 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-6" type="button" aria-expanded="false" aria-controls="faq-answer-6">What is VukaMonth?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-6" role="region" aria-labelledby="faq-question-6" aria-hidden="true"><div class="faq-answer-inner"><p>VukaMonth is a survival-planning concept that focuses attention on essentials such as food and basic transport when the budget gets tight.</p></div></div>
+      <div class="faq-answer" id="faq-answer-6" role="region" aria-labelledby="faq-question-6" aria-hidden="true"><div class="faq-answer-inner"><p>VukaMonth helps organize monthly essentials such as food, basic transport and bills, then shows the balance remaining from the allocations you enter.</p></div></div>
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-7" type="button" aria-expanded="false" aria-controls="faq-answer-7">Does BilaForm replace a bank account?<span aria-hidden="true"></span></button>
       <div class="faq-answer" id="faq-answer-7" role="region" aria-labelledby="faq-question-7" aria-hidden="true"><div class="faq-answer-inner"><p>No. BilaForm is a budgeting and planning concept, not a bank, payment service or financial institution.</p></div></div>
     </div>
   </div></div></section>
-<!-- Final call to action. -->
-<section class="closing">
-  <div class="wrap closing-layout">
-    <div>
-      <span class="eyebrow">YOUR MONEY, YOUR NEXT MOVE</span>
-      <h2>
-        Make your money last <em>until payday.</em></h2>
-      <p>
-      Plan smarter, spend wisely and take control of your money with BilaForm.</p><a class="btn dark" href="#preview-title">Explore the BilaForm preview <span aria-hidden="true">→</span></a></div><img src="Assets/Illustrations/final-cta.svg" alt="A simple illustration of a person moving toward a payday savings goal" loading="lazy"></div></section></main>
-<footer class="footer" id="contact">
+<!-- Contact information and sample contact channels. -->
+<section class="contact-section" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <div class="contact-panel">
+      <div>
+        <span class="eyebrow">CONTACT BILAFORM</span>
+        <h2 id="contact-title">We’re here to help with your money plan.</h2>
+        <p>Reach out with questions about using BilaForm or share feedback with our team.</p>
+        <p class="contact-placeholder-note">Sample contact details shown for the website layout. Replace them with monitored BilaForm channels before publishing.</p>
+      </div>
+      <div class="contact-actions">
+        <a class="contact-primary" href="mailto:hello@bilaform.example">hello@bilaform.example</a>
+        <a class="contact-secondary" href="tel:+254000000000">+254 (0) 000 000 000</a>
+      </div>
+    </div>
+  </div>
+</section>
+ </main>
+<footer class="footer">
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
@@ -306,8 +349,8 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
     A daily money runway for real life. Make it to payday with a little more peace.</p></div>
   <div class="footer-links">
   <div>
-    <strong>Explore</strong><a href="#top">Home</a><a href="#features">Features</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#faq-title">FAQ</a></div>
+    <strong>Explore</strong><a href="#top">Home</a><a href="#about">About</a><a href="#features">Features</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#faq-title">FAQ</a></div>
   <div>
-    <strong>More</strong><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms and Conditions</a><a href="#calculator">Runway calculator</a><a href="#preview-title">Product preview</a></div></div>
+    <strong>More</strong><a href="#contact">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms and Conditions</a><a href="#calculator">Runway calculator</a><a href="#preview-title">Product preview</a></div></div>
 <div class="footer-bottom">
-    <span>© 2026 BilaForm. Money is personal. Your plan should be too.</span><span>Prototype concept. Estimates are for planning, not financial advice.</span></div></div></footer><a class="back-to-top" href="#top" aria-label="Back to top" aria-hidden="true" tabindex="-1"><span aria-hidden="true">↑</span><span>Back to top</span></a></body></html>
+    <span>© 2026 BilaForm. Money is personal. Your plan should be too.</span><span>Calculations are estimates for planning and may differ from actual expenses.</span></div></div></footer><a class="back-to-top" href="#top" aria-label="Back to top" aria-hidden="true" tabindex="-1"><span aria-hidden="true">↑</span><span>Back to top</span></a></body></html>

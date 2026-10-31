@@ -2623,24 +2623,6 @@ body {
   font-weight: 700
 }
 
-.feature-card a.tool-launch {
-  min-height: 44px;
-  width: fit-content;
-  padding: 11px 14px;
-  border-radius: 11px;
-  background: #2167c9;
-  color: #fff;
-  transition: transform .18s,background .18s,box-shadow .18s;
-}
-
-.feature-card a.tool-launch:hover {
-  transform: translateY(-2px);
-  background: #174f9f;
-  box-shadow: 0 8px 18px #2167c924;
-}
-
-.feature-card a.tool-launch span { color: inherit }
-
 .feature-card a span,.text-link span {
   transition: transform .2s
 }
@@ -3792,6 +3774,155 @@ body {
   }
 }
 
+/* About and contact sections extend the existing BilaForm landing page. */
+.about-section {
+  padding: 86px 0 92px;
+  background: #fff;
+  color: var(--bf-ink);
+}
+
+.about-heading {
+  max-width: 730px;
+  margin-bottom: 34px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.about-card {
+  min-height: 190px;
+  padding: 24px;
+  border: 1px solid #dce8f7;
+  border-radius: 18px;
+  background: #f8fbff;
+  box-shadow: 0 10px 28px #173b720c;
+}
+
+.about-card > span {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #e6f5ce;
+  color: #345b19;
+  font: 700 12px 'Space Grotesk',sans-serif;
+}
+
+.about-card h3 {
+  margin: 17px 0 7px;
+  color: #173967;
+  font: 700 17px 'Space Grotesk',sans-serif;
+}
+
+.about-card p {
+  margin: 0;
+  color: #5e7390;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.contact-section {
+  padding: 74px 0;
+  background: #edf4ff;
+}
+
+.contact-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 38px;
+  padding: clamp(26px, 5vw, 48px);
+  border: 1px solid #285b9f;
+  border-radius: 24px;
+  background: linear-gradient(125deg, #10356f, #174b91);
+  box-shadow: 0 20px 50px #123b741a;
+}
+
+.contact-panel .eyebrow {
+  color: #c8ee8a;
+}
+
+.contact-panel h2 {
+  max-width: 600px;
+  margin: 12px 0;
+  color: #fff;
+  font: 700 clamp(26px, 4vw, 40px)/1.1 'Space Grotesk',sans-serif;
+  letter-spacing: -1.2px;
+}
+
+.contact-panel p {
+  max-width: 690px;
+  margin: 0;
+  color: #d4e3f7;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.contact-actions {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  min-width: 150px;
+}
+
+.contact-primary,
+.contact-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.contact-primary {
+  background: #c8f27e;
+  color: #183216;
+}
+
+.contact-secondary {
+  min-height: 34px;
+  padding: 0 4px;
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: #91b8e9;
+  text-underline-offset: 4px;
+}
+
+.contact-primary:focus-visible,
+.contact-secondary:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+@media (max-width: 800px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-card {
+    min-height: 0;
+  }
+
+  .contact-panel {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .contact-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
 /* Reveal the floating return-to-top control after visitors scroll down. */
 .back-to-top {
   position: fixed;
@@ -3858,5 +3989,263 @@ body {
 @media (max-width: 350px) {
   .header .logo-word {
     display: none;
+  }
+}
+
+/* Keep the centred section links separate from the right-side actions. */
+.header-controls,
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.header-controls {
+  gap: 10px;
+  margin-left: auto;
+}
+
+.header-actions {
+  gap: 8px;
+}
+
+.account-button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid #a9c4ea;
+  border-radius: 10px;
+  background: #fff;
+  color: #183967;
+  font: 700 12px 'DM Sans',sans-serif;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+.account-button:hover {
+  transform: translateY(-1px);
+}
+
+.account-signin:hover {
+  background: #eef5ff;
+}
+
+.account-signup {
+  border-color: #1559cf;
+  background: #1559cf;
+  color: #fff;
+}
+
+.account-signup:hover {
+  background: #1049ad;
+}
+
+.navbar-login {
+  min-width: 74px;
+}
+
+.hero .actions .account-button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 10px;
+  min-height: 72px;
+  padding: 11px 14px;
+  border-radius: 17px;
+  text-align: left;
+  box-shadow: 0 8px 22px #163b6d14;
+}
+
+.hero .actions .account-signin {
+  border-color: #c4d5ec;
+  background: #fff;
+  color: #193b6d;
+}
+
+.hero .actions .account-signup {
+  border-color: #154d9f;
+  background: #154d9f;
+  color: #fff;
+  box-shadow: 0 12px 28px #145ee43c;
+  grid-template-columns: 34px minmax(0, 1fr);
+  min-height: 58px;
+  padding-inline: 17px;
+}
+
+.hero .actions .account-signup:hover {
+  background: #1049ad;
+  box-shadow: 0 16px 32px #145ee45c;
+}
+
+.account-action-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #e9f1ff;
+  color: #1559cf;
+}
+
+.account-action-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.account-signup .account-action-icon {
+  border-radius: 50%;
+  background: #c9f484;
+  color: #173515;
+}
+
+.account-action-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.account-action-copy strong {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.hero .actions .account-signup .account-action-copy strong {
+  font-size: 14px;
+}
+
+.account-action-copy small {
+  color: #7185a0;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.account-signup .account-action-copy small {
+  color: #d7e8ff;
+}
+
+.account-button:focus-visible,
+.account-notice-close:focus-visible,
+.account-demo-link:focus-visible {
+  outline: 3px solid #78aaff;
+  outline-offset: 3px;
+}
+
+.account-notice {
+  position: fixed;
+  width: min(440px, calc(100% - 32px));
+  padding: 34px;
+  border: 1px solid #d8e4f4;
+  border-radius: 20px;
+  background: #fff;
+  color: #193b6d;
+  box-shadow: 0 24px 80px #071b4266;
+}
+
+.account-notice::backdrop {
+  background: #071b42a8;
+  backdrop-filter: blur(3px);
+}
+
+.account-notice-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #eef4fc;
+  color: #193b6d;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.account-notice h2 {
+  margin: 12px 0;
+  color: #123263;
+  font: 700 clamp(24px, 5vw, 31px)/1.12 'Space Grotesk',sans-serif;
+}
+
+.account-notice p {
+  margin: 0 0 22px;
+  color: #536985;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.account-demo-link {
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 11px;
+  background: #1559cf;
+  color: #fff;
+}
+
+@media (max-width: 650px) {
+  .header {
+    padding-inline: 12px;
+  }
+
+  .header-controls {
+    gap: 6px;
+  }
+
+  .header-actions {
+    gap: 5px;
+  }
+
+  .account-button {
+    min-height: 40px;
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+
+  .hero .actions {
+    gap: 10px;
+  }
+
+  .hero .actions .account-button {
+    flex: 1 1 calc(50% - 5px);
+    grid-template-columns: 28px minmax(0, 1fr) 10px;
+    gap: 6px;
+    min-height: 68px;
+    padding: 9px 8px;
+  }
+
+  .hero .actions .account-signup {
+    flex-basis: 100%;
+    grid-template-columns: 28px minmax(0, 1fr);
+    min-height: 56px;
+    padding-inline: 12px;
+  }
+
+  .hero .actions .account-action-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+  }
+
+  .hero .actions .account-signup .account-action-icon {
+    border-radius: 50%;
+  }
+
+  .hero .actions .account-action-copy strong {
+    font-size: 11px;
+  }
+
+  .hero .actions .account-action-copy small {
+    font-size: 9px;
+  }
+
+  .hero .actions .account-signup .account-action-copy strong {
+    font-size: 12px;
+  }
+
+  .header nav .install-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .account-notice {
+    padding: 30px 24px 24px;
   }
 }

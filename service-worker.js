@@ -1,13 +1,10 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v15';
+const CACHE_NAME = 'bilaform-site-v25';
 const APP_FILES = [
   './',
   './index.html',
-  './tools.html',
   './CSS/styles.css',
-  './CSS/tools.css?v=3',
   './JS/site.js',
-  './JS/tools.js?v=3',
   './manifest.webmanifest',
   './privacy.html',
   './terms.html',
