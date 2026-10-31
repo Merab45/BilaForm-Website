@@ -5,19 +5,26 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#07101e">
     <meta name="description" content="A daily money runway for real life. Make it to payday with BilaForm.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="BilaForm: Make it to payday">
+    <meta property="og:description" content="A daily money runway for real life. Plan what is safe to spend with BilaForm.">
+    <meta property="og:image" content="Assets/Assets/bilaform-hero.png">
+    <meta name="color-scheme" content="light">
     <title>
       BilaForm: Make it to payday
     </title>
-  <link rel="icon" href="Assets/Assets/bilaform-mark.png" type="image/png">
-  <link rel="stylesheet" href="CSS/styles.css">
-  <script defer src="JS/site.js">
-  </script>
+    <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="Assets/Assets/bilaform-mark.png" type="image/png">
+    <link rel="apple-touch-icon" href="Assets/icons/bilaform-icon-192.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="CSS/styles.css">
+    <script defer src="JS/site.js"></script>
 </head>
 <body>
   <header class="header">
-    <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a><button class="menu" aria-expanded="false" aria-label="Toggle menu">Menu</button>
-    <nav>
-      <a href="#how">How it works</a><a href="#features">Features</a><a href="#vuka">VukaMonth</a><a class="nav-cta" href="../BilaForm-Android-Prototype/index.html">Try the app</a></nav></header>
+    <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a><button class="menu" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+    <nav id="primary-navigation" aria-label="Main navigation">
+      <a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#vuka">VukaMonth</a><a href="#faq-title">FAQs</a><a class="nav-cta" href="#preview-title">Explore BilaForm</a><button class="install-button" type="button" hidden>Install BilaForm</button></nav></header>
   <main id="top">
     <!-- Main introduction and app demo link. -->
     <section class="hero">
@@ -40,7 +47,7 @@
     <div class="art-label">
 A calmer way to count down to payday</div></div></div></section>
 <!-- Benefits at a glance. -->
-<section class="benefits-section" aria-labelledby="benefits-title">
+<section class="benefits-section" id="benefits" aria-labelledby="benefits-title">
   <div class="wrap">
     <div class="section-heading">
       <span class="eyebrow">MONEY THAT MAKES SENSE</span>
@@ -77,7 +84,7 @@ Make a realistic plan and move through the month with confidence.</p></article><
 <section class="how-section" id="how" aria-labelledby="how-title">
   <div class="wrap how-layout">
     <div class="how-visual">
-      <img src="Assets/Illustrations/how-it-works.svg" alt="Illustration of a person planning income, expenses and a payday budget on a phone" loading="lazy"></div>
+      <img src="Assets/Illustrations/financial-planning.svg" alt="Illustration of a person planning income, expenses and a payday budget on a phone" loading="lazy"></div>
     <div class="how-copy">
       <span class="eyebrow">A SIMPLE ROUTINE</span>
       <h2 id="how-title">
@@ -147,7 +154,7 @@ Notice how airtime, snacks, delivery fees and other small spends add up over tim
   <p>
 Set a weekly fun-spend limit with a friend and encourage each other along the way.</p></div></article>
 <article class="feature-card feature-vuka">
-  <img src="Assets/Assets/vukamonth/essentials.svg" alt="Essentials protected in a monthly budget" loading="lazy">
+  <img src="Assets/Illustrations/african-shopping.svg" alt="Essentials protected in a monthly budget" loading="lazy">
   <div>
     <span class="feature-tag">ESSENTIALS FIRST</span>
     <h3>
@@ -162,7 +169,7 @@ Set a weekly fun-spend limit with a friend and encourage each other along the wa
       <h2 id="calculator-title">
         Your daily number. <em>Made clear.</em></h2>
       <p>
-      Subtract upcoming essentials and your buffer from the money you have. The rest becomes a simple daily guide until payday.</p><img src="Assets/Illustrations/calculator-illustration.svg" alt="Illustration of a spending plan with a daily allowance chart" loading="lazy">
+      Subtract upcoming essentials and your buffer from the money you have. The rest becomes a simple daily guide until payday.</p><img src="Assets/Illustrations/budgeting-calculator.svg" alt="Illustration of a spending plan with a daily allowance chart" loading="lazy">
     <p class="sample-note">
   A planning estimate based on the figures you enter.</p></div>
 <div class="calc">
@@ -177,7 +184,8 @@ Set a weekly fun-spend limit with a friend and encourage each other along the wa
   <div>
     <small>SAFE TO SPEND EACH DAY</small><strong id="daily">KES 420</strong></div><span id="badge">BUFFER KEPT ✓</span></div>
 <div class="inputs">
-  <label>Money available now<input id="cash" type="number" value="18420" min="0" inputmode="numeric" aria-describedby="currency-cash"><span class="sr-only" id="currency-cash">Enter your available money in Kenyan shillings.</span></label><label>Essentials before payday<input id="essentials" type="number" value="7600" min="0" inputmode="numeric"></label><label>Buffer to keep<input id="buffer" type="number" value="2000" min="0" inputmode="numeric"></label><label>Days to payday<input id="days" type="number" value="21" min="1" inputmode="numeric"></label></div>
+  <label>Money available now<input id="cash" type="number" value="18420" min="0" step="1" inputmode="numeric" aria-describedby="currency-cash calc-error"><span class="sr-only" id="currency-cash">Enter your available money in Kenyan shillings.</span></label><label>Essentials before payday<input id="essentials" type="number" value="7600" min="0" step="1" inputmode="numeric" aria-describedby="calc-error"></label><label>Buffer to keep<input id="buffer" type="number" value="2000" min="0" step="1" inputmode="numeric" aria-describedby="calc-error"></label><label>Days to payday<input id="days" type="number" value="21" min="1" step="1" inputmode="numeric" aria-describedby="calc-error"></label></div>
+<p class="calc-error" id="calc-error" role="alert" hidden></p>
 <p class="disclaimer">
 All amounts are in KES. Estimate only; real costs can change.</p></div></div></section>
 <!-- Example budgeting dashboard. -->
@@ -195,14 +203,14 @@ All amounts are in KES. Estimate only; real costs can change.</p></div></div></s
     <li>
     Daily safe-to-spend limit</li>
   <li>
-Simple category and spending chart</li></ul><a class="text-link" href="../BilaForm-Android-Prototype/index.html">Explore the interactive demo <span aria-hidden="true">→</span></a></div>
+Simple category and spending chart</li></ul><a class="text-link" href="#preview-title">Explore the BilaForm preview <span aria-hidden="true">→</span></a></div>
 <div class="phone-stage">
-  <img src="Assets/Illustrations/app-dashboard.svg" alt="Sample BilaForm budgeting dashboard shown inside a smartphone mockup" loading="lazy"><span class="sample-label">SAMPLE FIGURES</span></div></div></section>
+  <img src="Assets/Illustrations/financial-dashboard.svg" alt="Sample BilaForm budgeting dashboard shown inside a smartphone mockup" loading="lazy"><span class="sample-label">SAMPLE FIGURES</span></div></div></section>
 <!-- VukaMonth essentials planning. -->
 <section class="vuka" id="vuka" aria-labelledby="vuka-title">
   <div class="wrap vuka-layout">
     <div class="vuka-visual">
-      <img src="Assets/Assets/vukamonth/essentials.svg" alt="Illustration of vegetables, rice, beans, cooking oil and a public transport bus" loading="lazy"></div>
+      <img src="Assets/Illustrations/african-shopping.svg" alt="Illustration of vegetables, rice, beans, cooking oil and a public transport bus" loading="lazy"></div>
     <div class="vuka-copy">
       <span class="eyebrow">WHEN THE MONTH GETS TIGHT</span>
       <h2 id="vuka-title">
@@ -210,7 +218,7 @@ Simple category and spending chart</li></ul><a class="text-link" href="../BilaFo
       <p>
       When funds are running low, VukaMonth helps you focus on the basics: food, transport and the bills that can’t wait. Get a simpler view of what remains and practical ideas for stretching it.</p>
     <div class="vuka-points">
-      <span>Prioritise everyday essentials</span><span>Plan food and basic transport</span><span>Keep the next step manageable</span></div><a class="btn light" href="../BilaForm-Android-Prototype/index.html">Explore VukaMonth in the demo</a><small class="vuka-disclaimer">Suggestions are planning ideas, not live local price quotes.</small></div></div></section>
+      <span>Prioritise everyday essentials</span><span>Plan food and basic transport</span><span>Keep the next step manageable</span></div><a class="btn light" href="#preview-title">Explore the product preview</a><small class="vuka-disclaimer">Suggestions are planning ideas, not live local price quotes.</small></div></div></section>
 <!-- Getting started steps. -->
 <section class="get-started" aria-labelledby="start-title">
   <div class="wrap">
@@ -247,7 +255,7 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
       <h2 id="faq-title">
         The money stuff, <em>made simple.</em></h2>
       <p>
-      Clear answers to help you decide if BilaForm fits the way you manage money.</p><img src="Assets/Illustrations/faq-illustration.svg" alt="Illustration of a person reviewing a simple financial plan" loading="lazy"></div>
+      Clear answers to help you decide if BilaForm fits the way you manage money.</p><img src="Assets/Illustrations/customer-support.svg" alt="Illustration of a person reviewing a simple financial plan" loading="lazy"></div>
   <div class="faq-list">
     <details>
       <summary>
@@ -292,17 +300,17 @@ No. BilaForm is a budgeting and planning concept, not a bank, payment service or
       <h2>
         Make your money last <em>until payday.</em></h2>
       <p>
-      Plan smarter, spend wisely and take control of your money with BilaForm.</p><a class="btn dark" href="../BilaForm-Android-Prototype/index.html">Open the BilaForm demo <span aria-hidden="true">→</span></a></div><img src="Assets/Illustrations/final-cta.svg" alt="A simple illustration of a person moving toward a payday savings goal" loading="lazy"></div></section></main>
-<footer class="footer">
+      Plan smarter, spend wisely and take control of your money with BilaForm.</p><a class="btn dark" href="#preview-title">Explore the BilaForm preview <span aria-hidden="true">→</span></a></div><img src="Assets/Illustrations/final-cta.svg" alt="A simple illustration of a person moving toward a payday savings goal" loading="lazy"></div></section></main>
+<footer class="footer" id="contact">
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
       <p>
     A daily money runway for real life. Make it to payday with a little more peace.</p></div>
-<div class="footer-links">
+  <div class="footer-links">
   <div>
-    <strong>Explore</strong><a href="#how">How it works</a><a href="#features">Features</a><a href="#vuka">VukaMonth</a><a href="#faq-title">FAQs</a></div>
+    <strong>Explore</strong><a href="#top">Home</a><a href="#features">Features</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#faq-title">FAQ</a></div>
   <div>
-    <strong>Try BilaForm</strong><a href="../BilaForm-Android-Prototype/index.html">Interactive demo</a><a href="#calculator">Runway calculator</a></div></div>
+    <strong>More</strong><a href="contact.html">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms and Conditions</a><a href="#calculator">Runway calculator</a><a href="#preview-title">Product preview</a></div></div>
 <div class="footer-bottom">
   <span>© 2026 BilaForm. Money is personal. Your plan should be too.</span><span>Prototype concept. Estimates are for planning, not financial advice.</span></div></div></footer></body></html>

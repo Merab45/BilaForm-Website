@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07101e">
+    <meta name="description" content="Explore an interactive BilaForm budgeting concept demo.">
+    <title>BilaForm Demo</title>
+    <link rel="icon" href="../Assets/Assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="demo.css">
+    <script defer src="demo.js"></script>
+  </head>
+  <body>
+    <header class="demo-header">
+      <a class="brand" href="../index.html" aria-label="BilaForm home">
+        <img src="../Assets/Assets/bilaform-mark.png" alt="">
+        <span>Bila<strong>Form</strong></span>
+      </a>
+      <a class="back-link" href="../index.html#preview-title">Back to the website</a>
+    </header>
+
+    <main class="demo-main">
+      <section class="welcome" aria-labelledby="welcome-title">
+        <div>
+          <span class="eyebrow">INTERACTIVE CONCEPT DEMO</span>
+          <h1 id="welcome-title">Your money, <em>at a glance.</em></h1>
+          <p>Try a sample monthly plan and record a sample expense. Your entries stay in this browser tab and clear when you reload.</p>
+        </div>
+        <span class="sample-pill">SAMPLE DATA</span>
+      </section>
+
+      <section class="summary-grid" aria-label="Example monthly money summary">
+        <article class="summary-card balance-card">
+          <span>AVAILABLE TO PLAN</span>
+          <strong id="available-balance">KES 18,420</strong>
+          <small>Sample balance</small>
+        </article>
+        <article class="summary-card">
+          <span>MONTHLY INCOME</span>
+          <strong>KES 32,000</strong>
+          <small>Example amount</small>
+        </article>
+        <article class="summary-card">
+          <span>MONTH EXPENSES</span>
+          <strong id="monthly-expenses">KES 9,500</strong>
+          <small>Sample and recorded spends</small>
+        </article>
+        <article class="summary-card savings-card">
+          <span>BUFFER SET ASIDE</span>
+          <strong>KES 2,000</strong>
+          <small>Protected in this plan</small>
+        </article>
+      </section>
+
+      <section class="demo-columns" aria-label="Spending plan and expense log">
+        <article class="panel runway-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">PANGASIKU</span>
+              <h2>Your daily guide</h2>
+            </div>
+            <span class="kes-mark" aria-hidden="true">KES</span>
+          </div>
+          <div class="daily-result">
+            <span>SAFE TO SPEND EACH DAY</span>
+            <strong id="daily-amount">KES 420</strong>
+            <p id="daily-context">After essentials and your buffer, over 21 days.</p>
+            <p class="plan-status" id="plan-status" role="status" aria-live="polite">Buffer kept in the example plan.</p>
+          </div>
+          <div class="plan-details">
+            <div><span>Essentials to reserve</span><strong>KES 7,600</strong></div>
+            <div><span>Buffer to protect</span><strong>KES 2,000</strong></div>
+            <div><span>Days to payday</span><strong>21 days</strong></div>
+          </div>
+          <p class="disclaimer">Planning estimate from sample figures. Real expenses can change.</p>
+        </article>
+
+        <article class="panel expense-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">SPENDING JOURNAL</span>
+              <h2>Record a sample spend</h2>
+            </div>
+          </div>
+          <form id="expense-form" novalidate>
+            <label for="expense-name">What did you spend on?</label>
+            <input id="expense-name" name="name" type="text" maxlength="60" placeholder="e.g. Lunch" required>
+            <div class="form-row">
+              <div>
+                <label for="expense-category">Category</label>
+                <select id="expense-category" name="category">
+                  <option>Food</option>
+                  <option>Transport</option>
+                  <option>Bills</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="expense-amount">Amount (KES)</label>
+                <input id="expense-amount" name="amount" type="number" min="1" step="1" inputmode="numeric" placeholder="0" required>
+              </div>
+            </div>
+            <p class="form-error" id="expense-error" role="alert" hidden></p>
+            <button class="record-button" type="submit">Add sample expense</button>
+          </form>
+          <div class="expense-list-wrap">
+            <h3>Recent sample spending</h3>
+            <ul class="expense-list" id="expense-list" aria-live="polite">
+              <li><span><strong>Groceries</strong><small>Food · Sample</small></span><b>KES 2,400</b></li>
+              <li><span><strong>Matatu fare</strong><small>Transport · Sample</small></span><b>KES 350</b></li>
+            </ul>
+            <p class="empty-state" id="empty-state" hidden>No sample spending has been added yet.</p>
+          </div>
+        </article>
+      </section>
+
+      <p class="demo-note">This is a local concept demo. It does not connect to a bank, send your entries, or save them after you close or reload this page.</p>
+    </main>
+  </body>
+</html>

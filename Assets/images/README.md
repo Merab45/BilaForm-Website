@@ -1,0 +1,1 @@
+Optimized standalone photos can be added to this folder. The existing hero photograph remains in `Assets/Assets/hero-portrait.png` so the protected hero section and its image reference stay unchanged.

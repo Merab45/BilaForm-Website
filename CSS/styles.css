@@ -2468,12 +2468,13 @@ body {
 
 .how-layout {
   display: grid;
-  grid-template-columns: 1fr .92fr;
+  grid-template-columns: .92fr 1fr;
   align-items: center;
   gap: 70px
 }
 
 .how-visual {
+  order: 2;
   padding: 12px
 }
 
@@ -2485,6 +2486,7 @@ body {
 }
 
 .how-copy {
+  order: 1;
   max-width: 515px
 }
 
@@ -2501,10 +2503,21 @@ body {
 }
 
 .process-list li {
+  position: relative;
   display: grid;
   grid-template-columns: 42px 1fr;
   gap: 14px;
   align-items: start
+}
+
+.process-list li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 38px;
+  bottom: -21px;
+  left: 17px;
+  width: 2px;
+  background: #c8dcef;
 }
 
 .process-list li>span {
@@ -3525,12 +3538,142 @@ body {
   }
 }
 
+/* Accessible navigation, calculator feedback, legal pages, and install UI. */
+.header nav a.is-active {
+  color: #8ebcff;
+}
+
+.header nav a:focus-visible,
+.footer a:focus-visible,
+.install-button:focus-visible,
+.menu:focus-visible,
+.calc .inputs input:focus-visible {
+  outline: 3px solid #78aaff;
+  outline-offset: 3px;
+}
+
+.install-button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid #9fc2f5;
+  border-radius: 10px;
+  background: #edf4ff;
+  color: #153765;
+  font: 700 12px 'DM Sans',sans-serif;
+  cursor: pointer;
+}
+
+.menu {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.install-button[hidden] {
+  display: none;
+}
+
+.calc-error {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #f1b8b0;
+  border-radius: 10px;
+  background: #fff4f2;
+  color: #8b2f25;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.calc-error[hidden] {
+  display: none;
+}
+
+.calc .inputs input[aria-invalid="true"] {
+  border-color: #b43a30;
+  box-shadow: 0 0 0 3px #b43a301a;
+}
+
+.faq-list details p {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .24s ease;
+}
+
+.faq-list summary:hover {
+  color: #1558bd;
+}
+
+.legal-body {
+  min-height: 100vh;
+  padding: 48px 20px;
+  background: #f3f7fd;
+  color: #18365f;
+}
+
+.legal-page {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 54px);
+  border: 1px solid #dce7f5;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 18px 50px #173b7212;
+}
+
+.legal-page .eyebrow {
+  display: block;
+  margin-top: 36px;
+}
+
+.legal-page h1,
+.legal-page h2 {
+  color: #153765;
+  font-family: 'Space Grotesk',sans-serif;
+}
+
+.legal-page h1 {
+  margin: 12px 0 20px;
+  font-size: clamp(30px, 5vw, 46px);
+  letter-spacing: -1.6px;
+}
+
+.legal-page h2 {
+  margin: 30px 0 8px;
+  font-size: 20px;
+}
+
+.legal-page p {
+  color: #536985;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.legal-page p a {
+  color: #155ec3;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media(max-width:700px) {
+  .header nav .install-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .legal-body {
+    padding: 16px;
+  }
+
+  .legal-page {
+    border-radius: 18px;
+  }
+}
+
 @media(prefers-reduced-motion:reduce) {
   html {
     scroll-behavior: auto
   }
 
-  .benefit-card,.feature-card,.faq-list summary span:after,.feature-card a span,.text-link span,.reveal {
+  .benefit-card,.feature-card,.faq-list summary span:after,.faq-list details p,.feature-card a span,.text-link span,.reveal {
     transition: none
   }
 
