@@ -2623,6 +2623,24 @@ body {
   font-weight: 700
 }
 
+.feature-card a.tool-launch {
+  min-height: 44px;
+  width: fit-content;
+  padding: 11px 14px;
+  border-radius: 11px;
+  background: #2167c9;
+  color: #fff;
+  transition: transform .18s,background .18s,box-shadow .18s;
+}
+
+.feature-card a.tool-launch:hover {
+  transform: translateY(-2px);
+  background: #174f9f;
+  box-shadow: 0 8px 18px #2167c924;
+}
+
+.feature-card a.tool-launch span { color: inherit }
+
 .feature-card a span,.text-link span {
   transition: transform .2s
 }
@@ -3094,11 +3112,14 @@ body {
   border-top: 1px solid #d4e1f2
 }
 
-.faq-list details {
+.faq-item {
   border-bottom: 1px solid #d4e1f2
 }
 
-.faq-list summary {
+.faq-question {
+  width: 100%;
+  border: 0;
+  background: transparent;
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -3110,15 +3131,10 @@ body {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.45;
-  list-style: none;
   cursor: pointer
 }
 
-.faq-list summary::-webkit-details-marker {
-  display: none
-}
-
-.faq-list summary:after {
+.faq-question:after {
   content: "";
   flex: 0 0 22px;
   width: 22px;
@@ -3127,14 +3143,14 @@ body {
   background: #dceaff
 }
 
-.faq-list summary span {
+.faq-question span {
   position: absolute;
   right: 6px;
   width: 10px;
   height: 10px
 }
 
-.faq-list summary span:before,.faq-list summary span:after {
+.faq-question span:before,.faq-question span:after {
   content: "";
   position: absolute;
   left: 0;
@@ -3144,22 +3160,37 @@ body {
   background: #2167d1
 }
 
-.faq-list summary span:after {
+.faq-question span:after {
   transform: rotate(90deg);
-  transition: transform .18s
+  transition: transform .28s ease
 }
 
-.faq-list details[open] summary span:after {
+.faq-item.is-open .faq-question span:after {
   transform: rotate(0)
 }
 
-.faq-list summary:focus-visible {
+.faq-question:focus-visible {
   outline: 2px solid #3478f6;
   outline-offset: 3px;
   border-radius: 5px
 }
 
-.faq-list details p {
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .32s ease;
+}
+
+.faq-item.is-open .faq-answer {
+  grid-template-rows: 1fr;
+}
+
+.faq-answer-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq-answer p {
   max-width: 610px;
   margin: 0;
   padding: 0 28px 18px 2px;
@@ -3498,7 +3529,7 @@ body {
     margin-top: 18px
   }
 
-  .faq-list summary {
+  .faq-question {
     font-size: 13px;
     min-height: 58px
   }
@@ -3592,13 +3623,7 @@ body {
   box-shadow: 0 0 0 3px #b43a301a;
 }
 
-.faq-list details p {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .24s ease;
-}
-
-.faq-list summary:hover {
+.faq-question:hover {
   color: #1558bd;
 }
 
@@ -3654,8 +3679,8 @@ body {
 }
 
 @media(max-width:700px) {
-  .header nav .install-button {
-    width: 100%;
+  .header > .install-button {
+    width: auto;
     min-height: 44px;
   }
 
@@ -3673,7 +3698,7 @@ body {
     scroll-behavior: auto
   }
 
-  .benefit-card,.feature-card,.faq-list summary span:after,.faq-list details p,.feature-card a span,.text-link span,.reveal {
+  .benefit-card,.feature-card,.faq-question span:after,.faq-answer,.back-to-top,.feature-card a span,.text-link span,.reveal {
     transition: none
   }
 
@@ -3738,5 +3763,100 @@ body {
   .feature-grid>.feature-primary,.feature-grid>.feature-card:nth-child(2),.feature-grid>.feature-vuka {
     grid-column: span 6;
     grid-template-columns: 1fr
+  }
+}
+
+/* Centre the nav links while keeping the logo aligned to the left. */
+.header {
+  position: relative;
+}
+
+@media (min-width: 651px) {
+  .header nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 650px) {
+  .header nav {
+    text-align: center;
+    align-items: stretch;
+  }
+
+  .header nav a {
+    text-align: center;
+  }
+}
+
+/* Reveal the floating return-to-top control after visitors scroll down. */
+.back-to-top {
+  position: fixed;
+  right: max(20px, calc((100vw - var(--max)) / 2));
+  bottom: 22px;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid #ffffff30;
+  border-radius: 999px;
+  background: #123d81;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px #071b4260;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top span:first-child {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.back-to-top:hover {
+  background: #1855aa;
+}
+
+.back-to-top:focus-visible {
+  outline: 3px solid #8ebcff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-answer,
+  .back-to-top {
+    transition: none;
+  }
+}
+
+/* Keep the centred navigation clear of the brand on compact tablet widths. */
+@media (min-width: 651px) and (max-width: 800px) {
+  .header nav {
+    gap: 13px;
+    font-size: 11px;
+  }
+
+  .header .logo-word {
+    display: none;
+  }
+}
+
+@media (max-width: 350px) {
+  .header .logo-word {
+    display: none;
   }
 }

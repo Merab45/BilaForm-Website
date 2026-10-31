@@ -95,55 +95,50 @@ if ('IntersectionObserver' in window) {
   observedSections.forEach((section) => sectionObserver.observe(section));
 }
 
-// Use native details semantics, but keep one answer open and animate its height.
-const faqItems = [...document.querySelectorAll('.faq-list details')];
+// Accessible FAQ disclosures: CSS grid animates their height in normal flow,
+// so each answer moves the content below it instead of covering it.
+const faqItems = [...document.querySelectorAll('.faq-item')];
+const canHoverFAQ = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-function syncFAQ(item) {
-  const answer = item.querySelector('p');
-  const summary = item.querySelector('summary');
-  summary.setAttribute('aria-expanded', String(item.open));
-  answer.style.maxHeight = item.open ? `${answer.scrollHeight}px` : '0px';
+function setFAQOpen(item, open) {
+  faqItems.forEach((other) => {
+    const isOpen = other === item && open;
+    other.classList.toggle('is-open', isOpen);
+    other.querySelector('.faq-question').setAttribute('aria-expanded', String(isOpen));
+    other.querySelector('.faq-answer').setAttribute('aria-hidden', String(!isOpen));
+  });
 }
 
 faqItems.forEach((item) => {
-  item.querySelector('summary').setAttribute('aria-expanded', 'false');
+  const question = item.querySelector('.faq-question');
 
-  // Keep the answer in normal document flow so it pushes the next row down.
-  // Mouse hover opens/closes it; native summary activation still works on touch
-  // screens and for keyboard users.
-  item.addEventListener('mouseenter', () => {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    faqItems.forEach((other) => {
-      if (other !== item && other.open) {
-        other.open = false;
-        syncFAQ(other);
-      }
-    });
-    item.open = true;
-    syncFAQ(item);
-  });
-  item.addEventListener('mouseleave', () => {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    item.open = false;
-    syncFAQ(item);
-  });
-
-  item.addEventListener('toggle', () => {
-    if (item.open) {
-      faqItems.forEach((other) => {
-        if (other !== item && other.open) other.open = false;
-      });
+  question.addEventListener('click', (event) => {
+    // A mouse click follows its hover state; keyboard and touch activate as a toggle.
+    if (canHoverFAQ.matches && event.detail > 0) {
+      setFAQOpen(item, true);
+      return;
     }
-    syncFAQ(item);
+    setFAQOpen(item, question.getAttribute('aria-expanded') !== 'true');
+  });
+
+  item.addEventListener('pointerenter', (event) => {
+    if (canHoverFAQ.matches && event.pointerType === 'mouse') setFAQOpen(item, true);
+  });
+  item.addEventListener('pointerleave', (event) => {
+    if (canHoverFAQ.matches && event.pointerType === 'mouse') setFAQOpen(item, false);
   });
 });
 
-// Recalculate expanded heights after a viewport change wraps the answer text.
-window.addEventListener('resize', () => {
-  faqItems.forEach((item) => {
-    if (item.open) syncFAQ(item);
-  });
-});
+// Keep the floating return-to-top control out of the way until it is useful.
+const backToTop = document.querySelector('.back-to-top');
+function syncBackToTop() {
+  const isVisible = window.scrollY > 500;
+  backToTop.classList.toggle('is-visible', isVisible);
+  backToTop.setAttribute('aria-hidden', String(!isVisible));
+  backToTop.tabIndex = isVisible ? 0 : -1;
+}
+window.addEventListener('scroll', syncBackToTop, { passive: true });
+syncBackToTop();
 
 // Show installation only after the browser confirms it can install the app.
 const installButton = document.querySelector('.install-button');

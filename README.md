@@ -1,6 +1,6 @@
 # BilaForm Website
 
-BilaForm is a responsive, static FinTech concept website for planning day-to-day spending between income days. It includes a daily runway calculator, product and VukaMonth illustrations, an FAQ accordion, and installable/offline-capable Progressive Web App support.
+BilaForm is a responsive, static FinTech concept website for planning day-to-day spending between income days. It includes five interactive, browser-only money tools, the daily runway calculator, product and VukaMonth illustrations, an FAQ accordion, and installable/offline-capable Progressive Web App support.
 
 The calculator and dashboard are examples only. The linked demo runs in the browser and resets its sample entries when reloaded. This project does not connect to a bank, process payments, create user accounts, or provide live prices.
 
@@ -11,6 +11,9 @@ The calculator and dashboard are examples only. The linked demo runs in the brow
 ├── index.html                 Main landing page
 ├── CSS/styles.css             Responsive design system and page styles
 ├── JS/site.js                 Calculator, navigation, FAQ, and install behavior
+├── JS/tools.js                Local calculations and state for the five money tools
+├── CSS/tools.css              Responsive tools page and result styles
+├── tools.html                 PangaSiku, affordability, micro-leak, BudgetRival, VukaMonth
 ├── manifest.webmanifest       PWA metadata and application icons
 ├── service-worker.js          Offline shell and static asset caching
 ├── server.cjs                 Dependency-free local preview server
@@ -28,6 +31,8 @@ The calculator and dashboard are examples only. The linked demo runs in the brow
 │   └── images/                Reserved for optimized standalone images
 └── Assets/Assets/benefits/    Benefit card icons
 ```
+
+The five cards in “Small moves. Big difference.” link directly to their matching tool on `tools.html`. PangaSiku divides the amount entered by days remaining; the affordability checker reserves entered essentials and marks a purchase using at least half of the remaining flexible amount as risky; Micro-leak Finder estimates repeat costs using a 7-day week and 30-day planning month; BudgetRival compares only progress a user manually enters; VukaMonth compares allocations with income and warns when they exceed it. All values are calculated in the open page and are not sent or saved.
 
 The original hero image and background remain at their existing paths so the protected hero markup, links, images, and styling remain unchanged.
 

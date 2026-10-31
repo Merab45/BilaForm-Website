@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07101e">
+  <meta name="description" content="Use BilaForm's local planning tools for a daily budget, purchase check, spending leaks, budget challenge and monthly essentials.">
+  <title>BilaForm Money Tools</title>
+  <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="Assets/icons/bilaform-icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="CSS/styles.css">
+  <link rel="stylesheet" href="CSS/tools.css?v=3">
+  <script defer src="JS/tools.js?v=3"></script>
+</head>
+<body class="tools-page">
+  <header class="tools-header">
+    <a class="logo" href="index.html#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
+    <a class="tools-back" href="index.html#features">Back to BilaForm</a>
+  </header>
+
+  <main class="tools-main">
+    <section class="tools-intro" id="tools" aria-labelledby="tools-title">
+      <span class="eyebrow">TOOLS FOR REAL LIFE</span>
+      <h1 id="tools-title">Small moves. <em>Big difference.</em></h1>
+      <p>Choose a tool and work through your numbers right here. Your entries stay in this page while it is open and are not sent to BilaForm.</p>
+      <nav class="tools-jump" aria-label="Jump to a money tool">
+        <a href="#pangasiku">PangaSiku</a>
+        <a href="#affordability">Can I afford this?</a>
+        <a href="#micro-leaks">Micro-leak finder</a>
+        <a href="#budget-rival">BudgetRival</a>
+        <a href="#vukamonth">VukaMonth</a>
+      </nav>
+    </section>
+
+    <section class="tool-panel" id="pangasiku" aria-labelledby="pangasiku-title">
+      <div class="tool-heading"><span class="tool-number">01</span><div><span class="feature-tag">YOUR DAILY GUIDE</span><h2 id="pangasiku-title">PangaSiku</h2><p>Divide the money available for everyday spending across the days until your next income.</p></div></div>
+      <form class="tool-form" id="pangasiku-form" novalidate>
+        <div class="tool-fields two-col">
+          <label>Available money (KES)<input name="balance" type="number" min="0" step="1" inputmode="numeric" required aria-describedby="pangasiku-error" placeholder="e.g. 12000"></label>
+          <label>Days until next income<input name="days" type="number" min="1" step="1" inputmode="numeric" required aria-describedby="pangasiku-error" placeholder="e.g. 14"></label>
+        </div>
+        <p class="tool-error" id="pangasiku-error" role="alert" hidden></p>
+        <button class="tool-button" type="submit">Calculate My Daily Budget</button>
+      </form>
+      <div class="tool-result" id="pangasiku-result" role="status" aria-live="polite" hidden></div>
+      <p class="tool-note">This simple guide divides the amount you enter by the days remaining. Set aside essentials separately before using it.</p>
+      <a class="return-tools" href="#tools">↑ Back to all tools</a>
+    </section>
+
+    <section class="tool-panel" id="affordability" aria-labelledby="affordability-title">
+      <div class="tool-heading"><span class="tool-number">02</span><div><span class="feature-tag">PAUSE BEFORE YOU PAY</span><h2 id="affordability-title">Can I afford this?</h2><p>Check a planned purchase against your balance after the essentials you still need to cover.</p></div></div>
+      <form class="tool-form" id="affordability-form" novalidate>
+        <div class="tool-fields three-col">
+          <label>Available balance (KES)<input name="balance" type="number" min="0" step="1" inputmode="numeric" required aria-describedby="affordability-error" placeholder="e.g. 18000"></label>
+          <label>Purchase price (KES)<input name="price" type="number" min="1" step="1" inputmode="numeric" required aria-describedby="affordability-error" placeholder="e.g. 2500"></label>
+          <label>Essentials still due (KES)<input name="essentials" type="number" min="0" step="1" inputmode="numeric" required aria-describedby="affordability-error" placeholder="e.g. 9000"></label>
+        </div>
+        <p class="tool-error" id="affordability-error" role="alert" hidden></p>
+        <button class="tool-button" type="submit">Check Before Buying</button>
+      </form>
+      <div class="tool-result" id="affordability-result" role="status" aria-live="polite" hidden></div>
+      <p class="tool-note">The labels are planning prompts: “Risky” means the purchase uses at least half of the money left after essentials. They are not financial advice.</p>
+      <a class="return-tools" href="#tools">↑ Back to all tools</a>
+    </section>
+
+    <section class="tool-panel" id="micro-leaks" aria-labelledby="micro-leaks-title">
+      <div class="tool-heading"><span class="tool-number">03</span><div><span class="feature-tag">FIND THE LITTLE LEAKS</span><h2 id="micro-leaks-title">Micro-leak finder</h2><p>List repeat purchases to see how small amounts can add up over time.</p></div></div>
+      <form class="tool-form" id="leaks-form" novalidate>
+        <div class="leak-rows" id="leak-rows"></div>
+        <div class="form-actions"><button class="tool-button secondary" type="button" id="add-leak">+ Add another expense</button><button class="tool-button" type="submit">Find My Spending Leaks</button></div>
+        <p class="tool-error" id="leaks-error" role="alert" hidden></p>
+      </form>
+      <div class="tool-result" id="leaks-result" role="status" aria-live="polite" hidden></div>
+      <p class="tool-note">Daily, weekly and monthly totals use a 7-day week and a 30-day planning month. Amounts stay in this page and are not saved or sent.</p>
+      <a class="return-tools" href="#tools">↑ Back to all tools</a>
+    </section>
+
+    <section class="tool-panel" id="budget-rival" aria-labelledby="budget-rival-title">
+      <div class="tool-heading"><span class="tool-number">04</span><div><span class="feature-tag">A LITTLE ACCOUNTABILITY</span><h2 id="budget-rival-title">BudgetRival</h2><p>Set a personal challenge, track your progress and compare with a friend by entering their update yourself.</p></div></div>
+      <form class="tool-form" id="rival-form" novalidate>
+        <div class="tool-fields two-col">
+          <label>Challenge type<select name="type"><option value="save">Save towards a goal</option><option value="spend">Keep spending under a limit</option></select></label>
+          <label>Goal or spending limit (KES)<input name="target" type="number" min="1" step="1" inputmode="numeric" required aria-describedby="rival-error" placeholder="e.g. 10000"></label>
+          <label>Your progress so far (KES)<input name="self" type="number" min="0" step="1" inputmode="numeric" required aria-describedby="rival-error" placeholder="e.g. 2500"></label>
+          <label>Friend's name or nickname (optional)<input name="friendName" type="text" maxlength="40" placeholder="e.g. Amina"></label>
+          <label class="friend-progress">Friend's progress (optional, KES)<input name="friend" type="number" min="0" step="1" inputmode="numeric" aria-describedby="rival-error" placeholder="Enter what they share"></label>
+        </div>
+        <p class="tool-error" id="rival-error" role="alert" hidden></p>
+        <button class="tool-button" type="submit">Start a Budget Challenge</button>
+      </form>
+      <div class="tool-result" id="rival-result" role="status" aria-live="polite" hidden></div>
+      <p class="tool-note">This is a private, local challenge tracker. Progress is not shared, synced or compared in real time; discuss updates with your friend separately.</p>
+      <a class="return-tools" href="#tools">↑ Back to all tools</a>
+    </section>
+
+    <section class="tool-panel" id="vukamonth" aria-labelledby="vukamonth-title">
+      <div class="tool-heading"><span class="tool-number">05</span><div><span class="feature-tag">ESSENTIALS FIRST</span><h2 id="vukamonth-title">VukaMonth</h2><p>Map your monthly income across essential costs and see what remains to plan.</p></div></div>
+      <form class="tool-form" id="vuka-form" novalidate>
+        <div class="tool-fields two-col vuka-fields">
+          <label class="income-field">Monthly income (KES)<input name="income" type="number" min="0" step="1" inputmode="numeric" required aria-describedby="vuka-error" placeholder="e.g. 40000"></label>
+          <label>Food (KES)<input name="food" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Transport (KES)<input name="transport" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Rent (KES)<input name="rent" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Electricity (KES)<input name="electricity" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Water (KES)<input name="water" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Savings (KES)<input name="savings" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+          <label>Other essentials (KES)<input name="other" type="number" min="0" step="1" inputmode="numeric" value="0"></label>
+        </div>
+        <p class="tool-error" id="vuka-error" role="alert" hidden></p>
+        <button class="tool-button" type="submit">Plan My Essentials</button>
+      </form>
+      <div class="tool-result" id="vuka-result" role="status" aria-live="polite" hidden></div>
+      <p class="tool-note">Enter only the amounts you choose to plan. This planner runs in your browser and does not store or send your budget.</p>
+      <a class="return-tools" href="#tools">↑ Back to all tools</a>
+    </section>
+  </main>
+  <footer class="tools-footer"><a href="index.html#features">Back to the BilaForm tools section</a><span>Planning estimates only. Your entries are not sent to BilaForm.</span></footer>
+</body>
+</html>
