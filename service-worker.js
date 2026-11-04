@@ -1,5 +1,5 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v25';
+const CACHE_NAME = 'bilaform-site-v26';
 const APP_FILES = [
   './',
   './index.html',
@@ -9,6 +9,21 @@ const APP_FILES = [
   './privacy.html',
   './terms.html',
   './contact.html',
+  './blog/index.html',
+  './blog/blog.css',
+  './blog/blog-data.js',
+  './blog/blog.js',
+  './blog/blog-home.js',
+  './blog/article.js',
+  './blog/nav.js',
+  './blog/articles/how-to-budget-on-a-small-salary.html',
+  './blog/articles/how-to-save-money-every-month.html',
+  './blog/articles/surviving-the-last-week-before-payday.html',
+  './blog/articles/10-small-expenses-draining-your-money.html',
+  './blog/articles/building-an-emergency-fund-in-kenya.html',
+  './blog/articles/smart-spending-vs-impulse-buying.html',
+  './blog/articles/how-to-manage-your-money-after-payday.html',
+  './blog/articles/side-hustles-and-managing-irregular-income.html',
   './BilaForm-Android-Prototype/index.html',
   './BilaForm-Android-Prototype/demo.css',
   './BilaForm-Android-Prototype/demo.js',

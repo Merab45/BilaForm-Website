@@ -1,68 +1,57 @@
 # BilaForm Website
 
-BilaForm is a responsive, static FinTech concept website for planning day-to-day spending between income days. It includes an interactive daily runway calculator, a local-only product demo, explanatory feature cards, product and VukaMonth illustrations, an FAQ accordion, and installable/offline-capable Progressive Web App support.
+BilaForm is a responsive financial planning website for everyday money decisions and making a plan between paydays. It includes a daily spending calculator, informational product sections, an FAQ, a curated financial insights Journal, and Progressive Web App support. The website is static and can be hosted on GitHub Pages.
 
-The calculator and dashboard are examples only. The linked demo runs in the browser and resets its sample entries when reloaded. This project does not connect to a bank, process payments, create user accounts, or provide live prices.
+The daily allowance calculator uses the available cash less planned essential expenses and a chosen buffer, divided by the days remaining. Calculations happen in the browser. BilaForm does not connect to bank or mobile money accounts, hold funds, process payments, or provide account sign-in on this site.
 
 ## Project structure
 
 ```text
 .
-├── index.html                 Main landing page
-├── CSS/styles.css             Responsive design system and page styles
-├── JS/site.js                 Calculator, navigation, FAQ, and install behavior
-├── manifest.webmanifest       PWA metadata and application icons
-├── service-worker.js          Offline shell and static asset caching
-├── server.cjs                 Dependency-free local preview server
-├── contact.html               Contact-channel status
-├── privacy.html               Current prototype privacy notice
-├── terms.html                 Prototype terms and usage notice
-├── BilaForm-Android-Prototype/
-│   ├── index.html              Interactive, local-only product demo
-│   ├── demo.css                Demo dashboard and responsive layout
-│   └── demo.js                 Sample expense log and runway calculation
+├── index.html                     Homepage and daily planner
+├── CSS/styles.css                 Main BilaForm styles
+├── JS/site.js                     Calculator, navigation and FAQ behaviour
+├── blog/
+│   ├── index.html                 Journal directory with search and filters
+│   ├── blog.css                   Homepage and Journal editorial styles
+│   ├── blog-data.js               Article copy and featured/popular flags
+│   ├── blog.js                    Directory rendering and controls
+│   ├── blog-home.js               Homepage popular article cards
+│   ├── article.js                 Shared article page renderer
+│   ├── nav.js                     Blog mobile navigation
+│   └── articles/                  Eight individual article URLs
 ├── Assets/
-│   ├── Assets/                Existing brand, photography, and feature artwork
-│   ├── Illustrations/         Product, calculator, FAQ, and planning illustrations
-│   ├── icons/                 192px and 512px PWA icons
-│   └── images/                Reserved for optimized standalone images
-└── Assets/Assets/benefits/    Benefit card icons
+│   ├── Illustrations/             Original BilaForm illustrations
+│   ├── Assets/                    Brand artwork and photography
+│   └── icons/                     PWA icons
+├── manifest.webmanifest           Installable app metadata
+├── service-worker.js              Offline cache and fallback
+├── privacy.html
+└── terms.html
 ```
-
-The “Small moves. Big difference.” section explains the BilaForm features without linking to separate tool pages. The interactive PangaSiku calculator remains on the landing page; the separate product demo runs locally in the browser and resets its sample entries when reloaded.
-
-The original hero image and background remain at their existing paths so the protected hero markup, links, images, and styling remain unchanged.
 
 ## Run locally
 
-The site has no build step or package dependencies. With Node.js installed, start the included local HTTP server:
+Use any static HTTP server from the project root. For example, with Node.js installed:
 
 ```sh
 node server.cjs
 ```
 
-Then open <http://localhost:8000>. You can also use another static HTTP server. Use HTTPS or `localhost` to test service workers and installation; opening `index.html` directly as a `file://` URL does not enable those browser features.
+Then open the local address printed by the server. A local HTTP server is required for service workers and PWA installation; opening `index.html` as a `file://` URL is not sufficient.
 
-## Assets
+## Journal content
 
-- Existing brand images and feature graphics: `Assets/Assets/`
-- Benefit icons: `Assets/Assets/benefits/`
-- Named product illustrations: `Assets/Illustrations/`
-- PWA application icons: `Assets/icons/`
-- Optimized standalone images can be added under `Assets/images/`. The source hero photography remains in its existing location.
+Article titles, summaries, copy, dates, images and the `popular` / `featured` selections are maintained in `blog/blog-data.js`. Edit those flags to curate the homepage and directory picks. Update an article slug carefully because it is also the corresponding static HTML filename and URL. Blog illustrations and photography are kept in `Assets/Illustrations/` and `Assets/Assets/`; article pages use relative paths so they work from GitHub Pages project subpaths.
 
-All illustrations and photographs currently referenced by the page are local project assets. The site does request DM Sans and Space Grotesk from Google Fonts when online; system font fallbacks are configured for offline use.
+## PWA installation
 
-## Install BilaForm
+On HTTPS hosting or localhost, supported browsers can offer installation through BilaForm’s install prompt. The install control is only shown when the browser signals that installation is available. The service worker caches the homepage, Journal pages, and local assets for repeat and offline access; a previously visited page can still be opened offline.
 
-Deploy the folder on HTTPS, visit the site in a browser that supports PWA installation, and use the browser's install prompt. The in-page **Install BilaForm** control appears only when the browser fires its install-available event. The service worker caches the page and local assets and serves the cached landing page if a later navigation is offline.
+## Deploy to GitHub Pages
 
-## Deployment
+Push the project to the repository and configure GitHub Pages to publish the project root (or the selected branch/folder containing `index.html`). The current canonical URL metadata targets `https://merab45.github.io/BilaForm-Website/`; update canonical and Open Graph URLs if the repository or custom domain changes. Verify the deployed subpath, HTTPS, PWA manifest and service worker after publishing.
 
-Upload the project folder to a static host with HTTPS, preserving file names and directory capitalization. The manifest, service worker, policy pages, and assets must be served from the same origin. No server runtime is needed for the current prototype.
+## Contact details
 
-Before a public production launch, configure a monitored support contact and review the privacy and terms pages against the final hosting/analytics setup and applicable requirements. The interactive demo link expects the site to be hosted at the domain root, where its `../BilaForm-Android-Prototype/index.html` destination resolves to the included demo folder. If you deploy under a nested path, configure the host to serve that sibling route.
-
-## Validation notes
-
-JavaScript source can be syntax-checked with `node --check JS/site.js`, `node --check service-worker.js`, `node --check server.cjs`, and `node --check BilaForm-Android-Prototype/demo.js`. The static site does not include an automated test suite.
+The contact section currently contains sample details marked as placeholders. Replace them with monitored contact channels before using them for customer support. Privacy and terms content should also be reviewed against the final hosting, data handling and support setup.

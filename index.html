@@ -18,13 +18,14 @@
     <link rel="apple-touch-icon" href="Assets/icons/bilaform-icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="CSS/styles.css">
+    <link rel="stylesheet" href="blog/blog.css">
     <script defer src="JS/site.js"></script>
 </head>
 <body>
   <header class="header">
     <a class="logo" href="#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
     <nav id="primary-navigation" aria-label="Main navigation">
-      <a href="#top">Home</a><a href="#about">About</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#faq-title">FAQs</a><a href="#contact">Contact</a>
+      <a href="#top">Home</a><a href="#about">About</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#features">Features</a><a href="blog/index.html">Blog</a><a href="#faq-title">FAQs</a><a href="#contact">Contact</a>
     </nav>
     <div class="header-controls">
       <button class="menu" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
@@ -39,7 +40,7 @@
     <span class="eyebrow">BILAFORM ACCOUNT</span>
     <h2 id="account-notice-title">Account access is coming later.</h2>
     <p id="account-notice-message">BilaForm account sign-in and registration are not available on this website yet. You can still use the budgeting tools without an account.</p>
-    <a class="btn account-planner-link" href="../BilaForm-Android-Prototype/index.html">Explore the spending planner <span aria-hidden="true">→</span></a>
+    <a class="btn account-planner-link" href="#calculator">Explore the spending planner <span aria-hidden="true">→</span></a>
   </dialog>
   <main id="top">
 <!-- Main introduction and primary account action. -->
@@ -102,7 +103,7 @@ Check the trade-off before a want becomes a regret.</p></article>
   Peace of mind</h3>
 <p>
 Make a realistic plan and move through the month with confidence.</p></article></div></div></section>
-<!-- About BilaForm and the practical ideas behind the product concept. -->
+<!-- Explain how BilaForm supports everyday financial planning. -->
 <section class="about-section" id="about" aria-labelledby="about-title">
   <div class="wrap">
     <div class="section-heading about-heading">
@@ -320,9 +321,21 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
     </div>
     <div class="faq-item">
       <button class="faq-question" id="faq-question-7" type="button" aria-expanded="false" aria-controls="faq-answer-7">Does BilaForm replace a bank account?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-7" role="region" aria-labelledby="faq-question-7" aria-hidden="true"><div class="faq-answer-inner"><p>No. BilaForm is a budgeting and planning concept, not a bank, payment service or financial institution.</p></div></div>
+      <div class="faq-answer" id="faq-answer-7" role="region" aria-labelledby="faq-question-7" aria-hidden="true"><div class="faq-answer-inner"><p>No. BilaForm helps you plan your spending. It is not a bank, payment service or financial institution.</p></div></div>
     </div>
   </div></div></section>
+<!-- Popular articles from the BilaForm Journal. -->
+<section class="blog-home" id="journal" aria-labelledby="journal-title">
+  <div class="wrap">
+    <div class="blog-home-heading">
+      <div><span class="eyebrow">THE BILAFORM JOURNAL</span><h2 id="journal-title">Money Talks. <em>Real Life.</em><br>Smarter Moves.</h2><p>Practical money lessons, everyday budgeting tips and financial insights to help you make it to payday with confidence.</p></div>
+      <a class="blog-all-link" href="blog/index.html">Explore all articles <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="blog-home-grid" data-home-articles aria-live="polite"></div>
+  </div>
+</section>
+<script defer src="blog/blog-data.js"></script>
+<script defer src="blog/blog-home.js"></script>
 <!-- Contact information and sample contact channels. -->
 <section class="contact-section" id="contact" aria-labelledby="contact-title">
   <div class="wrap">
@@ -349,7 +362,7 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
     A daily money runway for real life. Make it to payday with a little more peace.</p></div>
   <div class="footer-links">
   <div>
-    <strong>Explore</strong><a href="#top">Home</a><a href="#about">About</a><a href="#features">Features</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="#faq-title">FAQ</a></div>
+    <strong>Explore</strong><a href="#top">Home</a><a href="#about">About</a><a href="#features">Features</a><a href="#benefits">Benefits</a><a href="#how">How it works</a><a href="blog/index.html">Blog</a><a href="#faq-title">FAQ</a></div>
   <div>
     <strong>More</strong><a href="#contact">Contact</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms and Conditions</a><a href="#calculator">Runway calculator</a><a href="#preview-title">Product preview</a></div></div>
 <div class="footer-bottom">
