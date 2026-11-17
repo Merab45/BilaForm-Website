@@ -24,7 +24,7 @@
   function returnToLogin() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    window.location.replace('index.html?auth=login');
+    window.location.replace('auth.html?auth=login');
   }
 
   if (!token) { returnToLogin(); return; }
@@ -184,7 +184,7 @@
     localStorage.setItem(preferenceKeys.dark, String(darkToggle.checked));
     localStorage.setItem(preferenceKeys.contrast, String(contrastToggle.checked));
   }
-  darkToggle.checked = localStorage.getItem(preferenceKeys.dark) === 'true';
+  darkToggle.checked = localStorage.getItem(preferenceKeys.dark) !== 'false';
   contrastToggle.checked = localStorage.getItem(preferenceKeys.contrast) === 'true';
   applyPreferences();
   darkToggle.addEventListener('change', applyPreferences);

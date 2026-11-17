@@ -4297,3 +4297,121 @@ body {
 @media(max-width:650px){.page-hero{padding:45px 0 42px}.page-hero h1{letter-spacing:-1.6px}.page-hero p{font-size:13px}.service-hero-grid,.how-page-layout,.welcome-panel,.content-page .contact-panel{grid-template-columns:1fr;gap:20px}.service-hero-grid img{max-height:190px;grid-row:1}.directory-section{padding:32px 0 48px}.directory-grid{grid-template-columns:1fr}.directory-card{grid-template-columns:110px 1fr;min-height:0}.directory-card>img{height:100%;min-height:180px}.directory-card>div{padding:16px}.directory-card h2{font-size:18px}.directory-card p{font-size:12px}.values-grid,.about-values .values-grid{grid-template-columns:1fr}.about-values .values-grid>div{padding:3px 0 10px}.announcement-empty{align-items:flex-start;flex-wrap:wrap}.announcement-empty>div{flex:1 1 75%}.announcement-empty .btn{margin-left:0}.page-action{align-items:flex-start;flex-direction:column;gap:14px}.content-page .contact-panel{width:calc(100% - 32px)}.content-page .contact-form{padding:17px}.welcome-section{padding:34px 0}.welcome-panel{padding:22px}.welcome-panel img{max-height:170px;grid-row:1}.blog-home-grid{grid-template-columns:1fr}.site-header-inner>.logo .logo-word{font-size:20px}}
 @media(max-width:850px){.header:not(.account-header){height:68px;padding-inline:16px}.header:not(.account-header) .menu{display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:56px;height:40px;border:1px solid #ffffff2a;border-radius:9px;background:#111c2a;color:#fff;font:700 12px 'DM Sans',sans-serif}.header:not(.account-header)>nav{display:none;position:absolute;left:12px;right:12px;top:62px;transform:none;max-width:none;width:auto;max-height:calc(100svh - 82px);overflow:auto;padding:14px;border:1px solid #ffffff20;border-radius:15px;background:#0c1723;align-items:stretch;gap:3px;flex-direction:column;white-space:normal}.header:not(.account-header)>nav.open{display:flex}.header:not(.account-header)>nav>a,.header:not(.account-header) .nav-dropdown>summary{min-height:43px;padding:9px 11px;font-size:13px;justify-content:space-between}.header:not(.account-header) .nav-dropdown-menu{position:static;margin-left:10px;border:0;border-left:1px solid #ffffff25;border-radius:0;background:transparent;box-shadow:none}.header:not(.account-header) .nav-dropdown-menu a{padding:9px 12px}}
 
+/* Single header layout: navigation stays in its own flex track and never
+   overlaps the logo or account actions. The compact menu takes over below
+   tablet width. */
+@media (min-width: 851px) {
+  .header:not(.account-header) {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 72px;
+    min-height: 72px;
+    padding-inline: max(24px, calc((100vw - 1320px) / 2));
+    gap: 20px;
+  }
+  .header:not(.account-header) > nav,
+  .header:not(.account-header) .site-header-inner > nav {
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    transform: none;
+    justify-content: center;
+    gap: clamp(10px, 1.15vw, 19px);
+    white-space: nowrap;
+    font-size: clamp(10px, .84vw, 12px);
+  }
+  .header:not(.account-header) .header-controls,
+  .header:not(.account-header) .site-login {
+    flex: 0 0 auto;
+    margin-left: 0;
+  }
+  .header:not(.account-header) .menu,
+  .header:not(.account-header) .site-header-inner .menu { display: none; }
+  .site-header-inner {
+    position: relative;
+    width: min(100%, 1320px);
+    min-height: 72px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+}
+@media (max-width: 1100px) {
+  .header:not(.account-header) { position: sticky; top: 0; z-index: 20; }
+  .header:not(.account-header) > .menu,
+  .header:not(.account-header) .site-header-inner > .menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    padding: 0;
+    border: 1px solid #ffffff2a;
+    border-radius: 12px;
+    background: #111c2a;
+    color: #fff;
+    font-size: 0;
+    cursor: pointer;
+  }
+  .header:not(.account-header) .menu::before,
+  .header:not(.account-header) .site-header-inner .menu::before {
+    content: "";
+    width: 18px;
+    height: 12px;
+    background: linear-gradient(#f5f8fb 0 0) 0 0/100% 2px,
+      linear-gradient(#f5f8fb 0 0) 0 5px/100% 2px,
+      linear-gradient(#f5f8fb 0 0) 0 10px/100% 2px;
+    background-repeat: no-repeat;
+  }
+  .header:not(.account-header) > nav,
+  .header:not(.account-header) .site-header-inner > nav {
+    display: none;
+    position: absolute;
+    top: calc(100% - 1px);
+    left: 12px;
+    right: 12px;
+    z-index: 21;
+    width: auto;
+    max-width: none;
+    max-height: calc(100svh - 88px);
+    overflow: auto;
+    padding: 12px;
+    transform: none;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 3px;
+    white-space: normal;
+    border: 1px solid #ffffff20;
+    border-radius: 16px;
+    background: #0c1723;
+    box-shadow: 0 20px 55px #0008;
+  }
+  .header:not(.account-header) > nav.open,
+  .header:not(.account-header) .site-header-inner > nav.open { display: flex; }
+  .header:not(.account-header) > nav > a,
+  .header:not(.account-header) .site-header-inner > nav > a,
+  .header:not(.account-header) .nav-dropdown > summary {
+    min-height: 44px;
+    padding: 10px 12px;
+    justify-content: space-between;
+    font-size: 13px;
+    text-align: left;
+  }
+  .header:not(.account-header) .nav-dropdown-menu {
+    position: static;
+    min-width: 0;
+    margin: 0 0 7px 10px;
+    border: 0;
+    border-left: 1px solid #ffffff25;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .header:not(.account-header) .nav-dropdown-menu a { padding: 9px 14px; font-size: 12px; }
+  .site-header-inner { width: 100%; min-height: 68px; }
+}
+

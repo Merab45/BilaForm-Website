@@ -144,7 +144,10 @@ function renderAccount() {
   document.querySelector('[data-user-name]').hidden = !loggedIn;
   document.querySelector('[data-user-name]').textContent = loggedIn ? `Hi, ${accountUser.name}` : '';
   document.querySelector('[data-logout]').hidden = !loggedIn;
-  document.querySelector('[data-open-auth]').hidden = loggedIn;
+  const navbarLogin = document.querySelector('.navbar-login');
+  if (navbarLogin) navbarLogin.hidden = loggedIn;
+  const openAuth = document.querySelector('[data-open-auth]');
+  if (openAuth) openAuth.hidden = loggedIn;
 }
 
 async function apiRequest(path, options = {}) {
