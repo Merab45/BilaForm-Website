@@ -1,5 +1,5 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v32';
+const CACHE_NAME = 'bilaform-site-v34';
 const APP_FILES = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_FILES = [
   './CSS/auth.css',
   './CSS/account.css',
   './JS/site.js',
+  './JS/portal.js',
   './JS/auth.js',
   './JS/account.js',
   './manifest.webmanifest',
@@ -108,13 +109,13 @@ self.addEventListener('fetch', (event) => {
             .then((cache) => cache.put(request, copy))
             .then(() => response);
         })
-        .catch(async () => (await caches.match(request)) || caches.match('./index.html')),
+        .catch(async () => (await caches.match(request, { ignoreSearch: true })) || caches.match('./index.html')),
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
       return fetch(request).then((response) => {
         if (response.ok) {

@@ -6,8 +6,8 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#10172a",
-  "theme_color": "#10172a",
+  "background_color": "#fbfcff",
+  "theme_color": "#fbfcff",
   "icons": [
     {
       "src": "Assets/icons/bilaform-icon-192.png",

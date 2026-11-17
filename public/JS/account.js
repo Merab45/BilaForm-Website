@@ -76,6 +76,7 @@
 
   function setProfile(user) {
     currentUser = user;
+    document.querySelector('.account-announcement').hidden = false;
     const initials = user.name.trim().split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase();
     document.querySelector('[data-avatar]').textContent = initials || 'BF';
     document.querySelector('[data-sidebar-name]').textContent = user.name;

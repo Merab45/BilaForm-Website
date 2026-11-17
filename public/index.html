@@ -1,97 +1,99 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08111c">
-<meta name="description" content="BilaForm helps you plan everyday spending in KES, set aside essentials and make it to payday with more clarity.">
-<meta property="og:type" content="website"><meta property="og:title" content="BilaForm | Make it to payday"><meta property="og:description" content="A daily money runway for real life. Plan what is safe to spend with BilaForm."><meta property="og:image" content="Assets/Assets/bilaform-hero.png">
-<meta name="color-scheme" content="dark"><title>BilaForm | Make it to payday</title>
-<link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml"><link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="CSS/styles.css?v=redesign-20261117"><link rel="stylesheet" href="blog/blog.css?v=redesign-20261117"><link rel="stylesheet" href="CSS/premium.css?v=premium-20261117">
-<script defer src="JS/site.js?v=redesign-20261117"></script>
-</head><body class="landing-page">
-<header class="header"><a class="logo" href="index.html#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
-<button class="menu" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
-<nav id="primary-navigation" aria-label="Main navigation">
-<a href="index.html#top">Home</a>
-<details class="nav-dropdown"><summary>About us</summary><div class="nav-dropdown-menu"><a href="about.html">Who we are</a><a href="about.html#mission">Mission &amp; vision</a><a href="about.html#team">Our team</a></div></details>
-<details class="nav-dropdown"><summary>Our services</summary><div class="nav-dropdown-menu"><a href="services.html">Service directory</a><a href="services/pangasiku.html">PangaSiku</a><a href="services/affordability.html">Can I afford this?</a><a href="services/micro-leaks.html">Micro-leak finder</a><a href="services/vukamonth.html">VukaMonth</a></div></details>
-<details class="nav-dropdown"><summary>Get started</summary><div class="nav-dropdown-menu"><a href="how-it-works.html">How it works</a><a href="index.html#calculator">Plan your daily budget</a><a href="auth.html?auth=register">Create an account</a></div></details>
-<details class="nav-dropdown"><summary>News &amp; articles</summary><div class="nav-dropdown-menu"><a href="articles.html">Popular articles</a><a href="announcements.html">Latest updates</a><a href="blog/index.html">BilaForm Journal</a></div></details>
-<details class="nav-dropdown"><summary>Resources</summary><div class="nav-dropdown-menu"><a href="resources.html">Guides &amp; downloads</a><a href="blog/index.html">Money guides</a></div></details>
-<a href="contact.html">Contact us</a>
-</nav><div class="header-controls"><div class="header-actions"><a class="account-user-name" data-user-name href="account.html" hidden></a><a class="account-button account-signin navbar-login" href="auth.html?auth=login">Sign in</a><button class="account-button" type="button" data-logout hidden>Log out</button><button class="install-button" type="button" hidden>Install BilaForm</button></div></div></header>
-<dialog class="account-notice" id="account-dialog" aria-labelledby="account-notice-title"><button class="account-notice-close" type="button" aria-label="Close">×</button><span class="eyebrow">YOUR BILAFORM ACCOUNT</span><h2 id="account-notice-title">Welcome back.</h2><div class="auth-tabs" role="tablist" aria-label="Account access"><button type="button" role="tab" id="login-tab" aria-controls="login-panel" aria-selected="true" tabindex="0" data-auth-tab="login">Log in</button><button type="button" role="tab" id="register-tab" aria-controls="register-panel" aria-selected="false" tabindex="-1" data-auth-tab="register">Create account</button></div><form id="login-panel" class="auth-form" role="tabpanel" data-auth-form="login" aria-labelledby="login-tab"><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Password<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="72"></label><button class="btn auth-submit" type="submit">Log in</button></form><form id="register-panel" class="auth-form" role="tabpanel" data-auth-form="register" aria-labelledby="register-tab" hidden><label>Your name<input name="name" type="text" autocomplete="name" required minlength="2" maxlength="80"></label><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Create a password<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><button class="btn auth-submit" type="submit">Create my account</button></form><p class="auth-feedback" role="status" aria-live="polite" hidden></p><p class="auth-privacy-note">Your budget is saved only when you choose Save Plan.</p></dialog>
-<main id="top">
-<section class="hero"><div class="wrap hero-grid"><div class="hero-copy"><div class="hero-kicker"><i></i>MONEY, BUT MAKE IT MANAGEABLE</div><h1>Make it to payday.<br><em>Keep your peace.</em></h1><p class="lead">A daily money runway for real life. Know what’s safe to spend, see the trade-off before you tap, and reset without the guilt trip.</p><div class="actions"><a class="account-button account-signup" href="auth.html?auth=register"><span class="account-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8.5h16v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-10Zm0 0 2-4h12l2 4M15.5 13.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="account-action-copy"><strong>Start your money plan today</strong></span></a><a class="hero-secondary" href="services.html">Explore our tools</a></div><div class="hero-points"><span><i aria-hidden="true"></i>Daily spending guide</span><span><i aria-hidden="true"></i>No shame, just the math</span></div><p class="note">Built for KES budgets and the very real days between paydays.</p></div><div class="art"><img class="hero-art" src="Assets/Assets/hero-portrait.png" alt="A young woman smiling while checking her phone"><div class="art-label">A calmer way to count down to payday</div></div></div></section>
-<section class="welcome-section"><div class="wrap welcome-panel"><div><span class="eyebrow">WELCOME TO BILAFORM</span><h2>Money planning for <em>real life.</em></h2><p>BilaForm is a KES-focused personal finance platform for the choices between income days. Plan a daily spending guide, make room for essentials and check the effect of everyday expenses.</p><a class="text-link" href="about.html">Learn about BilaForm <span aria-hidden="true">→</span></a></div><img src="Assets/Illustrations/financial-planning.svg" alt="A person planning income, expenses and an upcoming payday" loading="lazy"></div></section>
-<section class="features" id="features" aria-labelledby="features-title"><div class="wrap"><div class="section-heading feature-heading"><span class="eyebrow">OUR SERVICES</span><h2 id="features-title">Practical tools for <em>everyday money.</em></h2><p>Simple ways to plan what’s coming in, what needs covering and what remains.</p><a class="directory-link" href="services.html">View service directory <span aria-hidden="true">→</span></a></div><div class="feature-grid">
-<article class="feature-card feature-primary"><img src="Assets/Assets/runway.svg" alt="Daily money runway" loading="lazy"><div><span class="feature-tag">YOUR DAILY GUIDE</span><h3>PangaSiku</h3><p>Set aside essentials and a buffer, then divide what remains across the days to your next income.</p><a href="services/pangasiku.html">Learn more <span aria-hidden="true">→</span></a></div></article>
-<article class="feature-card"><img src="Assets/Assets/simulator.svg" alt="Purchase trade-off" loading="lazy"><div><span class="feature-tag">PAUSE BEFORE YOU PAY</span><h3>Can I afford this?</h3><p>Check a planned purchase against available money and upcoming essentials to see the effect on your runway.</p><a href="services/affordability.html">Learn more <span aria-hidden="true">→</span></a></div></article>
-<article class="feature-card"><img src="Assets/Assets/micro-leaks.svg" alt="Recurring small costs" loading="lazy"><div><span class="feature-tag">FIND THE LITTLE LEAKS</span><h3>Micro-leak finder</h3><p>Add repeat costs like snacks, airtime and subscriptions to review their daily, weekly and monthly impact.</p><a href="services/micro-leaks.html">Learn more <span aria-hidden="true">→</span></a></div></article>
-<article class="feature-card feature-vuka"><img src="Assets/Illustrations/african-shopping.svg" alt="Everyday essentials for a monthly budget" loading="lazy"><div><span class="feature-tag">ESSENTIALS FIRST</span><h3>VukaMonth</h3><p>Plan food, transport, rent and bills from monthly income, then see what remains.</p><a href="services/vukamonth.html">Learn more <span aria-hidden="true">→</span></a></div></article>
-</div></div></section>
-<section class="benefits-section" id="benefits"><div class="wrap"><div class="section-heading"><span class="eyebrow">WHY CHOOSE BILAFORM</span><h2>More clarity. <em>Less guesswork.</em></h2><p>Designed for realistic choices and everyday planning.</p></div><div class="benefit-grid"><article class="benefit-card"><img src="Assets/Assets/benefits/financial-control.svg" alt="" loading="lazy"><h3>Financial control</h3><p>See what is available and make the next choice with a clearer picture.</p></article><article class="benefit-card"><img src="Assets/Assets/benefits/smart-planning.svg" alt="" loading="lazy"><h3>Smart planning</h3><p>Give essentials and a buffer room in the plan before spending.</p></article><article class="benefit-card"><img src="Assets/Assets/benefits/better-decisions.svg" alt="" loading="lazy"><h3>Better spending decisions</h3><p>Check the trade-off before a purchase changes the rest of your month.</p></article><article class="benefit-card"><img src="Assets/Assets/benefits/peace-of-mind.svg" alt="" loading="lazy"><h3>Planning without judgement</h3><p>Make a practical reset whenever the numbers change.</p></article></div></div></section>
-<section class="how-section" id="how"><div class="wrap how-layout"><div class="how-visual"><img src="Assets/Illustrations/financial-planning.svg" alt="A person planning income, expenses and payday" loading="lazy"></div><div class="how-copy"><span class="eyebrow">HOW IT WORKS</span><h2>A money plan in <em>three steps.</em></h2><ol class="process-list"><li><span>01</span><div><h3>Enter your numbers</h3><p>Add available money, essentials, a buffer and days to payday.</p></div></li><li><span>02</span><div><h3>Review the daily guide</h3><p>See a KES estimate based on the amounts you entered.</p></div></li><li><span>03</span><div><h3>Save or adjust your plan</h3><p>Sign in to keep a PangaSiku plan on your account and update it when life changes.</p></div></li></ol><a class="text-link" href="how-it-works.html">See how to get started <span aria-hidden="true">→</span></a></div></div></section>
-<section class="announcements-section"><div class="wrap"><div class="section-heading"><span class="eyebrow">ANNOUNCEMENTS</span><h2>Updates from <em>BilaForm.</em></h2><p>Product news and service notices will appear here.</p></div><div class="announcement-empty"><span aria-hidden="true">◷</span><div><h3>No announcements at the moment</h3><p>Check the BilaForm Journal for practical money guides and articles.</p></div><a href="announcements.html">Announcements <span aria-hidden="true">→</span></a></div></div></section>
-<section class="blog-home" id="journal" aria-labelledby="journal-title"><div class="wrap"><div class="blog-home-heading"><div><span class="eyebrow">POPULAR ARTICLES</span><h2 id="journal-title">Money Talks. <em>Real Life.</em><br>Smarter Moves.</h2><p>Practical money lessons and everyday budgeting ideas for the days between paydays.</p></div><a class="blog-all-link" href="articles.html">View all articles <span aria-hidden="true">→</span></a></div><div class="blog-home-grid" data-home-articles aria-live="polite"></div></div></section>
-<script defer src="blog/blog-data.js"></script><script defer src="blog/blog-home.js"></script>
-<section class="about-values" id="mission"><div class="wrap values-grid"><div><span class="eyebrow">OUR PURPOSE</span><h2>A steady guide for <em>everyday decisions.</em></h2><p>We build tools and share practical guidance to help people understand everyday spending between income days.</p><a class="text-link" href="about.html">About BilaForm <span aria-hidden="true">→</span></a></div><article><span class="value-icon">01</span><h3>Mission</h3><p>Make everyday money planning clearer, more practical and easier to revisit.</p></article><article><span class="value-icon">02</span><h3>Vision</h3><p>Help people approach the days between paydays with greater confidence and control.</p></article><article><span class="value-icon">03</span><h3>Values</h3><p>Clarity, privacy, accessibility and respect for the choices people make with money.</p></article></div></section>
-<!-- Interactive daily spending calculator. -->
-<section class="calculator-section" id="calculator" aria-labelledby="calculator-title">
-  <div class="wrap calculator-layout">
-    <div class="calculator-story">
-      <span class="eyebrow">A QUICK MONEY CHECK</span>
-      <h2 id="calculator-title">
-        Your daily number. <em>Made clear.</em></h2>
-      <p>
-      Subtract upcoming essentials and your buffer from the money you have. The rest becomes a simple daily guide until payday.</p><img src="Assets/Illustrations/budgeting-calculator.svg" alt="Illustration of a spending plan with a daily allowance chart" loading="lazy">
-    <p class="sample-note">
-  A planning estimate based on the figures you enter.</p></div>
-<div class="calc">
-  <div class="calc-title">
-    <div>
-      <span class="calc-kicker">PANGASIKU CALCULATOR</span>
-      <h3>
-      What’s safe to spend?</h3>
-    <p>
-  Adjust the numbers to match your month.</p></div><span class="calc-mark" aria-hidden="true">KES</span></div>
-<div class="result" aria-live="polite" aria-busy="false">
-  <div>
-    <small>SAFE TO SPEND EACH DAY</small><strong id="daily">KES 420</strong></div><span id="badge">BUFFER KEPT ✓</span></div>
-<p class="runway-breakdown" id="runway-breakdown" aria-live="polite">KES 18,420 less KES 7,600 essentials and KES 2,000 buffer, spread across 21 days.</p>
-<div class="inputs">
-  <label>Money available now<input id="cash" type="number" value="18420" min="0" max="1000000000" step="1" inputmode="numeric" aria-describedby="currency-cash calc-error"><span class="sr-only" id="currency-cash">Enter your available money in Kenyan shillings.</span></label><label>Essentials before payday<input id="essentials" type="number" value="7600" min="0" max="1000000000" step="1" inputmode="numeric" aria-describedby="calc-error"></label><label>Buffer to keep<input id="buffer" type="number" value="2000" min="0" max="1000000000" step="1" inputmode="numeric" aria-describedby="calc-error"></label><label>Days to payday<input id="days" type="number" value="21" min="1" max="366" step="1" inputmode="numeric" aria-describedby="calc-error"></label></div>
-<p class="calc-error" id="calc-error" role="alert" hidden></p>
-<div class="calc-actions"><button class="btn save-plan-button" type="button" data-save-plan>Save Plan to My Account</button><p class="save-plan-status" data-save-status role="status" aria-live="polite"></p></div>
-<section class="purchase-simulator" aria-labelledby="purchase-simulator-title">
-  <span class="calc-kicker">PAUSE BEFORE YOU PAY</span><h4 id="purchase-simulator-title">Can I afford this?</h4>
-  <p>See how one planned purchase could change your daily guide.</p>
-  <label for="purchase-price">Planned purchase (KES)</label><input id="purchase-price" type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="e.g. 1,500" aria-describedby="purchase-feedback">
-  <p id="purchase-feedback" class="purchase-feedback" role="status" aria-live="polite">Enter a purchase amount to see the impact.</p>
-</section><p class="disclaimer">All amounts are in KES. Estimate only; real costs can change.</p></div></div></section>
-<section class="faq-section" id="faq" aria-labelledby="faq-title"><div class="wrap faq-layout"><div class="faq-visual"><span class="eyebrow">GOOD QUESTIONS</span><h2 id="faq-title">The money stuff, <em>made simple.</em></h2><p>Clear answers about the BilaForm planning tools.</p><img src="Assets/Illustrations/customer-support.svg" alt="Illustration of customer support" loading="lazy"></div><div class="faq-list">
-<div class="faq-item"><button class="faq-question" id="faq-question-1" type="button" aria-expanded="false" aria-controls="faq-answer-1">What is BilaForm?<span aria-hidden="true"></span></button><div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-question-1" aria-hidden="true"><div class="faq-answer-inner"><p>BilaForm is a KES-focused personal finance platform with tools to help plan spending between income days.</p></div></div></div>
-<div class="faq-item"><button class="faq-question" id="faq-question-2" type="button" aria-expanded="false" aria-controls="faq-answer-2">How is the daily guide calculated?<span aria-hidden="true"></span></button><div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true"><div class="faq-answer-inner"><p>Subtract essentials and your chosen buffer from available money, then divide the remaining amount by the days to payday.</p></div></div></div>
-<div class="faq-item"><button class="faq-question" id="faq-question-3" type="button" aria-expanded="false" aria-controls="faq-answer-3">Does BilaForm connect to my bank?<span aria-hidden="true"></span></button><div class="faq-answer" id="faq-answer-3" role="region" aria-labelledby="faq-question-3" aria-hidden="true"><div class="faq-answer-inner"><p>No. BilaForm does not connect to bank accounts or move money. You enter the planning amounts yourself.</p></div></div></div>
-<div class="faq-item"><button class="faq-question" id="faq-question-4" type="button" aria-expanded="false" aria-controls="faq-answer-4">Can I save my plan?<span aria-hidden="true"></span></button><div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true"><div class="faq-answer-inner"><p>Yes. Sign in, use Save Plan in PangaSiku, and the saved calculation will appear in your client portal.</p></div></div></div>
-</div></div></section>
-<!-- Contact form that saves requests to the BilaForm API. -->
-<section class="contact-section" id="contact" aria-labelledby="contact-title">
-  <div class="wrap">
-    <div class="contact-panel">
-      <div>
-        <span class="eyebrow">CONTACT BILAFORM</span>
-        <h2 id="contact-title">We’re here to help with your money plan.</h2>
-        <p>Reach out with questions about using BilaForm or share feedback with our team.</p>
-        <p>Send a note to our team. We’ll use your details only to respond to your enquiry.</p>
-      </div>
-      <form class="contact-form" id="contact-form">
-        <label for="contact-name">Name</label><input id="contact-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100">
-        <label for="contact-email">Email</label><input id="contact-email" name="email" type="email" autocomplete="email" required maxlength="254">
-        <label for="contact-message">How can we help?</label><textarea id="contact-message" name="message" rows="4" required minlength="10" maxlength="5000"></textarea>
-        <button class="contact-primary" type="submit">Send message</button><p class="contact-form-status" data-contact-status role="status" aria-live="polite"></p>
-      </form>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10172A">
+  <meta name="description" content="BilaForm helps you plan everyday spending in KES, set aside essentials and make it to payday with more clarity.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BilaForm | Make it to payday">
+  <meta property="og:description" content="A daily money runway for real life. Plan what is safe to spend with BilaForm.">
+  <meta property="og:image" content="Assets/Assets/bilaform-hero.png">
+  <meta name="color-scheme" content="dark">
+  <title>BilaForm | Make it to payday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="CSS/styles.css?v=platform-20261117">
+  <link rel="stylesheet" href="CSS/premium.css?v=platform-20261117">
+  <script defer src="JS/portal.js?v=platform-20261117"></script>
+</head>
+<body class="landing-page">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="header">
+    <a class="logo" href="index.html" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
+    <button class="menu" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+    <nav id="primary-navigation" aria-label="Main navigation">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="about.html">About us</a>
+      <a href="services.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a class="account-button navbar-login" href="auth.html?auth=login">Log in</a>
+      <a class="account-button account-register" href="auth.html?auth=register">Get started</a>
+      <button class="install-button" type="button" hidden>Install BilaForm</button>
     </div>
-  </div>
-</section>
-</main>
-<footer class="footer"><div class="wrap footer-inner"><div class="footer-brand"><a class="logo" href="index.html#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a><p>A KES money planning platform for real life between paydays.</p></div><div class="footer-links"><div><strong>About BilaForm</strong><a href="about.html">Who we are</a><a href="about.html#mission">Mission &amp; vision</a><a href="how-it-works.html">How it works</a></div><div><strong>Services</strong><a href="services.html">Service directory</a><a href="services/pangasiku.html">PangaSiku</a><a href="services/vukamonth.html">VukaMonth</a></div><div><strong>News &amp; resources</strong><a href="articles.html">Popular articles</a><a href="announcements.html">Announcements</a><a href="resources.html">Resources</a></div><div><strong>Help</strong><a href="contact.html">Contact us</a><a href="auth.html?auth=login">Client portal</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a></div></div><div class="footer-bottom"><span>© 2026 BilaForm. Money is personal. Your plan should be too.</span><span>Planning estimates only. Real expenses may differ.</span></div></div></footer><a class="back-to-top" href="#top" aria-label="Back to top" aria-hidden="true" tabindex="-1"><span aria-hidden="true">↑</span><span>Back to top</span></a></body></html>
+  </header>
+
+  <main id="main-content">
+    <section class="portal-section" id="top" aria-labelledby="hero-title">
+      <div class="portal-stage">
+        <img class="portal-image" src="Assets/Assets/hero-portrait.png" alt="A woman checking her phone while planning her money">
+        <div class="portal-wash" aria-hidden="true"></div>
+        <div class="hero-ui hero-ui--left" aria-hidden="true"><div class="hero-ui-line"></div><div class="hero-ui-line"></div><div class="hero-ui-grid"><i></i><i></i></div></div>
+        <div class="hero-ui hero-ui--right" aria-hidden="true"><div class="hero-ui-stat"><span>YOUR PLAN</span><i></i></div><div class="hero-ui-block"></div></div>
+        <div class="hero-ui hero-ui--center" aria-hidden="true"><div class="hero-ui-dots"><i></i><i></i><i></i></div><div class="hero-ui-line"></div><div class="hero-ui-line"></div></div>
+        <div class="portal-meta portal-meta--top"><span>PERSONAL MONEY PLANNING</span><span>KENYA · KES</span></div>
+        <div class="portal-center">
+          <p class="portal-kicker">A CALMER WAY BETWEEN PAYDAYS</p>
+          <h1 class="portal-title" id="hero-title"><span>Bila</span><span>Form</span></h1>
+          <p class="portal-tagline">Make room for what matters.</p>
+          <p class="portal-description">Plan everyday spending, set essentials aside and see a clearer daily guide in Kenyan shillings.</p>
+          <form class="tool-finder" data-tool-finder action="services.html" method="get" role="search" aria-label="Find a BilaForm tool">
+            <label class="sr-only" for="tool-finder-query">Find a money-planning tool</label>
+            <span class="tool-finder-mark" aria-hidden="true">↗</span>
+            <input id="tool-finder-query" name="query" type="search" autocomplete="off" placeholder="Try daily budget or monthly essentials" aria-describedby="tool-finder-hint tool-finder-status">
+            <button type="submit" aria-label="Find a tool"><span aria-hidden="true">→</span></button>
+          </form>
+          <p class="tool-finder-hint" id="tool-finder-hint">Find the right planner for payday, a purchase, repeat costs or monthly essentials.</p>
+          <p class="tool-finder-status" data-tool-finder-status role="status" aria-live="polite"></p>
+          <a class="tool-finder-directory" data-tool-finder-directory href="services.html">Browse all tools <span aria-hidden="true">→</span></a>
+          <div class="hero-actions"><a class="btn account-register" href="auth.html?auth=register">Get started <span aria-hidden="true">→</span></a><a class="hero-login" href="auth.html?auth=login">Log in</a></div>
+        </div>
+        <div class="portal-meta portal-meta--bottom"><span>PLAN WITH CLARITY. ADJUST WITH LIFE.</span><a href="services.html">EXPLORE THE TOOLS <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+
+    <section class="features releases-section" id="features" aria-labelledby="features-title">
+      <div class="wrap">
+        <div class="section-heading feature-heading"><span class="eyebrow">THE BILAFORM TOOLKIT</span><h2 id="features-title">Practical tools for <em>real money days.</em></h2><p>Choose one focused planner for the decision in front of you.</p></div>
+        <div class="service-grid">
+          <a class="feature-card" href="services/pangasiku.html"><span class="feature-number">01</span><h3>PangaSiku</h3><p>Set aside essentials and a buffer to get a daily spending guide until payday.</p><span class="feature-arrow" aria-hidden="true">↗</span></a>
+          <a class="feature-card" href="services/affordability.html"><span class="feature-number">02</span><h3>Can I afford this?</h3><p>Consider how a planned purchase could change your money runway.</p><span class="feature-arrow" aria-hidden="true">↗</span></a>
+          <a class="feature-card" href="services/micro-leaks.html"><span class="feature-number">03</span><h3>Micro-leak finder</h3><p>Review the small recurring costs that add up across your month.</p><span class="feature-arrow" aria-hidden="true">↗</span></a>
+          <a class="feature-card" href="services/vukamonth.html"><span class="feature-number">04</span><h3>VukaMonth</h3><p>Organise monthly income around the essentials that matter to you.</p><span class="feature-arrow" aria-hidden="true">↗</span></a>
+        </div>
+        <a class="directory-link" href="services.html">See all features and services <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="how-section" id="how" aria-labelledby="how-title">
+      <div class="wrap how-layout">
+        <div class="how-copy"><span class="eyebrow">HOW IT WORKS</span><h2 id="how-title">A clearer plan in <em>three steps.</em></h2><p>Use your own numbers. BilaForm provides a planning estimate you can revisit whenever life changes.</p></div>
+        <ol class="process-list"><li><span>01</span><div><h3>Enter your numbers</h3><p>Add available money, essentials, a buffer and days to payday.</p></div></li><li><span>02</span><div><h3>Review your guide</h3><p>See what remains for each day or compare a planned purchase.</p></div></li><li><span>03</span><div><h3>Save and adjust</h3><p>Sign in to keep your PangaSiku and VukaMonth plans together.</p></div></li></ol>
+        <a class="text-link" href="how-it-works.html">Read how BilaForm works <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="wrap footer-inner">
+    <div class="footer-brand"><a class="logo" href="index.html" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a><p>A KES money planning platform for real life between paydays.</p></div>
+    <div class="footer-links"><div><strong>Company</strong><a href="about.html">About BilaForm</a><a href="services.html">Features &amp; services</a><a href="how-it-works.html">How it works</a></div><div><strong>Tools</strong><a href="services/pangasiku.html">PangaSiku</a><a href="services/affordability.html">Can I afford this?</a><a href="services/micro-leaks.html">Micro-leak finder</a><a href="services/vukamonth.html">VukaMonth</a></div><div><strong>Help</strong><a href="contact.html">Contact us</a><a href="articles.html">Money articles</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a></div><div><strong>Your account</strong><a href="auth.html?auth=login">Log in</a><a href="auth.html?auth=register">Create an account</a><a href="account.html?view=overview">Dashboard</a></div></div>
+    <div class="footer-bottom"><span>© 2026 BilaForm. Money is personal. Your plan should be too.</span><span>Planning estimates only. Real expenses may differ.</span></div>
+  </div></footer>
+</body>
+</html>
