@@ -40,8 +40,9 @@ For production, set a long random `JWT_SECRET` environment variable before start
 - `GET /api/health` — service health.
 - `POST /api/runway` — validate and calculate a PangaSiku daily allowance.
 - `POST /api/auth/register` and `POST /api/auth/login` — create an account or sign in; passwords are hashed with bcrypt and the response includes a seven-day JWT.
-- `GET /api/auth/me` — return the signed-in user profile used by the account page.
-- `POST /api/budgets` and `GET /api/budgets/latest` — save and retrieve the signed-in user’s most recent budget.
+- `GET /api/auth/me` and `PATCH /api/auth/profile` — read and update the signed-in user profile.
+- `POST /api/budgets`, `GET /api/budgets`, `GET /api/budgets/latest`, and `DELETE /api/budgets/:id` — save, list, retrieve and remove PangaSiku budgets.
+- `GET /api/plans`, `POST /api/plans`, and `DELETE /api/plans/:id` — save, list and remove VukaMonth plans.
 - `POST /api/contact` — validate and store a contact message.
 
 Money inputs are whole KES amounts. The daily guide is `floor(max(0, cash - essentials - buffer) / days)`. The browser calculates immediately and uses the API when it is reachable, so the planner remains available offline. Account and contact features need the Node server.

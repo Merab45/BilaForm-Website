@@ -4,43 +4,93 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#08111c">
-  <meta name="description" content="Your BilaForm account and saved PangaSiku money plan.">
-  <title>My BilaForm Account</title>
+  <meta name="description" content="Your BilaForm dashboard for KES budgets, monthly essentials and account settings.">
+  <title>My BilaForm Dashboard</title>
   <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="CSS/styles.css?v=auth-20261117">
-  <link rel="stylesheet" href="CSS/account.css?v=auth-20261117">
-  <script defer src="JS/account.js?v=api-preview-20261117"></script>
+  <link rel="stylesheet" href="CSS/styles.css?v=dashboard-20261117">
+  <link rel="stylesheet" href="CSS/account.css?v=dashboard-20261117">
+  <script defer src="JS/account.js?v=dashboard-20261117"></script>
 </head>
 <body class="account-page">
   <header class="header account-header">
     <a class="logo" href="index.html#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
-    <nav aria-label="Account navigation"><a href="index.html#calculator">Daily planner</a><a href="blog/index.html">Journal</a></nav>
+    <a class="account-home-link" href="index.html">Back to BilaForm</a>
     <button class="account-button account-logout" type="button" data-account-logout>Log out</button>
   </header>
-  <main class="account-main">
-    <a class="account-back" href="index.html#top">← Back to BilaForm</a>
-    <section class="account-welcome" aria-labelledby="account-heading">
-      <span class="account-kicker">YOUR MONEY PLAN</span>
-      <h1 id="account-heading">Welcome back<span data-name-ending>.</span></h1>
-      <p>Your account details and latest saved PangaSiku plan are here.</p>
+  <main class="dashboard-shell">
+    <aside class="dashboard-sidebar" aria-label="Account sections">
+      <div class="sidebar-profile"><span class="avatar" data-avatar>BF</span><div><strong data-sidebar-name>My account</strong><small data-sidebar-email></small></div></div>
+      <nav class="dashboard-nav" role="tablist" aria-label="Dashboard sections" aria-orientation="vertical">
+        <button type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" data-account-tab="overview"><span aria-hidden="true">◫</span>Overview</button>
+        <button type="button" role="tab" id="tab-plans" aria-controls="panel-plans" aria-selected="false" tabindex="-1" data-account-tab="plans"><span aria-hidden="true">▤</span>Saved Budgets</button>
+        <button type="button" role="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-account-tab="settings"><span aria-hidden="true">⚙</span>Settings</button>
+        <button type="button" role="tab" id="tab-security" aria-controls="panel-security" aria-selected="false" tabindex="-1" data-account-tab="security"><span aria-hidden="true">⌑</span>Security</button>
+      </nav>
+      <p class="sidebar-note">Your numbers stay private to your BilaForm account.</p>
+    </aside>
+
+    <section class="dashboard-main">
+      <div class="dashboard-welcome">
+        <div><span class="account-kicker">YOUR MONEY, IN ONE PLACE</span><h1>Welcome back<span data-name-ending>.</span></h1><p>See your runway and keep the next small move in view.</p></div>
+        <a class="dashboard-cta" href="index.html#calculator">Open PangaSiku <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="account-message" data-account-message role="status" aria-live="polite" hidden></p>
+
+      <section class="dashboard-panel" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview" data-account-panel="overview">
+        <div class="panel-heading"><div><span class="account-kicker">OVERVIEW</span><h2>Your current picture</h2></div><span class="updated-label" data-overview-updated></span></div>
+        <div class="summary-grid">
+          <article class="summary-card summary-runway"><span class="summary-icon" aria-hidden="true">KES</span><span class="summary-label">DAILY SAFE-TO-SPEND</span><strong data-summary-daily>—</strong><small data-summary-days>Save a PangaSiku plan to see your runway</small></article>
+          <article class="summary-card"><span class="summary-icon summary-icon-green" aria-hidden="true">✓</span><span class="summary-label">BUFFER STATUS</span><strong data-summary-buffer>Not set</strong><small data-summary-buffer-note>Keep a little room for the unexpected</small></article>
+          <article class="summary-card"><span class="summary-icon summary-icon-blue" aria-hidden="true">↗</span><span class="summary-label">SAVED PLANS</span><strong data-summary-count>0</strong><small>PangaSiku and VukaMonth</small></article>
+        </div>
+        <div class="overview-lower">
+          <article class="dashboard-card runway-card"><div class="card-heading"><div><span class="account-kicker">LATEST PANGASIKU</span><h3>Your daily runway</h3></div><a href="index.html#calculator">Edit plan</a></div>
+            <div class="runway-details"><div><span>Money available</span><strong data-budget-cash>—</strong></div><div><span>Essentials set aside</span><strong data-budget-essentials>—</strong></div><div><span>Buffer kept</span><strong data-budget-buffer>—</strong></div><div><span>Days to payday</span><strong data-budget-days>—</strong></div></div>
+            <p class="empty-copy" data-budget-empty>You haven’t saved a PangaSiku plan yet. Add one to see your daily runway here.</p>
+          </article>
+          <article class="dashboard-card profile-quick"><span class="account-kicker">YOUR PROFILE</span><h3>Quick details</h3><dl><div><dt>Name</dt><dd data-profile-name>Loading…</dd></div><div><dt>Email</dt><dd data-profile-email>Loading…</dd></div><div><dt>Member since</dt><dd data-profile-date>—</dd></div></dl><button class="subtle-button" type="button" data-open-settings>Manage profile</button></article>
+        </div>
+      </section>
+
+      <section class="dashboard-panel" role="tabpanel" id="panel-plans" aria-labelledby="tab-plans" data-account-panel="plans" hidden>
+        <div class="panel-heading"><div><span class="account-kicker">YOUR SAVED NUMBERS</span><h2>Saved budgets</h2><p>Review or remove calculations saved to your account.</p></div><a class="dashboard-cta" href="index.html#calculator">New PangaSiku plan</a></div>
+        <div class="dashboard-card vuka-save-card">
+          <div class="card-heading"><div><span class="account-kicker">MONTHLY ESSENTIALS</span><h3>Save a VukaMonth plan</h3></div><span class="mini-badge">KES planner</span></div>
+          <form class="vuka-form" data-vuka-form>
+            <label class="field-wide">Plan name<input name="name" type="text" maxlength="60" placeholder="e.g. November essentials" required></label>
+            <label>Monthly income (KES)<input name="income" type="number" min="0" max="1000000000" step="1" inputmode="numeric" required></label>
+            <label>Food<input name="food" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Transport<input name="transport" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Rent<input name="rent" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Electricity<input name="electricity" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Water<input name="water" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Savings<input name="savings" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <label>Other essentials<input name="other" type="number" min="0" max="1000000000" step="1" value="0" inputmode="numeric"></label>
+            <div class="vuka-total field-wide" data-vuka-total>Enter your monthly income and allocations.</div>
+            <div class="field-wide form-actions"><button class="dashboard-cta" type="submit">Save VukaMonth plan</button><span role="status" data-vuka-status></span></div>
+          </form>
+        </div>
+        <div class="saved-plans-list"><div class="card-heading"><div><span class="account-kicker">PLAN HISTORY</span><h3>Your saved plans</h3></div></div><div class="plan-list" data-plan-list></div><p class="empty-copy" data-plans-empty hidden>No saved calculations yet. Save a PangaSiku plan or create a VukaMonth plan above.</p></div>
+      </section>
+
+      <section class="dashboard-panel" role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" data-account-panel="settings" hidden>
+        <div class="panel-heading"><div><span class="account-kicker">PREFERENCES</span><h2>Settings</h2><p>Adjust how BilaForm looks and update your profile details.</p></div></div>
+        <article class="dashboard-card preferences-card"><div class="card-heading"><div><span class="account-kicker">DISPLAY</span><h3>Accessibility preferences</h3></div></div>
+          <label class="switch-row"><span><strong>Dark mode</strong><small>Use a darker dashboard palette.</small></span><input type="checkbox" role="switch" data-dark-toggle></label>
+          <label class="switch-row"><span><strong>High contrast</strong><small>Increase contrast around text and controls.</small></span><input type="checkbox" role="switch" data-contrast-toggle></label>
+        </article>
+        <article class="dashboard-card profile-edit-card"><div class="card-heading"><div><span class="account-kicker">PERSONAL DETAILS</span><h3>Update your profile</h3></div></div>
+          <form class="profile-form" data-profile-form><label>Full name<input name="name" type="text" minlength="2" maxlength="80" autocomplete="name" required></label><label>Email address<input name="email" type="email" maxlength="254" autocomplete="email" required></label><div class="form-actions field-wide"><button class="dashboard-cta" type="submit">Save profile</button><span role="status" data-profile-status></span></div></form>
+        </article>
+      </section>
+
+      <section class="dashboard-panel" role="tabpanel" id="panel-security" aria-labelledby="tab-security" data-account-panel="security" hidden>
+        <div class="panel-heading"><div><span class="account-kicker">ACCOUNT ACCESS</span><h2>Security</h2><p>Review your current sign-in and protect your account on shared devices.</p></div></div>
+        <article class="dashboard-card security-card"><span class="security-mark" aria-hidden="true">✓</span><div><span class="account-kicker">ACTIVE SESSION</span><h3>You’re signed in securely</h3><p>Your account uses a protected sign-in token. Sign out when you finish on a shared computer or phone.</p><p class="security-email" data-security-email></p><button class="subtle-button" type="button" data-account-logout>Log out of this device</button></div></article>
+        <p class="account-privacy">BilaForm does not connect to your bank or move money. Your saved plans are available only to your signed-in account.</p>
+      </section>
+      <footer class="account-footer"><a href="index.html">BilaForm</a><span>Money is personal. Your plan should be too.</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></footer>
     </section>
-    <p class="account-message" data-account-message role="status" aria-live="polite" hidden></p>
-    <div class="account-grid">
-      <section class="account-card account-profile" aria-labelledby="profile-heading">
-        <div class="account-card-heading"><span class="account-icon" aria-hidden="true">BF</span><div><span class="account-kicker">PROFILE</span><h2 id="profile-heading">Your details</h2></div></div>
-        <dl><div><dt>Name</dt><dd data-profile-name>Loading…</dd></div><div><dt>Email</dt><dd data-profile-email>Loading…</dd></div><div><dt>Member since</dt><dd data-profile-date>Loading…</dd></div></dl>
-      </section>
-      <section class="account-card account-budget" aria-labelledby="budget-heading">
-        <div class="account-card-heading"><span class="account-icon account-icon-green" aria-hidden="true">KES</span><div><span class="account-kicker">PANGASIKU</span><h2 id="budget-heading">Latest saved plan</h2></div></div>
-        <div class="account-daily"><span>DAILY SAFE-TO-SPEND GUIDE</span><strong data-budget-daily>—</strong></div>
-        <div class="account-budget-grid"><div><span>Available now</span><strong data-budget-cash>—</strong></div><div><span>Essentials</span><strong data-budget-essentials>—</strong></div><div><span>Buffer to keep</span><strong data-budget-buffer>—</strong></div><div><span>Days to payday</span><strong data-budget-days>—</strong></div></div>
-        <p class="account-updated" data-budget-updated></p>
-        <p class="account-empty-plan" data-budget-empty hidden>You haven’t saved a plan yet. Add your current numbers in PangaSiku and save them to your account.</p>
-        <a class="account-primary-action" href="index.html#calculator">Open PangaSiku planner</a>
-      </section>
-    </div>
-    <p class="account-privacy">Your plan is available to your signed-in account. Log out when you’re using a shared device.</p>
   </main>
-  <footer class="account-footer"><a href="index.html">BilaForm</a><span>Money is personal. Your plan should be too.</span></footer>
 </body>
 </html>

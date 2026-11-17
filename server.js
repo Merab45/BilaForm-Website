@@ -55,6 +55,15 @@ async function initializeDatabase() {
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`);
   await run(`CREATE INDEX IF NOT EXISTS budgets_user_latest ON budgets(user_id, updated_at DESC, id DESC)`);
+  await run(`CREATE TABLE IF NOT EXISTS plans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plan_type TEXT NOT NULL CHECK (plan_type IN ('vukamonth')),
+    name TEXT NOT NULL,
+    data TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+  await run('CREATE INDEX IF NOT EXISTS plans_user_latest ON plans(user_id, created_at DESC, id DESC)');
   await run(`CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -189,6 +198,20 @@ app.post('/api/auth/login', authRateLimit, async (req, res, next) => {
   }
 });
 
+app.patch('/api/auth/profile', requireAuth, async (req, res, next) => {
+  try {
+    const name = cleanText(req.body?.name);
+    const email = normalizeEmail(req.body?.email);
+    if (name.length < 2 || name.length > 80) return res.status(400).json({ error: 'Name must be between 2 and 80 characters.' });
+    if (!validEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    await run('UPDATE users SET name = ?, email = ? WHERE id = ?', [name, email, req.user.id]);
+    return res.json({ user: await get('SELECT id, name, email, created_at FROM users WHERE id = ?', [req.user.id]) });
+  } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT') return res.status(409).json({ error: 'That email address is already in use.' });
+    return next(error);
+  }
+});
+
 app.get('/api/auth/me', requireAuth, async (req, res, next) => {
   try {
     const user = await get('SELECT id, name, email, created_at FROM users WHERE id = ?', [req.user.id]);
@@ -214,6 +237,26 @@ app.post('/api/budgets', requireAuth, async (req, res, next) => {
   }
 });
 
+app.get('/api/budgets', requireAuth, async (req, res, next) => {
+  try {
+    const budgets = await new Promise((resolve, reject) => db.all(
+      'SELECT id, cash, essentials, buffer, days, daily_safe, updated_at FROM budgets WHERE user_id = ? ORDER BY updated_at DESC, id DESC',
+      [req.user.id], (error, rows) => error ? reject(error) : resolve(rows),
+    ));
+    return res.json({ budgets });
+  } catch (error) { return next(error); }
+});
+
+app.delete('/api/budgets/:id', requireAuth, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid saved plan.' });
+    const result = await run('DELETE FROM budgets WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!result.changes) return res.status(404).json({ error: 'Saved plan not found.' });
+    return res.json({ deleted: true });
+  } catch (error) { return next(error); }
+});
+
 app.get('/api/budgets/latest', requireAuth, async (req, res, next) => {
   try {
     const budget = await get(
@@ -224,6 +267,43 @@ app.get('/api/budgets/latest', requireAuth, async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+});
+
+app.get('/api/plans', requireAuth, async (req, res, next) => {
+  try {
+    const rows = await new Promise((resolve, reject) => db.all(
+      'SELECT id, plan_type, name, data, created_at FROM plans WHERE user_id = ? ORDER BY created_at DESC, id DESC',
+      [req.user.id], (error, result) => error ? reject(error) : resolve(result),
+    ));
+    return res.json({ plans: rows.map((row) => ({ ...row, data: JSON.parse(row.data) })) });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/plans', requireAuth, async (req, res, next) => {
+  try {
+    const name = cleanText(req.body?.name);
+    const { type, data } = req.body || {};
+    if (type !== 'vukamonth') return res.status(400).json({ error: 'Choose a supported plan type.' });
+    if (!name || name.length > 60) return res.status(400).json({ error: 'Plan name must be 1 to 60 characters.' });
+    const categories = ['food', 'transport', 'rent', 'electricity', 'water', 'savings', 'other'];
+    if (!data || !Number.isSafeInteger(data.income) || data.income < 0 || data.income > 1000000000
+      || !categories.every((key) => Number.isSafeInteger(data[key]) && data[key] >= 0 && data[key] <= 1000000000)) {
+      return res.status(400).json({ error: 'Enter whole-number KES values for income and each allocation.' });
+    }
+    const result = await run('INSERT INTO plans (user_id, plan_type, name, data) VALUES (?, ?, ?, ?)', [req.user.id, type, name, JSON.stringify(data)]);
+    const plan = await get('SELECT id, plan_type, name, data, created_at FROM plans WHERE id = ?', [result.id]);
+    return res.status(201).json({ plan: { ...plan, data: JSON.parse(plan.data) } });
+  } catch (error) { return next(error); }
+});
+
+app.delete('/api/plans/:id', requireAuth, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid saved plan.' });
+    const result = await run('DELETE FROM plans WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!result.changes) return res.status(404).json({ error: 'Saved plan not found.' });
+    return res.json({ deleted: true });
+  } catch (error) { return next(error); }
 });
 
 app.post('/api/contact', contactRateLimit, async (req, res, next) => {

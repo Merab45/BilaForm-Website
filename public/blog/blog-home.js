@@ -3,7 +3,7 @@
   const container = document.querySelector('[data-home-articles]');
   if (!container || !Array.isArray(window.BILAFORM_ARTICLES)) return;
 
-  const popular = window.BILAFORM_ARTICLES.filter((article) => article.popular).slice(0, 4);
+  const popular = window.BILAFORM_ARTICLES.filter((article) => article.popular).slice(0, 3);
   const dateLabel = (value) => new Date(`${value}T12:00:00Z`).toLocaleDateString('en-KE', {
     day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
   });

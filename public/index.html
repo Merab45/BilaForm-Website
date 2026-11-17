@@ -17,9 +17,9 @@
     <link rel="icon" href="Assets/Assets/bilaform-mark.png" type="image/png">
     <link rel="apple-touch-icon" href="Assets/icons/bilaform-icon-192.png">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="CSS/styles.css?v=auth-20261117">
-    <link rel="stylesheet" href="blog/blog.css?v=auth-20261117">
-    <script defer src="JS/site.js?v=api-preview-20261117"></script>
+    <link rel="stylesheet" href="CSS/styles.css?v=dashboard-20261117">
+    <link rel="stylesheet" href="blog/blog.css?v=dashboard-20261117">
+    <script defer src="JS/site.js?v=dashboard-20261117"></script>
 </head>
 <body>
   <header class="header">
@@ -72,12 +72,12 @@
           <p class="lead">
           A daily money runway for real life. Know what’s safe to spend, see the trade-off before you tap, and reset without the guilt trip.</p>
         <div class="actions">
-          <button class="account-button account-signup" type="button" data-account-mode="signup">
+          <a class="account-button account-signup" href="account.html">
             <span class="account-action-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M4 8.5h16v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-10Zm0 0 2-4h12l2 4M15.5 13.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
             <span class="account-action-copy"><strong>Start your money plan today</strong></span>
-          </button>
+          </a>
         </div>
         <div class="hero-points">
           <span><i aria-hidden="true"></i>Daily spending guide</span><span><i aria-hidden="true"></i>No shame, just the math</span></div>
@@ -167,56 +167,38 @@ Record expenses and spot the habits shaping your month.</p></div></li>
     Plan until payday</h3>
   <p>
 See a daily guide and what to reserve for essentials.</p></div></li></ol></div></div></section>
-<!-- Feature cards explain the ways BilaForm can help with everyday planning. -->
+<!-- Four clear tools for everyday money decisions. -->
 <section class="features" id="features" aria-labelledby="features-title">
   <div class="wrap">
     <div class="section-heading feature-heading">
       <span class="eyebrow">FEATURES FOR EVERYDAY MONEY</span>
-      <h2 id="features-title">
-        Small moves. <em>Big difference.</em></h2>
-      <p>
-    A closer look at how each feature can help you plan the month.</p></div>
-<div class="feature-grid">
-  <article class="feature-card feature-primary">
-    <img src="Assets/Assets/runway.svg" alt="Daily money runway visual" loading="lazy">
-    <div>
-      <span class="feature-tag">YOUR DAILY GUIDE</span>
-      <h3>
-      PangaSiku</h3>
-    <p>
-    PangaSiku estimates a daily spending guide from the money available after essentials and a buffer, divided across the days until your next income.</p></div></article>
-<article class="feature-card">
-  <img src="Assets/Assets/simulator.svg" alt="Purchase trade-off visual" loading="lazy">
-  <div>
-    <span class="feature-tag">PAUSE BEFORE YOU PAY</span>
-    <h3>
-    Can I afford this?</h3>
-    <p>
-Compare your balance with a planned purchase and essential expenses to see how much would remain and whether the choice could feel tight.</p></div></article>
-<article class="feature-card">
-  <img src="Assets/Assets/micro-leaks.svg" alt="Small expenses adding up over time" loading="lazy">
-  <div>
-    <span class="feature-tag">FIND THE LITTLE LEAKS</span>
-    <h3>
-    Micro-leak finder</h3>
-    <p>
-Micro-leak Finder adds recurring small expenses across daily, weekly and monthly views so you can spot costs you may want to reduce.</p></div></article>
-<article class="feature-card">
-  <img src="Assets/Assets/budget-rival.svg" alt="Two people keeping each other accountable to a budget" loading="lazy">
-  <div>
-    <span class="feature-tag">A LITTLE ACCOUNTABILITY</span>
-    <h3>
-    BudgetRival</h3>
-    <p>
-Set a savings or spending goal, track your progress and compare updates entered manually with a friend.</p></div></article>
-<article class="feature-card feature-vuka">
-  <img src="Assets/Illustrations/african-shopping.svg" alt="Essentials protected in a monthly budget" loading="lazy">
-  <div>
-    <span class="feature-tag">ESSENTIALS FIRST</span>
-    <h3>
-    VukaMonth</h3>
-  <p>
-  VukaMonth helps allocate monthly income across essentials, shows the remaining balance and flags when planned allocations exceed income.</p></div></article></div></div></section>
+      <h2 id="features-title">Small moves. <em>Big difference.</em></h2>
+      <p>Practical tools for the decisions that shape your month.</p>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card feature-primary">
+        <img src="Assets/Assets/runway.svg" alt="Daily money runway visual" loading="lazy">
+        <div><span class="feature-tag">YOUR DAILY GUIDE</span><h3>PangaSiku</h3>
+          <p>Set aside essentials and a buffer, then divide what remains across the days to your next income for a clear daily spending guide.</p></div>
+      </article>
+      <article class="feature-card">
+        <img src="Assets/Assets/simulator.svg" alt="Purchase trade-off visual" loading="lazy">
+        <div><span class="feature-tag">PAUSE BEFORE YOU PAY</span><h3>Can I afford this?</h3>
+          <p>Check a planned purchase against your available money and upcoming essentials to see its effect on your daily runway.</p></div>
+      </article>
+      <article class="feature-card">
+        <img src="Assets/Assets/micro-leaks.svg" alt="Small expenses adding up over time" loading="lazy">
+        <div><span class="feature-tag">FIND THE LITTLE LEAKS</span><h3>Micro-leak finder</h3>
+          <p>Add repeat costs like snacks, airtime and subscriptions to see their daily, weekly and monthly impact in KES.</p></div>
+      </article>
+      <article class="feature-card feature-vuka">
+        <img src="Assets/Illustrations/african-shopping.svg" alt="Everyday essentials for a monthly budget" loading="lazy">
+        <div><span class="feature-tag">ESSENTIALS FIRST</span><h3>VukaMonth</h3>
+          <p>Plan food, transport, rent and bills from monthly income, then see what remains and where allocations need adjusting.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
 <!-- Interactive daily spending calculator. -->
 <section class="calculator-section" id="calculator" aria-labelledby="calculator-title">
   <div class="wrap calculator-layout">
@@ -329,14 +311,8 @@ Use your daily guide to make a more informed choice.</p></li></ol></div></sectio
       <button class="faq-question" id="faq-question-2" type="button" aria-expanded="false" aria-controls="faq-answer-2">How does BilaForm help me manage my money?<span aria-hidden="true"></span></button>
       <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true"><div class="faq-answer-inner"><p>Enter your available money, upcoming essentials, a buffer and days to payday to get a daily spending estimate. The other planning features help you review recurring expenses and consider purchase trade-offs.</p></div></div>
     </div>
-    <div class="faq-item">
-      <button class="faq-question" id="faq-question-3" type="button" aria-expanded="false" aria-controls="faq-answer-3">Is BilaForm suitable for people earning monthly salaries?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-3" role="region" aria-labelledby="faq-question-3" aria-hidden="true"><div class="faq-answer-inner"><p>Yes. You can plan around a monthly pay cycle, and the same approach can be used for other income schedules by entering the number of days until your next payday.</p></div></div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-question" id="faq-question-4" type="button" aria-expanded="false" aria-controls="faq-answer-4">Can I use BilaForm to track daily expenses?<span aria-hidden="true"></span></button>
-      <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true"><div class="faq-answer-inner"><p>You can enter and review expenses in the spending planner. Entries stay in your browser and are not imported from a bank or stored as live transactions.</p></div></div>
-    </div>
+
+
     <div class="faq-item">
       <button class="faq-question" id="faq-question-5" type="button" aria-expanded="false" aria-controls="faq-answer-5">What is PangaSiku?<span aria-hidden="true"></span></button>
       <div class="faq-answer" id="faq-answer-5" role="region" aria-labelledby="faq-question-5" aria-hidden="true"><div class="faq-answer-inner"><p>PangaSiku means planning your day. It estimates a daily amount from the money available after essentials and a chosen buffer are set aside.</p></div></div>
