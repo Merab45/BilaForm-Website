@@ -255,7 +255,7 @@ app.use((error, req, res, next) => {
 });
 
 initializeDatabase().then(() => {
-  app.listen(PORT, () => console.log(`BilaForm is available at http://localhost:${PORT}`));
+  app.listen(PORT, '0.0.0.0', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
 }).catch((error) => {
   console.error('Could not initialize BilaForm database:', error.message);
   process.exit(1);

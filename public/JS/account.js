@@ -5,7 +5,7 @@
   const token = localStorage.getItem(TOKEN_KEY);
   const apiRoot = ['5500', '5501'].includes(location.port)
     && ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? 'http://localhost:8000/api' : '/api';
+    ? 'http://127.0.0.1:8000/api' : '/api';
   const message = document.querySelector('[data-account-message]');
   const money = (amount) => `KES ${Number(amount).toLocaleString('en-KE')}`;
 

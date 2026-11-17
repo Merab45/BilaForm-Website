@@ -31,7 +31,7 @@ npm install
 npm start
 ```
 
-Open `http://localhost:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
+Open `http://127.0.0.1:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
 
 For production, set a long random `JWT_SECRET` environment variable before starting the server. The development fallback secret is only for local use. Set `CORS_ORIGIN` only if a separate trusted frontend origin needs API access. Do not commit production secrets or the database file.
 

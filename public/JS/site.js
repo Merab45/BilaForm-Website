@@ -5,7 +5,7 @@ const money = (value) => `KES ${Math.floor(Math.max(0, value)).toLocaleString('e
 // to Express; normal npm-start browsing stays same-origin.
 const API_ROOT = ['5500', '5501'].includes(location.port)
   && ['localhost', '127.0.0.1'].includes(location.hostname)
-  ? 'http://localhost:8000/api'
+  ? 'http://127.0.0.1:8000/api'
   : '/api';
 const inputIds = ['cash', 'essentials', 'buffer', 'days'];
 const calcError = byId('calc-error');
