@@ -11,9 +11,21 @@ BilaForm is a KES-focused personal finance planner for everyday choices between 
 ├── bilaform.db                 # created automatically when the server starts
 └── public/
     ├── index.html
-    ├── account.html             # Signed-in profile and saved budget page
+    ├── about.html
+    ├── services.html
+    ├── services/                # Dedicated BilaForm tool pages
+    ├── how-it-works.html
+    ├── articles.html
+    ├── announcements.html
+    ├── resources.html
+    ├── contact.html
+    ├── account.html             # Signed-in client portal
     ├── CSS/styles.css
+    ├── CSS/account.css
     ├── JS/site.js
+    ├── JS/account.js
+    ├── JS/contact.js
+    ├── JS/navigation.js
     ├── Assets/                 # BilaForm images, illustrations and icons
     ├── blog/                   # Journal directory and article pages
     ├── manifest.webmanifest
@@ -56,6 +68,12 @@ This app does not connect to banks or mobile money, move funds, or provide regul
 ## Assets and Journal
 
 Place website images and illustrations in `public/Assets/`. Journal content and curated `popular` / `featured` flags are in `public/blog/blog-data.js`; individual static article pages are in `public/blog/articles/`.
+
+## Website pages
+
+The public site uses a shared navigation hierarchy for About, Services, Get Started, News & Articles, Resources, Contact, and the Client Portal. Service pages describe PangaSiku, Can I afford this?, Micro-leak finder, and VukaMonth. The announcements page displays an empty state until there is an actual update to publish. Resource links point to the Journal, privacy policy, and terms; unsupported downloads and testimonials are not fabricated.
+
+The account portal reads and updates profile details, lists/removes saved PangaSiku calculations, and saves/lists/removes VukaMonth allocations. Display preferences are stored locally in the browser.
 
 ## Deployment
 
