@@ -1,7 +1,12 @@
 // BilaForm browser interactions and API connections.
 const byId = (id) => document.getElementById(id);
 const money = (value) => `KES ${Math.floor(Math.max(0, value)).toLocaleString('en-KE')}`;
-const API_ROOT = '/api';
+// VS Code Live Server is a static preview on port 5501. Route its API calls
+// to Express; normal npm-start browsing stays same-origin.
+const API_ROOT = ['5500', '5501'].includes(location.port)
+  && ['localhost', '127.0.0.1'].includes(location.hostname)
+  ? 'http://localhost:8000/api'
+  : '/api';
 const inputIds = ['cash', 'essentials', 'buffer', 'days'];
 const calcError = byId('calc-error');
 const resultPanel = document.querySelector('.calc .result');
@@ -148,12 +153,12 @@ async function apiRequest(path, options = {}) {
   try {
     response = await fetch(`${API_ROOT}${path}`, { ...options, headers });
   } catch {
-    throw new Error('BilaForm’s account server could not be reached. Start the Node app with “npm start” and try again.');
+    throw new Error('BilaForm could not reach its API. In VS Code, run “BilaForm: Start API” from Terminal → Run Task, then try again.');
   }
   let payload = {};
   const isJson = (response.headers.get('content-type') || '').includes('application/json');
   if (!isJson && !response.ok) {
-    throw new Error('The BilaForm account API is not running. Start the app with “npm start” and try again.');
+    throw new Error('This preview is not connected to BilaForm’s API. Start the API with the VS Code task “BilaForm: Start API”, then try again.');
   }
   try { if (isJson) payload = await response.json(); } catch { /* Use the standard API error below. */ }
   if (!response.ok) {

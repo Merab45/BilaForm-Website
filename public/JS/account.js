@@ -3,6 +3,9 @@
   const TOKEN_KEY = 'bilaform.auth.token';
   const USER_KEY = 'bilaform.auth.user';
   const token = localStorage.getItem(TOKEN_KEY);
+  const apiRoot = ['5500', '5501'].includes(location.port)
+    && ['localhost', '127.0.0.1'].includes(location.hostname)
+    ? 'http://localhost:8000/api' : '/api';
   const message = document.querySelector('[data-account-message]');
   const money = (amount) => `KES ${Number(amount).toLocaleString('en-KE')}`;
 
@@ -26,12 +29,12 @@
   async function get(path) {
     let response;
     try {
-      response = await fetch(`/api${path}`, { headers: { Authorization: `Bearer ${token}` } });
+      response = await fetch(`${apiRoot}${path}`, { headers: { Authorization: `Bearer ${token}` } });
     } catch {
-      throw new Error('The BilaForm account server could not be reached. Start the app with “npm start” and reload this page.');
+      throw new Error('BilaForm could not reach its API. In VS Code, run “BilaForm: Start API” from Terminal → Run Task, then reload the page.');
     }
     const isJson = (response.headers.get('content-type') || '').includes('application/json');
-    if (!isJson && !response.ok) throw new Error('The BilaForm account API is not running. Start the app with “npm start” and reload this page.');
+    if (!isJson && !response.ok) throw new Error('This preview is not connected to BilaForm’s API. Start the API with the VS Code task “BilaForm: Start API”, then reload.');
     const result = isJson ? await response.json() : {};
     if (!response.ok) {
       if (response.status === 401) returnToLogin();

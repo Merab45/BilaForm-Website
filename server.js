@@ -65,8 +65,17 @@ async function initializeDatabase() {
 }
 
 // Only allow configured cross-origin clients; same-origin browser requests need no CORS headers.
-const allowedOrigin = process.env.CORS_ORIGIN || false;
-app.use(cors({ origin: allowedOrigin, credentials: false }));
+const allowedOrigin = process.env.CORS_ORIGIN || '';
+const localPreviewOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):(?:5500|5501)$/;
+app.use(cors({
+  origin(origin, callback) {
+    // Same-origin calls need no CORS header; local Live Server previews do.
+    const isAllowed = !origin || origin === allowedOrigin
+      || (!production && localPreviewOrigin.test(origin));
+    callback(null, isAllowed);
+  },
+  credentials: false,
+}));
 app.use(express.json({ limit: '12kb', type: 'application/json' }));
 app.disable('x-powered-by');
 app.use((req, res, next) => {
