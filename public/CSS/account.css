@@ -1,0 +1,24 @@
+.account-page{min-height:100vh;background:#f3f7fa;color:#132b3e;display:flex;flex-direction:column}
+.account-header{position:relative;background:#08111c}
+.account-header nav{display:flex;gap:26px;color:#d4dfeb;font-size:13px}
+.account-header nav a:hover{color:#b8f46b}
+.account-logout{min-height:42px;padding:0 16px;border:1px solid #5a738d;border-radius:10px;background:transparent;color:#f2f7fb;font:700 13px 'DM Sans',sans-serif;cursor:pointer}
+.account-main{width:min(1080px,calc(100% - 40px));margin:0 auto;padding:44px 0 74px;flex:1}
+.account-back{color:#397953;font-size:13px;font-weight:800}
+.account-welcome{margin:30px 0 28px}.account-kicker{color:#4b8965;font-size:11px;font-weight:800;letter-spacing:.12em}
+.account-welcome h1{margin:8px 0;font:700 clamp(34px,5vw,52px)/1.08 'Space Grotesk',sans-serif;letter-spacing:-1.8px;color:#10283b}
+.account-welcome p{margin:0;color:#637787;line-height:1.6}
+.account-grid{display:grid;grid-template-columns:minmax(260px,.78fr) minmax(0,1.22fr);gap:20px;align-items:start}
+.account-card{padding:clamp(22px,3vw,32px);border:1px solid #dbe5ea;border-radius:20px;background:#fff;box-shadow:0 14px 38px #102d430d}
+.account-card-heading{display:flex;align-items:center;gap:13px;margin-bottom:24px}.account-card-heading h2{margin:4px 0 0;font:700 21px 'Space Grotesk',sans-serif;color:#142f43}
+.account-icon{display:grid;width:45px;height:45px;place-items:center;border-radius:14px;background:#e9eff7;color:#1c4970;font-size:13px;font-weight:800}.account-icon-green{background:#ebf8e8;color:#377346;font-size:11px}
+.account-profile dl{margin:0}.account-profile dl>div{padding:15px 0;border-top:1px solid #ebf0f3}.account-profile dt{color:#728493;font-size:12px}.account-profile dd{margin:5px 0 0;color:#1d384c;font-size:15px;font-weight:700;overflow-wrap:anywhere}
+.account-daily{display:grid;gap:8px;padding:20px;border-radius:15px;background:#f0f9eb}.account-daily span{color:#5d785d;font-size:10px;font-weight:800;letter-spacing:.1em}.account-daily strong{color:#183c2b;font:700 clamp(28px,4vw,38px) 'Space Grotesk',sans-serif}
+.account-budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.account-budget-grid>div{display:grid;gap:5px;padding:13px;border:1px solid #e7edf0;border-radius:12px}.account-budget-grid span{color:#71818e;font-size:11px}.account-budget-grid strong{color:#1c3549;font-size:14px}
+.account-updated{margin:0 0 15px;color:#6b7e8c;font-size:12px}.account-empty-plan{padding:12px;border-radius:10px;background:#f4f7fa;color:#566d7b;font-size:13px;line-height:1.6}
+.account-primary-action{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 17px;border-radius:11px;background:#b8f46b;color:#163621;font-size:13px;font-weight:800}
+.account-message{margin:0 0 18px;padding:13px 16px;border-radius:12px;background:#e9f6ed;color:#285d3c;font-size:13px}.account-message.is-error{background:#fff0ed;color:#8b3028}
+.account-privacy{margin-top:23px;color:#687b8a;font-size:12px}.account-footer{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px;background:#08111c;color:#c0cdd9;font-size:12px}.account-footer a{color:#b8f46b;font-weight:800}
+.account-page a:focus-visible,.account-page button:focus-visible{outline:3px solid #57a87b;outline-offset:3px}
+@media(max-width:700px){.account-header{height:auto;min-height:70px;padding:12px 16px;gap:10px;flex-wrap:wrap}.account-header nav{order:3;width:100%;justify-content:center;padding:7px 0}.account-grid{grid-template-columns:1fr}.account-main{padding-top:30px}}
+@media(prefers-reduced-motion:reduce){.account-page *{scroll-behavior:auto!important;transition:none!important}}

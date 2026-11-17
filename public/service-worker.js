@@ -1,10 +1,13 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v26';
+const CACHE_NAME = 'bilaform-site-v28';
 const APP_FILES = [
   './',
   './index.html',
+  './account.html',
   './CSS/styles.css',
+  './CSS/account.css',
   './JS/site.js',
+  './JS/account.js',
   './manifest.webmanifest',
   './privacy.html',
   './terms.html',
@@ -74,6 +77,8 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // Account and contact API data must always go directly to the network.
+  if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(

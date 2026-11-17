@@ -3774,6 +3774,24 @@ body {
   }
 }
 
+/* Account access, saved-plan and contact form controls. */
+[hidden]{display:none!important}
+.account-user-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#d6e6f5;font-size:12px;font-weight:700}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:20px 0 16px;padding:5px;border-radius:12px;background:#edf3fa}
+.auth-tabs button{min-height:42px;border:0;border-radius:9px;background:transparent;color:#405a78;font:700 13px 'DM Sans',sans-serif;cursor:pointer}
+.auth-tabs button[aria-selected=true]{background:#fff;color:#123263;box-shadow:0 2px 8px #173b7212}
+.auth-form{display:grid;gap:12px}.auth-form[hidden]{display:none}.auth-form label,.contact-form label{display:grid;gap:6px;color:#25415f;font-size:13px;font-weight:700}
+.auth-form input,.contact-form input,.contact-form textarea{width:100%;min-height:46px;border:1px solid #cdd9e6;border-radius:10px;background:#fff;padding:10px 12px;color:#17314b;font:500 15px 'DM Sans',sans-serif}
+.auth-form input:focus,.contact-form input:focus,.contact-form textarea:focus{outline:3px solid #73a9ed66;border-color:#3878c8}
+.auth-form small{margin-top:-7px;color:#60748c;font-size:12px}.auth-submit{width:100%;min-height:48px;margin-top:5px;border:0;background:#1559cf;color:#fff;font-weight:800;cursor:pointer}
+.auth-submit:disabled,.contact-form button:disabled{opacity:.65;cursor:wait}.auth-feedback{margin:14px 0 0!important;padding:10px 12px;border-radius:10px;background:#e8f6eb;color:#225d37!important;font-weight:700}.auth-feedback.is-error{background:#fff0ed;color:#8b3028!important}.auth-privacy-note{margin-top:14px!important;font-size:12px!important}
+.calc .runway-breakdown{margin:12px 0 0;color:#d1e0ef;font-size:12px;line-height:1.55}.calc-actions{margin-top:16px}.save-plan-button{min-height:44px;padding-inline:16px;border:1px solid #6f91b5;border-radius:10px;background:#f5f9ff;color:#16365e;font:800 13px 'DM Sans',sans-serif;cursor:pointer}.save-plan-status,.contact-form-status{min-height:1.25em;margin:8px 0 0;color:#d9e9f8;font-size:12px;line-height:1.5}
+.purchase-simulator{margin-top:20px;padding:18px;border:1px solid #d7e2ee;border-radius:15px;background:#f7faff;color:#16365e}.purchase-simulator h4{margin:6px 0;font:700 18px 'Space Grotesk',sans-serif}.purchase-simulator>p{margin:6px 0 12px;color:#5b7087;font-size:13px;line-height:1.55}.purchase-simulator label{display:block;margin-bottom:6px;font-size:12px;font-weight:800}.purchase-simulator input{width:100%;min-height:44px;padding:10px 12px;border:1px solid #cbd8e6;border-radius:9px;color:#18365f;font:600 15px 'DM Sans',sans-serif}.purchase-feedback{padding:10px 11px;border-radius:9px;background:#e9f5ee;color:#265b3d!important;font-weight:700}.purchase-feedback.is-caution{background:#fff5df;color:#75540b!important}.purchase-feedback.is-warning{background:#fff0ed;color:#8c322a!important}
+.contact-panel{grid-template-columns:minmax(0,1fr) minmax(280px,440px);align-items:start}.contact-form{display:grid;gap:8px}.contact-form label{color:#f0f5fb}.contact-form input,.contact-form textarea{border-color:#5274a0;background:#fff;color:#132c49}.contact-form textarea{resize:vertical}.contact-form .contact-primary{width:max-content;margin-top:6px;border:0;cursor:pointer}.contact-form-status{color:#eff9e6}.contact-form-status:empty{display:none}
+.account-notice{max-height:min(90vh,820px);overflow-y:auto}.account-notice-close{z-index:1}.account-notice .eyebrow{display:block;margin:0;color:#387b50;font-weight:800;letter-spacing:.1em}.account-notice p.auth-privacy-note{margin-bottom:0}
+@media(max-width:800px){.contact-panel{grid-template-columns:1fr}.contact-form{max-width:520px;width:100%}}
+@media(max-width:650px){.account-user-name{max-width:100px}.account-notice{padding:28px 22px}.purchase-simulator{padding:15px}.calc-actions .save-plan-button{width:100%}}
+
 /* About and contact sections extend the existing BilaForm landing page. */
 .about-section {
   padding: 86px 0 92px;

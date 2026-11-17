@@ -1,0 +1,253 @@
+// BilaForm API and static site server. SQLite creates its database on first run.
+const path = require('node:path');
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const sqlite3 = require('sqlite3').verbose();
+
+const app = express();
+const PORT = Number(process.env.PORT) || 8000;
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const DATABASE_FILE = path.join(__dirname, 'bilaform.db');
+const production = process.env.NODE_ENV === 'production';
+const JWT_SECRET = process.env.JWT_SECRET || (production ? '' : 'local-development-secret-change-before-deploy');
+
+if (!JWT_SECRET) {
+  console.error('Set JWT_SECRET before running BilaForm in production.');
+  process.exit(1);
+}
+if (production && Buffer.byteLength(JWT_SECRET, 'utf8') < 32) {
+  console.error('JWT_SECRET must contain at least 32 bytes in production.');
+  process.exit(1);
+}
+
+const db = new sqlite3.Database(DATABASE_FILE);
+db.run('PRAGMA foreign_keys = ON');
+db.run('PRAGMA journal_mode = WAL');
+
+const run = (sql, params = []) => new Promise((resolve, reject) => {
+  db.run(sql, params, function onRun(error) {
+    if (error) reject(error);
+    else resolve({ id: this.lastID, changes: this.changes });
+  });
+});
+const get = (sql, params = []) => new Promise((resolve, reject) => {
+  db.get(sql, params, (error, row) => error ? reject(error) : resolve(row));
+});
+
+async function initializeDatabase() {
+  await run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    password_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+  await run(`CREATE TABLE IF NOT EXISTS budgets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    cash INTEGER NOT NULL CHECK (cash >= 0),
+    essentials INTEGER NOT NULL CHECK (essentials >= 0),
+    buffer INTEGER NOT NULL CHECK (buffer >= 0),
+    days INTEGER NOT NULL CHECK (days BETWEEN 1 AND 366),
+    daily_safe INTEGER NOT NULL CHECK (daily_safe >= 0),
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+  await run(`CREATE INDEX IF NOT EXISTS budgets_user_latest ON budgets(user_id, updated_at DESC, id DESC)`);
+  await run(`CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`);
+}
+
+// Only allow configured cross-origin clients; same-origin browser requests need no CORS headers.
+const allowedOrigin = process.env.CORS_ORIGIN || false;
+app.use(cors({ origin: allowedOrigin, credentials: false }));
+app.use(express.json({ limit: '12kb', type: 'application/json' }));
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-Frame-Options': 'DENY',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  });
+  next();
+});
+// Never let the browser or service worker cache account or contact API responses.
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+
+// Small per-process rate limiter for public write endpoints.
+const rateBuckets = new Map();
+function rateLimit({ limit, windowMs }) {
+  return (req, res, next) => {
+    const key = `${req.ip}:${req.path}`;
+    const now = Date.now();
+    let bucket = rateBuckets.get(key);
+    if (!bucket || now >= bucket.resetAt) bucket = { count: 0, resetAt: now + windowMs };
+    bucket.count += 1;
+    rateBuckets.set(key, bucket);
+    if (bucket.count > limit) {
+      res.set('Retry-After', String(Math.ceil((bucket.resetAt - now) / 1000)));
+      return res.status(429).json({ error: 'Too many requests. Please wait a moment and try again.' });
+    }
+    return next();
+  };
+}
+
+const authRateLimit = rateLimit({ limit: 12, windowMs: 15 * 60 * 1000 });
+const contactRateLimit = rateLimit({ limit: 5, windowMs: 10 * 60 * 1000 });
+const cleanText = (value) => typeof value === 'string' ? value.trim() : '';
+const normalizeEmail = (value) => cleanText(value).toLowerCase();
+const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
+const validAmount = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000_000;
+
+function readBudget(body) {
+  const { cash, essentials, buffer, days } = body || {};
+  if (![cash, essentials, buffer].every(validAmount)) return { error: 'Enter whole-number KES amounts from 0 to 1,000,000,000.' };
+  if (!Number.isSafeInteger(days) || days < 1 || days > 366) return { error: 'Days to payday must be a whole number between 1 and 366.' };
+  const unreserved = cash - essentials - buffer;
+  return {
+    cash, essentials, buffer, days,
+    daily_safe: Math.floor(Math.max(0, unreserved) / days),
+    remaining_after_reserves: unreserved,
+    needs_reset: unreserved <= 0,
+  };
+}
+
+function signToken(user) {
+  return jwt.sign({ sub: String(user.id), name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '7d', issuer: 'bilaform' });
+}
+
+function requireAuth(req, res, next) {
+  const [scheme, token] = (req.get('authorization') || '').split(' ');
+  if (scheme !== 'Bearer' || !token) return res.status(401).json({ error: 'Sign in to use this feature.' });
+  try {
+    const payload = jwt.verify(token, JWT_SECRET, { issuer: 'bilaform' });
+    req.user = { id: Number(payload.sub), name: payload.name, email: payload.email };
+    if (!Number.isSafeInteger(req.user.id) || req.user.id < 1) throw new Error('Invalid account');
+    return next();
+  } catch {
+    return res.status(401).json({ error: 'Your session has expired. Please sign in again.' });
+  }
+}
+
+app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'bilaform-api' }));
+
+app.post('/api/runway', rateLimit({ limit: 120, windowMs: 60 * 1000 }), (req, res) => {
+  const budget = readBudget(req.body);
+  if (budget.error) return res.status(400).json({ error: budget.error });
+  return res.set('Cache-Control', 'no-store').json(budget);
+});
+
+app.post('/api/auth/register', authRateLimit, async (req, res, next) => {
+  try {
+    const name = cleanText(req.body?.name);
+    const email = normalizeEmail(req.body?.email);
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (name.length < 2 || name.length > 80) return res.status(400).json({ error: 'Name must be between 2 and 80 characters.' });
+    if (!validEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) return res.status(400).json({ error: 'Password must be at least 8 characters and no more than 72 bytes.' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const result = await run('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)', [name, email, passwordHash]);
+    const user = { id: result.id, name, email };
+    return res.status(201).json({ token: signToken(user), user });
+  } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT') return res.status(409).json({ error: 'An account with that email already exists.' });
+    return next(error);
+  }
+});
+
+app.post('/api/auth/login', authRateLimit, async (req, res, next) => {
+  try {
+    const email = normalizeEmail(req.body?.email);
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (!validEmail(email) || !password || Buffer.byteLength(password, 'utf8') > 72) return res.status(400).json({ error: 'Enter your email and password.' });
+    const row = await get('SELECT id, name, email, password_hash FROM users WHERE email = ?', [email]);
+    if (!row || !(await bcrypt.compare(password, row.password_hash))) return res.status(401).json({ error: 'Email or password is incorrect.' });
+    const user = { id: row.id, name: row.name, email: row.email };
+    return res.json({ token: signToken(user), user });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.get('/api/auth/me', requireAuth, async (req, res, next) => {
+  try {
+    const user = await get('SELECT id, name, email, created_at FROM users WHERE id = ?', [req.user.id]);
+    if (!user) return res.status(401).json({ error: 'This account no longer exists. Please sign in again.' });
+    return res.json({ user });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post('/api/budgets', requireAuth, async (req, res, next) => {
+  try {
+    const budget = readBudget(req.body);
+    if (budget.error) return res.status(400).json({ error: budget.error });
+    const result = await run(
+      'INSERT INTO budgets (user_id, cash, essentials, buffer, days, daily_safe) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.user.id, budget.cash, budget.essentials, budget.buffer, budget.days, budget.daily_safe],
+    );
+    const saved = await get('SELECT cash, essentials, buffer, days, daily_safe, updated_at FROM budgets WHERE id = ?', [result.id]);
+    return res.status(201).json({ budget: { ...saved, remaining_after_reserves: budget.remaining_after_reserves, needs_reset: budget.needs_reset } });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.get('/api/budgets/latest', requireAuth, async (req, res, next) => {
+  try {
+    const budget = await get(
+      'SELECT cash, essentials, buffer, days, daily_safe, updated_at FROM budgets WHERE user_id = ? ORDER BY updated_at DESC, id DESC LIMIT 1',
+      [req.user.id],
+    );
+    return res.json({ budget: budget || null });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post('/api/contact', contactRateLimit, async (req, res, next) => {
+  try {
+    const name = cleanText(req.body?.name);
+    const email = normalizeEmail(req.body?.email);
+    const message = cleanText(req.body?.message);
+    if (name.length < 2 || name.length > 100) return res.status(400).json({ error: 'Enter a name between 2 and 100 characters.' });
+    if (!validEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    if (message.length < 10 || message.length > 5000) return res.status(400).json({ error: 'Message must be between 10 and 5,000 characters.' });
+    await run('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)', [name, email, message]);
+    return res.status(201).json({ message: 'Thanks for contacting BilaForm. Your message has been received.' });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// The static app remains usable offline; authenticated API features require this server.
+app.use(express.static(PUBLIC_DIR, { extensions: ['html'], maxAge: production ? '1h' : 0 }));
+app.use('/api', (req, res) => res.status(404).json({ error: 'API route not found.' }));
+app.use((req, res) => res.status(404).type('text').send('Page not found'));
+
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  if (error.type === 'entity.too.large') return res.status(413).json({ error: 'Request is too large.' });
+  if (error instanceof SyntaxError && error.status === 400 && 'body' in error) return res.status(400).json({ error: 'Request body must be valid JSON.' });
+  console.error('BilaForm request failed:', error.message);
+  return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+});
+
+initializeDatabase().then(() => {
+  app.listen(PORT, () => console.log(`BilaForm is available at http://localhost:${PORT}`));
+}).catch((error) => {
+  console.error('Could not initialize BilaForm database:', error.message);
+  process.exit(1);
+});

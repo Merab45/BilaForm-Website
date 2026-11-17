@@ -1,0 +1,7 @@
+node_modules/
+bilaform.db
+bilaform.db-shm
+bilaform.db-wal
+.env
+.env.*
+!.env.example

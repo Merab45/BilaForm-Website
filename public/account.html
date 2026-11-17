@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#08111c">
+  <meta name="description" content="Your BilaForm account and saved PangaSiku money plan.">
+  <title>My BilaForm Account</title>
+  <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="CSS/styles.css?v=auth-20261117">
+  <link rel="stylesheet" href="CSS/account.css?v=auth-20261117">
+  <script defer src="JS/account.js?v=auth-20261117"></script>
+</head>
+<body class="account-page">
+  <header class="header account-header">
+    <a class="logo" href="index.html#top" aria-label="BilaForm home"><img src="Assets/Assets/bilaform-mark.png" alt=""><span class="logo-word"><b>Bila</b><strong>Form</strong></span></a>
+    <nav aria-label="Account navigation"><a href="index.html#calculator">Daily planner</a><a href="blog/index.html">Journal</a></nav>
+    <button class="account-button account-logout" type="button" data-account-logout>Log out</button>
+  </header>
+  <main class="account-main">
+    <a class="account-back" href="index.html#top">← Back to BilaForm</a>
+    <section class="account-welcome" aria-labelledby="account-heading">
+      <span class="account-kicker">YOUR MONEY PLAN</span>
+      <h1 id="account-heading">Welcome back<span data-name-ending>.</span></h1>
+      <p>Your account details and latest saved PangaSiku plan are here.</p>
+    </section>
+    <p class="account-message" data-account-message role="status" aria-live="polite" hidden></p>
+    <div class="account-grid">
+      <section class="account-card account-profile" aria-labelledby="profile-heading">
+        <div class="account-card-heading"><span class="account-icon" aria-hidden="true">BF</span><div><span class="account-kicker">PROFILE</span><h2 id="profile-heading">Your details</h2></div></div>
+        <dl><div><dt>Name</dt><dd data-profile-name>Loading…</dd></div><div><dt>Email</dt><dd data-profile-email>Loading…</dd></div><div><dt>Member since</dt><dd data-profile-date>Loading…</dd></div></dl>
+      </section>
+      <section class="account-card account-budget" aria-labelledby="budget-heading">
+        <div class="account-card-heading"><span class="account-icon account-icon-green" aria-hidden="true">KES</span><div><span class="account-kicker">PANGASIKU</span><h2 id="budget-heading">Latest saved plan</h2></div></div>
+        <div class="account-daily"><span>DAILY SAFE-TO-SPEND GUIDE</span><strong data-budget-daily>—</strong></div>
+        <div class="account-budget-grid"><div><span>Available now</span><strong data-budget-cash>—</strong></div><div><span>Essentials</span><strong data-budget-essentials>—</strong></div><div><span>Buffer to keep</span><strong data-budget-buffer>—</strong></div><div><span>Days to payday</span><strong data-budget-days>—</strong></div></div>
+        <p class="account-updated" data-budget-updated></p>
+        <p class="account-empty-plan" data-budget-empty hidden>You haven’t saved a plan yet. Add your current numbers in PangaSiku and save them to your account.</p>
+        <a class="account-primary-action" href="index.html#calculator">Open PangaSiku planner</a>
+      </section>
+    </div>
+    <p class="account-privacy">Your plan is available to your signed-in account. Log out when you’re using a shared device.</p>
+  </main>
+  <footer class="account-footer"><a href="index.html">BilaForm</a><span>Money is personal. Your plan should be too.</span></footer>
+</body>
+</html>

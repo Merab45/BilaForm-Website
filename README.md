@@ -1,57 +1,61 @@
-# BilaForm Website
+# BilaForm Full Stack
 
-BilaForm is a responsive financial planning website for everyday money decisions and making a plan between paydays. It includes a daily spending calculator, informational product sections, an FAQ, a curated financial insights Journal, and Progressive Web App support. The website is static and can be hosted on GitHub Pages.
-
-The daily allowance calculator uses the available cash less planned essential expenses and a chosen buffer, divided by the days remaining. Calculations happen in the browser. BilaForm does not connect to bank or mobile money accounts, hold funds, process payments, or provide account sign-in on this site.
+BilaForm is a KES-focused personal finance planner for everyday choices between paydays. The responsive static frontend is served by a small Express API. The API creates a local SQLite database automatically for accounts, saved PangaSiku plans and contact messages.
 
 ## Project structure
 
 ```text
 .
-├── index.html                     Homepage and daily planner
-├── CSS/styles.css                 Main BilaForm styles
-├── JS/site.js                     Calculator, navigation and FAQ behaviour
-├── blog/
-│   ├── index.html                 Journal directory with search and filters
-│   ├── blog.css                   Homepage and Journal editorial styles
-│   ├── blog-data.js               Article copy and featured/popular flags
-│   ├── blog.js                    Directory rendering and controls
-│   ├── blog-home.js               Homepage popular article cards
-│   ├── article.js                 Shared article page renderer
-│   ├── nav.js                     Blog mobile navigation
-│   └── articles/                  Eight individual article URLs
-├── Assets/
-│   ├── Illustrations/             Original BilaForm illustrations
-│   ├── Assets/                    Brand artwork and photography
-│   └── icons/                     PWA icons
-├── manifest.webmanifest           Installable app metadata
-├── service-worker.js              Offline cache and fallback
-├── privacy.html
-└── terms.html
+├── package.json
+├── server.js
+├── bilaform.db                 # created automatically when the server starts
+└── public/
+    ├── index.html
+    ├── account.html             # Signed-in profile and saved budget page
+    ├── CSS/styles.css
+    ├── JS/site.js
+    ├── Assets/                 # BilaForm images, illustrations and icons
+    ├── blog/                   # Journal directory and article pages
+    ├── manifest.webmanifest
+    ├── service-worker.js
+    ├── privacy.html
+    └── terms.html
 ```
 
 ## Run locally
 
-Use any static HTTP server from the project root. For example, with Node.js installed:
+Install Node.js 18 or newer, then from the project root run:
 
 ```sh
-node server.cjs
+npm install
+npm start
 ```
 
-Then open the local address printed by the server. A local HTTP server is required for service workers and PWA installation; opening `index.html` as a `file://` URL is not sufficient.
+Open `http://localhost:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
 
-## Journal content
+For production, set a long random `JWT_SECRET` environment variable before starting the server. The development fallback secret is only for local use. Set `CORS_ORIGIN` only if a separate trusted frontend origin needs API access. Do not commit production secrets or the database file.
 
-Article titles, summaries, copy, dates, images and the `popular` / `featured` selections are maintained in `blog/blog-data.js`. Edit those flags to curate the homepage and directory picks. Update an article slug carefully because it is also the corresponding static HTML filename and URL. Blog illustrations and photography are kept in `Assets/Illustrations/` and `Assets/Assets/`; article pages use relative paths so they work from GitHub Pages project subpaths.
+## Backend endpoints
 
-## PWA installation
+- `GET /api/health` — service health.
+- `POST /api/runway` — validate and calculate a PangaSiku daily allowance.
+- `POST /api/auth/register` and `POST /api/auth/login` — create an account or sign in; passwords are hashed with bcrypt and the response includes a seven-day JWT.
+- `GET /api/auth/me` — return the signed-in user profile used by the account page.
+- `POST /api/budgets` and `GET /api/budgets/latest` — save and retrieve the signed-in user’s most recent budget.
+- `POST /api/contact` — validate and store a contact message.
 
-On HTTPS hosting or localhost, supported browsers can offer installation through BilaForm’s install prompt. The install control is only shown when the browser signals that installation is available. The service worker caches the homepage, Journal pages, and local assets for repeat and offline access; a previously visited page can still be opened offline.
+Money inputs are whole KES amounts. The daily guide is `floor(max(0, cash - essentials - buffer) / days)`. The browser calculates immediately and uses the API when it is reachable, so the planner remains available offline. Account and contact features need the Node server.
 
-## Deploy to GitHub Pages
+## Privacy and production notes
 
-Push the project to the repository and configure GitHub Pages to publish the project root (or the selected branch/folder containing `index.html`). The current canonical URL metadata targets `https://merab45.github.io/BilaForm-Website/`; update canonical and Open Graph URLs if the repository or custom domain changes. Verify the deployed subpath, HTTPS, PWA manifest and service worker after publishing.
+JWT and display name are stored in browser local storage as requested. Treat an account session as active on that browser until the user logs out or the seven-day token expires. Saved budgets and submitted messages are stored in the local SQLite database; protect database backups and use HTTPS in production. Contact messages are stored but are not emailed or forwarded automatically. Account verification, password reset, account deletion, message retention controls, backups, and operational monitoring need production configuration before launch.
 
-## Contact details
+This app does not connect to banks or mobile money, move funds, or provide regulated financial advice. Example dashboard numbers are illustrative. Calculations are planning estimates.
 
-The contact section currently contains sample details marked as placeholders. Replace them with monitored contact channels before using them for customer support. Privacy and terms content should also be reviewed against the final hosting, data handling and support setup.
+## Assets and Journal
+
+Place website images and illustrations in `public/Assets/`. Journal content and curated `popular` / `featured` flags are in `public/blog/blog-data.js`; individual static article pages are in `public/blog/articles/`.
+
+## Deployment
+
+Deploy the Node application to a host that supports persistent disk storage for SQLite. Set `NODE_ENV=production`, `JWT_SECRET`, and `PORT` through the host’s environment settings. Ensure the database path is on persistent storage, configure HTTPS and backups, and update canonical / Open Graph URLs if the domain changes. GitHub Pages can host the static pages only; its static hosting cannot run this API or persist accounts and contact messages.
