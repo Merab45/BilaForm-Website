@@ -63,7 +63,9 @@
       if (!response.ok) throw new Error(payload.error || 'The request could not be completed.');
       localStorage.setItem('bilaform.auth.token', payload.token);
       localStorage.setItem('bilaform.auth.user', JSON.stringify(payload.user));
-      location.assign('account.html');
+      location.assign(new URLSearchParams(location.search).get('return') === 'pangasiku'
+        ? 'services/pangasiku.html?resume=1'
+        : 'account.html');
     } catch (error) {
       setFeedback(error.message || 'BilaForm could not reach its API. Please try again.', true);
     } finally {

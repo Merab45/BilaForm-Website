@@ -31,12 +31,12 @@ test('account navigation uses refresh-safe protected view URLs', () => {
     assert.ok(account.includes(`account.html?view=${view}`), `Dashboard needs a direct ${view} link`);
   }
   assert.match(read('JS/account.js'), /URLSearchParams\(window\.location\.search\)/);
-  assert.match(read('JS/account.js'), /account\.html\?view=/);
+  assert.match(read('JS/account.js'), /dashboardViews = new Set/);
   assert.match(account, /data-sidebar-toggle/);
 });
 
 test('authentication retains the fixed PangaSiku resume destination', () => {
-  assert.match(read('JS/auth.js'), /return=pangasiku/);
+  assert.match(read('JS/auth.js'), /get\('return'\) === 'pangasiku'/);
   assert.match(read('JS/auth.js'), /services\/pangasiku\.html\?resume=1/);
   assert.match(read('JS/pangasiku.js'), /sessionStorage/);
 });

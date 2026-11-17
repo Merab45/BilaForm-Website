@@ -50,29 +50,35 @@
     return result;
   }
 
-  function setTab(name, focus = false) {
-    document.querySelectorAll('[data-account-tab]').forEach((button) => {
-      const active = button.dataset.accountTab === name;
-      button.setAttribute('aria-selected', String(active));
-      button.tabIndex = active ? 0 : -1;
-      if (active && focus) button.focus();
-    });
-    document.querySelectorAll('[data-account-panel]').forEach((panel) => {
-      panel.hidden = panel.dataset.accountPanel !== name;
-    });
-  }
-
-  document.querySelectorAll('[data-account-tab]').forEach((button, index, all) => {
-    button.addEventListener('click', () => setTab(button.dataset.accountTab));
-    button.addEventListener('keydown', (event) => {
-      const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1, Home: -index, End: all.length - 1 - index };
-      if (!(event.key in keys)) return;
-      event.preventDefault();
-      const next = (index + keys[event.key] + all.length) % all.length;
-      setTab(all[next].dataset.accountTab, true);
-    });
+  const dashboardViews = new Set(['overview', 'activity', 'plans', 'settings', 'security']);
+  const requestedView = new URLSearchParams(window.location.search).get('view');
+  const activeView = dashboardViews.has(requestedView) ? requestedView : 'overview';
+  document.querySelectorAll('[data-account-panel]').forEach((panel) => {
+    panel.hidden = panel.dataset.accountPanel !== activeView;
   });
-  document.querySelector('[data-open-settings]').addEventListener('click', () => setTab('settings'));
+  document.querySelectorAll('[data-account-view]').forEach((link) => {
+    if (link.dataset.accountView === activeView) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+  const viewTitles = { overview: 'Overview', activity: 'My Activities', plans: 'Saved Budgets', settings: 'Profile & Settings', security: 'Security' };
+  document.title = `${viewTitles[activeView]} | My BilaForm Dashboard`;
+
+  const sidebar = document.querySelector('.dashboard-sidebar');
+  const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
+  const closeSidebar = (restoreFocus = false) => {
+    sidebar.classList.remove('is-open');
+    sidebarToggle.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) sidebarToggle.focus();
+  };
+  sidebarToggle.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('is-open');
+    sidebarToggle.setAttribute('aria-expanded', String(open));
+    if (open) sidebar.querySelector('[data-account-view]')?.focus();
+  });
+  sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => closeSidebar()));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && sidebar.classList.contains('is-open')) closeSidebar(true);
+  });
 
   function setProfile(user) {
     currentUser = user;
@@ -157,6 +163,29 @@
     ].sort((a, b) => b.dataset.date.localeCompare(a.dataset.date));
     rows.forEach((row) => planContainer.append(row));
     document.querySelector('[data-plans-empty]').hidden = rows.length > 0;
+
+    const activity = [
+      ...budgets.map((budget) => ({ date: budget.updated_at, title: `PangaSiku · ${budget.days} day runway`, detail: `${money(budget.daily_safe)} daily guide` })),
+      ...plans.map((plan) => ({ date: plan.created_at, title: `VukaMonth · ${plan.name}`, detail: `${money(plan.data.income)} monthly income` })),
+    ].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+    const renderActivity = (container, entries) => {
+      container.replaceChildren();
+      entries.forEach((entry) => {
+        const item = document.createElement('li');
+        const title = document.createElement('strong');
+        const detail = document.createElement('span');
+        const date = document.createElement('time');
+        title.textContent = entry.title;
+        detail.textContent = entry.detail;
+        date.textContent = dateLabel(entry.date);
+        item.append(title, detail, date);
+        container.append(item);
+      });
+    };
+    renderActivity(document.querySelector('[data-recent-activity]'), activity.slice(0, 4));
+    renderActivity(document.querySelector('[data-activity-full]'), activity);
+    document.querySelector('[data-recent-activity-empty]').hidden = activity.length > 0;
+    document.querySelector('[data-activity-empty]').hidden = activity.length > 0;
   }
 
   async function loadData() {

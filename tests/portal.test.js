@@ -44,6 +44,8 @@ test('keeps the responsive navigation and account routes in the landing page', (
   const landingCss = fs.readFileSync(path.join(publicPath, 'CSS', 'premium.css'), 'utf8');
   assert.match(landingCss, /\.landing-page \.header>nav\{position:static/);
   assert.match(landingCss, /\.has-bubble-menu \.landing-page \.header>nav\{position:absolute/);
+  assert.match(landingCss, /@media\(max-width:740px\)\{\.has-bubble-menu \.landing-page \.header>nav\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
+  assert.match(landingCss, /@media\(max-width:400px\)\{\.has-bubble-menu \.landing-page \.header>nav\{grid-template-columns:1fr\}\}/);
   assert.match(landingCss, /prefers-reduced-motion:reduce/);
 });
 
@@ -57,11 +59,11 @@ test('keeps account announcements off the public landing page', () => {
   assert.match(fs.readFileSync(path.join(publicPath, 'account.html'), 'utf8'), /account-announcement/);
 });
 
-test('preserves the landing calculator, contact, FAQ, and four service cards', () => {
-  assert.match(homeHtml, /data-save-plan/);
-  assert.match(homeHtml, /id="contact-form"/);
-  assert.match(homeHtml, /class="faq-question"/);
-  assert.equal([...homeHtml.matchAll(/<article class="feature-card/g)].length, 4);
+test('keeps destination tools and support content on their focused pages', () => {
+  assert.match(fs.readFileSync(path.join(publicPath, 'services', 'pangasiku.html'), 'utf8'), /data-save-plan/);
+  assert.match(fs.readFileSync(path.join(publicPath, 'contact.html'), 'utf8'), /id="contact-form"/);
+  assert.match(fs.readFileSync(path.join(publicPath, 'how-it-works.html'), 'utf8'), /id="faq"/);
+  assert.equal([...homeHtml.matchAll(/class="feature-card"/g)].length, 4);
   assert.doesNotMatch(homeHtml, /data-service-deck|data-deck-card|data-deck-controls/);
   assert.doesNotMatch(fs.readFileSync(portalPath, 'utf8'), /initServiceDeck/);
 });
