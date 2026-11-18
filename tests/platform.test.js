@@ -112,6 +112,7 @@ test('GitHub Pages explains missing API configuration and accepts a configured A
   assert.equal(serverWindow.BILAFORM_API_ROOT, '/api');
   const authScript = read('JS/auth.js');
   assert.match(authScript, /local BilaForm account API is not running/);
+  assert.match(authScript, /isLocalHost && API_ROOT === '\/api'/);
   assert.match(authScript, /Terminal → Run Task → BilaForm: Start API/);
   assert.match(authScript, /CORS_ORIGIN setting/);
 });

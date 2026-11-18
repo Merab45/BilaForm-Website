@@ -68,7 +68,9 @@
         : returnTarget === 'goals' ? 'account.html?view=goals'
           : returnTarget === 'plans' ? 'account.html?view=plans' : 'account.html');
     } catch (error) {
-      const connectionMessage = API_ROOT.startsWith('http://127.0.0.1:8000')
+      const isLocalHost = ['localhost', '127.0.0.1'].includes(location.hostname);
+      const isLocalApi = API_ROOT.startsWith('http://127.0.0.1:8000') || (isLocalHost && API_ROOT === '/api');
+      const connectionMessage = isLocalApi
         ? 'The local BilaForm account API is not running. In VS Code, allow the “BilaForm: Start API” task when prompted, or choose Terminal → Run Task → BilaForm: Start API. Keep its terminal running while using Live Server.'
         : /^https?:\/\//i.test(API_ROOT)
           ? 'Could not reach the configured BilaForm API. Check that the host is online over HTTPS and allows this site in its CORS_ORIGIN setting.'
