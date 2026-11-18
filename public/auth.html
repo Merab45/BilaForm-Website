@@ -8,9 +8,10 @@
   <title>Sign in | BilaForm</title>
   <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="CSS/styles.css?v=redesign-20261117">
-  <link rel="stylesheet" href="CSS/auth.css?v=auth-20261118">
-  <script defer src="JS/api-config.js?v=api-config-20261118"></script>
-  <script defer src="JS/auth.js?v=auth-20261118-4"></script>
+  <link rel="stylesheet" href="CSS/auth.css?v=auth-20261118-2">
+  <link rel="stylesheet" href="CSS/auth-reset.css?v=auth-reset-20261118">
+  <script defer src="JS/api-config.js?v=api-config-cookie-20261118"></script>
+  <script defer src="JS/auth.js?v=auth-20261118-7"></script>
 </head>
 <body class="auth-page">
   <main class="auth-layout">
@@ -38,7 +39,7 @@
         <form id="login-panel" class="auth-form" role="tabpanel" data-auth-form="login" aria-labelledby="login-tab">
           <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
           <label>Password<span class="auth-password-wrap"><input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="72" placeholder="Enter your password"><button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" data-password-toggle>Show</button></span></label>
-          <a class="forgot-link" href="contact.html?topic=password-reset">Need help signing in? Contact support</a>
+          <a class="forgot-link" href="auth.html?auth=reset" data-forgot-password>Forgot your password?</a>
           <button class="auth-submit" type="submit">Log in <span aria-hidden="true">→</span></button>
         </form>
         <form id="register-panel" class="auth-form" role="tabpanel" data-auth-form="register" aria-labelledby="register-tab" hidden>
@@ -46,6 +47,17 @@
           <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
           <label>Create a password<span class="auth-password-wrap"><input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"><button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" data-password-toggle>Show</button></span></label>
           <button class="auth-submit" type="submit">Create my account <span aria-hidden="true">→</span></button>
+        </form>
+        <form class="auth-form" data-auth-form="reset-request" hidden>
+          <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+          <button class="auth-submit" type="submit">Send reset link <span aria-hidden="true">→</span></button>
+          <button class="auth-back-button" type="button" data-back-login>Back to log in</button>
+        </form>
+        <form class="auth-form" data-auth-form="reset-complete" hidden>
+          <label>New password<span class="auth-password-wrap"><input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"><button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" data-password-toggle>Show</button></span></label>
+          <label>Confirm new password<input name="confirm_password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="Enter the new password again"></label>
+          <button class="auth-submit" type="submit">Update password <span aria-hidden="true">→</span></button>
+          <button class="auth-back-button" type="button" data-back-login>Back to log in</button>
         </form>
         <p class="auth-feedback" role="status" aria-live="polite" hidden></p>
         <p class="auth-privacy-note">Your plans stay private to your BilaForm account.</p>

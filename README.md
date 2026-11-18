@@ -45,6 +45,8 @@ npm start
 
 Open `http://127.0.0.1:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
 
+For an existing database, stop the API and run `npm run db:migrate:auth-security` before restarting it. The migration creates and integrity-checks a timestamped SQLite backup before adding the session-revocation field and password-reset table. It is safe to rerun after success. Keep the backup outside production web roots and verify a separate restore procedure before deploying. Existing installations with the savings-goals feature must also apply `npm run db:migrate:savings-goals` if that earlier migration has not been run.
+
 ### VS Code Live Server
 
 Live Server serves the static frontend, while account login and saved plans/goals require the Node API. When this workspace opens in VS Code, allow the **BilaForm: Start API** folder task if prompted. It starts the API on `http://127.0.0.1:8000` and safely reuses an already-running BilaForm API. Then open the site with Live Server (configured for port 5501). If automatic tasks are disabled, choose **Terminal → Run Task → BilaForm: Start API** and leave that terminal running while using Live Server. The development API accepts localhost preview origins.
@@ -55,8 +57,9 @@ For production, set a long random `JWT_SECRET` environment variable before start
 
 - `GET /api/health` — service health.
 - `POST /api/runway` — validate and calculate a PangaSiku daily allowance.
-- `POST /api/auth/register` and `POST /api/auth/login` — create an account or sign in; passwords are hashed with bcrypt and the response includes a seven-day JWT.
-- `GET /api/auth/me` and `PATCH /api/auth/profile` — read and update the signed-in user profile.
+- `POST /api/auth/register` and `POST /api/auth/login` — create an account or sign in; passwords are bcrypt-hashed and a seven-day HttpOnly cookie is set. No bearer token is returned to JavaScript.
+- `GET /api/auth/me`, `POST /api/auth/logout`, and `PATCH /api/auth/profile` — validate/revoke the session and read or update the signed-in profile.
+- `POST /api/auth/password-reset/request` and `/api/auth/password-reset/complete` — send a one-hour, single-use password reset link and replace the password. Reset requests do not disclose whether an email is registered.
 - `POST /api/budgets`, `GET /api/budgets`, `GET /api/budgets/latest`, and `DELETE /api/budgets/:id` — save, list, retrieve and remove PangaSiku budgets.
 - `GET /api/plans`, `POST /api/plans`, and `DELETE /api/plans/:id` — save, list and remove VukaMonth plans.
 - `POST /api/contact` — validate and store a contact message.
@@ -66,7 +69,9 @@ Money inputs are whole KES amounts. The daily guide is `floor(max(0, cash - esse
 
 ## Privacy and production notes
 
-JWT and display name are stored in browser local storage as requested. Treat an account session as active on that browser until the user logs out or the seven-day token expires. Saved budgets and submitted messages are stored in the local SQLite database; protect database backups and use HTTPS in production. Contact messages are stored but are not emailed or forwarded automatically. Account verification, password reset, account deletion, message retention controls, backups, and operational monitoring need production configuration before launch.
+Sessions use an HttpOnly, SameSite cookie and are checked against the user's token version on protected API calls. Logout and password reset revoke existing sessions. Older browser-stored JWTs are removed by the refreshed frontend; users with those old sessions need to sign in again. Saved budgets and submitted messages are stored in SQLite; protect database backups and use HTTPS in production. Contact messages are stored but are not emailed or forwarded automatically.
+
+Password reset email uses Resend's HTTPS API and is deliberately disabled until configured. Set `RESEND_API_KEY`, `PASSWORD_RESET_FROM` to an address verified with Resend, and `PUBLIC_APP_URL` to the full frontend base URL (including the trailing slash for a GitHub Pages project path). Configure these in the API host environment; `.env.example` only documents the names. Also set `CORS_ORIGIN` to the exact frontend origin, use a production `JWT_SECRET` of at least 32 bytes, and deploy the API on HTTPS. For production cookie authentication, the browser must allow the API's cross-site cookie; a custom frontend/API domain arrangement on the same site is recommended. Without email configuration, the reset request clearly reports that password recovery is unavailable and no reset is claimed to have been sent.
 
 This app does not connect to banks or mobile money, move funds, or provide regulated financial advice. Example dashboard numbers are illustrative. Calculations are planning estimates.
 

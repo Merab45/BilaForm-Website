@@ -3,7 +3,6 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (global && global.document) api.initialize(global.document);
 }(typeof globalThis !== 'undefined' ? globalThis : this, function createSavingsGoals(globalRef) {
-  const TOKEN_KEY = 'bilaform.auth.token';
   const USER_KEY = 'bilaform.auth.user';
   const money = (value) => `KES ${Number(value || 0).toLocaleString('en-KE')}`;
 
@@ -31,8 +30,7 @@
   function initialize(documentRef) {
     const panel = documentRef.querySelector('[data-savings-goals]');
     if (!panel || panel.hidden) return;
-    const token = globalRef.localStorage.getItem(TOKEN_KEY);
-    if (!token) return;
+    globalRef.localStorage.removeItem('bilaform.auth.token');
 
     const form = panel.querySelector('[data-goal-form]');
     const status = panel.querySelector('[data-goal-status]');
@@ -54,9 +52,9 @@
         if (globalRef.BILAFORM_API_CONFIG_ERROR) throw new Error(globalRef.BILAFORM_API_CONFIG_ERROR);
         response = await globalRef.fetch(`${globalRef.BILAFORM_API_ROOT || '/api'}${route}`, {
           ...options,
+          credentials: 'include',
           headers: {
             ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-            Authorization: `Bearer ${token}`,
             ...options.headers,
           },
         });
@@ -66,7 +64,6 @@
       }
       const payload = (response.headers.get('content-type') || '').includes('application/json') ? await response.json() : {};
       if (response.status === 401) {
-        globalRef.localStorage.removeItem(TOKEN_KEY);
         globalRef.localStorage.removeItem(USER_KEY);
         globalRef.location.assign('auth.html?auth=login&return=goals');
       }

@@ -86,10 +86,10 @@ function walkHtml(directory) {
 }
 
 test('authentication retains the fixed PangaSiku resume destination', () => {
-  assert.match(read('JS/auth.js'), /returnTarget === 'pangasiku'/);
+  assert.match(read('JS/auth.js'), /target === 'pangasiku'/);
   assert.match(read('JS/auth.js'), /services\/pangasiku\.html\?resume=1/);
-  assert.match(read('JS/auth.js'), /returnTarget === 'goals'.*account\.html\?view=goals/s);
-  assert.match(read('JS/auth.js'), /returnTarget === 'plans'.*account\.html\?view=plans/s);
+  assert.match(read('JS/auth.js'), /target === 'goals'.*account\.html\?view=goals/s);
+  assert.match(read('JS/auth.js'), /target === 'plans'.*account\.html\?view=plans/s);
   assert.match(read('JS/pangasiku.js'), /sessionStorage/);
 });
 
@@ -106,15 +106,20 @@ test('GitHub Pages explains missing API configuration and accepts a configured A
   assert.equal(configuredWindow.BILAFORM_API_CONFIG_ERROR, '');
   const previewWindow = {};
   vm.runInNewContext(source, { window: previewWindow, location: { hostname: 'localhost', port: '5173' } });
-  assert.equal(previewWindow.BILAFORM_API_ROOT, 'http://127.0.0.1:8000/api');
+  assert.equal(previewWindow.BILAFORM_API_ROOT, 'http://localhost:8000/api');
   const serverWindow = {};
   vm.runInNewContext(source, { window: serverWindow, location: { hostname: '127.0.0.1', port: '8000' } });
   assert.equal(serverWindow.BILAFORM_API_ROOT, '/api');
   const authScript = read('JS/auth.js');
-  assert.match(authScript, /local BilaForm account API is not running/);
+  const authPage = read('auth.html');
+  assert.match(authScript, /local BilaForm account API is not responding/);
   assert.match(authScript, /isLocalHost && API_ROOT === '\/api'/);
   assert.match(authScript, /Terminal → Run Task → BilaForm: Start API/);
   assert.match(authScript, /CORS_ORIGIN setting/);
+  assert.match(authScript, /credentials: 'include'/);
+  assert.match(authPage, /data-auth-form="reset-request"/);
+  assert.match(authPage, /data-auth-form="reset-complete"/);
+  assert.match(authPage, /auth\.js\?v=auth-20261118-7/);
 });
 
 test('existing signed-in announcement remains account-only', () => {

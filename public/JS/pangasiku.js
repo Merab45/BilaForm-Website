@@ -1,5 +1,4 @@
 (() => {
-  const TOKEN_KEY = 'bilaform.auth.token';
   const USER_KEY = 'bilaform.auth.user';
   const PENDING_KEY = 'bilaform.pendingPangasiku';
   const fields = ['cash', 'essentials', 'buffer', 'days'].map((id) => document.getElementById(id));
@@ -9,12 +8,24 @@
   const status = document.querySelector('[data-save-status]');
   const loginLink = document.querySelector('[data-pangasiku-login]');
   const saveButton = document.querySelector('[data-save-plan]');
-  const token = () => localStorage.getItem(TOKEN_KEY) || '';
   const apiRoot = window.BILAFORM_API_ROOT || '/api';
+  localStorage.removeItem('bilaform.auth.token');
+  let sessionPromise;
   let requestSequence = 0;
   let requestTimer;
 
   function money(value) { return `KES ${Math.floor(Math.max(0, value)).toLocaleString('en-KE')}`; }
+
+  function hasSession() {
+    if (!sessionPromise) {
+      sessionPromise = fetch(`${apiRoot}/auth/me`, { credentials: 'include' }).then((response) => {
+        if (response.ok) return true;
+        if (response.status === 401) localStorage.removeItem(USER_KEY);
+        return false;
+      }).catch(() => false);
+    }
+    return sessionPromise;
+  }
 
   function readBudget() {
     fields.forEach((input) => input.setAttribute('aria-invalid', String(!input.value.trim() || !input.validity.valid)));
@@ -105,7 +116,8 @@
   async function request(path, options = {}) {
     const response = await fetch(`${apiRoot}${path}`, {
       ...options,
-      headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), Authorization: `Bearer ${token()}`, ...options.headers },
+      credentials: 'include',
+      headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers },
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw Object.assign(new Error(data.error || 'The request could not be completed.'), { status: response.status });
@@ -115,7 +127,7 @@
   async function saveBudget(budget = readBudget()) {
     if (!budget) return;
     loginLink.hidden = true;
-    if (!token()) {
+    if (!await hasSession()) {
       sessionStorage.setItem(PENDING_KEY, JSON.stringify(budget));
       location.assign('../auth.html?auth=login&return=pangasiku');
       return;
@@ -128,8 +140,8 @@
       sessionStorage.removeItem(PENDING_KEY);
     } catch (cause) {
       if (cause.status === 401) {
-        localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        sessionPromise = null;
         status.textContent = 'Your session expired. Log in to save this plan.';
         loginLink.hidden = false;
       } else status.textContent = cause.message;
@@ -137,7 +149,7 @@
   }
 
   async function loadLatestBudget() {
-    if (!token()) return;
+    if (!await hasSession()) { loginLink.hidden = false; return; }
     try {
       const { budget } = await request('/budgets/latest');
       if (!budget) return;
@@ -146,8 +158,8 @@
       status.textContent = 'Your latest saved plan is loaded.';
     } catch (cause) {
       if (cause.status === 401) {
-        localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        sessionPromise = null;
       }
     }
   }
@@ -160,12 +172,15 @@
   const resume = new URLSearchParams(location.search).get('resume') === '1';
   if (resume) {
     const saved = sessionStorage.getItem(PENDING_KEY);
-    if (saved && token()) {
+    if (saved) {
       try {
         const pending = JSON.parse(saved);
-        fields.forEach((input) => { input.value = pending[input.id]; });
-        updateRunway();
-        saveBudget(pending);
+        hasSession().then((authenticated) => {
+          if (!authenticated) { location.assign('../auth.html?auth=login&return=pangasiku'); return; }
+          fields.forEach((input) => { input.value = pending[input.id]; });
+          updateRunway();
+          saveBudget(pending);
+        });
       } catch { sessionStorage.removeItem(PENDING_KEY); }
     }
   } else loadLatestBudget();

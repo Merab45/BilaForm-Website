@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "db:migrate:auth-security": "node scripts/migrate-auth-security.js",
     "db:migrate:savings-goals": "node scripts/migrate-savings-goals.js",
     "test": "node --test"
   },

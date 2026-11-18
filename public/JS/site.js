@@ -112,9 +112,10 @@ const accountDialog = byId('account-dialog');
 const authFeedback = document.querySelector('.auth-feedback');
 const tokenKey = 'bilaform.auth.token';
 const userKey = 'bilaform.auth.user';
-let accountToken = localStorage.getItem(tokenKey) || '';
+let accountLoggedIn = false;
 let accountUser = null;
-try { accountUser = JSON.parse(localStorage.getItem(userKey) || 'null'); } catch { localStorage.removeItem(userKey); }
+localStorage.removeItem(tokenKey);
+localStorage.removeItem(userKey);
 
 function setAuthFeedback(message, isError = false) {
   authFeedback.textContent = message;
@@ -137,7 +138,7 @@ function showAuth(mode = 'login') {
 }
 
 function renderAccount() {
-  const loggedIn = Boolean(accountToken && accountUser?.name);
+  const loggedIn = Boolean(accountLoggedIn && accountUser?.name);
   document.querySelector('[data-user-name]').hidden = !loggedIn;
   document.querySelector('[data-user-name]').textContent = loggedIn ? `Hi, ${accountUser.name}` : '';
   document.querySelector('[data-logout]').hidden = !loggedIn;
@@ -148,10 +149,10 @@ function renderAccount() {
 }
 
 async function apiRequest(path, options = {}) {
-  const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(accountToken ? { Authorization: `Bearer ${accountToken}` } : {}), ...options.headers };
+  const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers };
   let response;
   try {
-    response = await fetch(`${API_ROOT}${path}`, { ...options, headers });
+    response = await fetch(`${API_ROOT}${path}`, { ...options, credentials: 'include', headers });
   } catch {
     throw new Error('BilaForm could not reach its API. In VS Code, run “BilaForm: Start API” from Terminal → Run Task, then try again.');
   }
@@ -162,14 +163,14 @@ async function apiRequest(path, options = {}) {
   }
   try { if (isJson) payload = await response.json(); } catch { /* Use the standard API error below. */ }
   if (!response.ok) {
-    if (response.status === 401 && accountToken) clearAccount();
+    if (response.status === 401 && accountLoggedIn) clearAccount();
     throw new Error(payload.error || 'The request could not be completed.');
   }
   return payload;
 }
 
 function clearAccount() {
-  accountToken = '';
+  accountLoggedIn = false;
   accountUser = null;
   localStorage.removeItem(tokenKey);
   localStorage.removeItem(userKey);
@@ -177,7 +178,7 @@ function clearAccount() {
 }
 
 async function loadLatestBudget() {
-  if (!accountToken) return;
+  if (!accountLoggedIn) return;
   try {
     const { budget } = await apiRequest('/budgets/latest');
     if (!budget) return;
@@ -223,10 +224,8 @@ document.querySelectorAll('[data-auth-form]').forEach((form) => {
       const payload = await apiRequest(mode === 'register' ? '/auth/register' : '/auth/login', {
         method: 'POST', body: JSON.stringify(data),
       });
-      accountToken = payload.token;
       accountUser = payload.user;
-      localStorage.setItem(tokenKey, accountToken);
-      localStorage.setItem(userKey, JSON.stringify(accountUser));
+      accountLoggedIn = true;
       renderAccount();
       form.reset();
       accountDialog.close();
@@ -246,7 +245,10 @@ document.querySelectorAll('[data-auth-form]').forEach((form) => {
   });
 });
 
-document.querySelector('[data-logout]').addEventListener('click', () => {
+document.querySelector('[data-logout]').addEventListener('click', async () => {
+  if (accountLoggedIn) {
+    try { await apiRequest('/auth/logout', { method: 'POST' }); } catch { /* Always clear the local session on logout. */ }
+  }
   clearAccount();
   document.querySelector('[data-save-status]').textContent = 'You have been logged out. Your current numbers remain on this device.';
 });
@@ -255,7 +257,7 @@ async function savePlan() {
   const budget = readInputs();
   if (!budget) return;
   const status = document.querySelector('[data-save-status]');
-  if (!accountToken) {
+  if (!accountLoggedIn) {
     pendingSave = true;
     showAuth('login');
     setAuthFeedback('Log in or create an account to save this plan.');
@@ -271,7 +273,12 @@ async function savePlan() {
 }
 document.querySelector('[data-save-plan]').addEventListener('click', savePlan);
 renderAccount();
-if (accountToken) loadLatestBudget();
+apiRequest('/auth/me').then(({ user }) => {
+  accountLoggedIn = true;
+  accountUser = user;
+  renderAccount();
+  return loadLatestBudget();
+}).catch(() => clearAccount());
 const requestedAuthMode = new URLSearchParams(window.location.search).get('auth');
 if (requestedAuthMode === 'login' || requestedAuthMode === 'register') showAuth(requestedAuthMode);
 

@@ -2,7 +2,6 @@
 (() => {
   const TOKEN_KEY = 'bilaform.auth.token';
   const USER_KEY = 'bilaform.auth.user';
-  const token = localStorage.getItem(TOKEN_KEY);
   const apiRoot = window.BILAFORM_API_ROOT || '/api';
   const message = document.querySelector('[data-account-message]');
   const money = (value) => `KES ${Number(value || 0).toLocaleString('en-KE')}`;
@@ -29,7 +28,10 @@
     window.location.replace(`auth.html?auth=login${returnTarget}`);
   }
 
-  if (!token) { returnToLogin(); return; }
+  // Migrate old browser-stored bearer tokens out of localStorage. The API now
+  // authenticates with an HttpOnly session cookie.
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
 
   async function api(path, options = {}) {
     let response;
@@ -37,9 +39,9 @@
       if (window.BILAFORM_API_CONFIG_ERROR) throw new Error(window.BILAFORM_API_CONFIG_ERROR);
       response = await fetch(`${apiRoot}${path}`, {
         ...options,
+        credentials: 'include',
         headers: {
           ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-          Authorization: `Bearer ${token}`,
           ...options.headers,
         },
       });
@@ -102,7 +104,6 @@
     const form = document.querySelector('[data-profile-form]');
     form.elements.name.value = user.name;
     form.elements.email.value = user.email;
-    localStorage.setItem(USER_KEY, JSON.stringify({ id: user.id, name: user.name, email: user.email }));
   }
 
   function makePlanRow({ id, type, title, detail, amount, date, deletePath }) {
@@ -204,7 +205,10 @@
     renderBudgets();
   }
 
-  document.querySelectorAll('[data-account-logout]').forEach((button) => button.addEventListener('click', () => {
+  document.querySelectorAll('[data-account-logout]').forEach((button) => button.addEventListener('click', async () => {
+    try {
+      await fetch(`${apiRoot}/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch { /* Local sign-out must work even when the API is offline. */ }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     window.location.assign('index.html');

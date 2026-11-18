@@ -65,6 +65,7 @@ test('savings-goal migration creates a pre-migration backup and is safe to rerun
 });
 
 test('savings goals API authenticates users and scopes create, update, contributions and delete', async (t) => {
+  await initializeDatabase();
   apiServer = await new Promise((resolve) => {
     const instance = app.listen(0, '127.0.0.1', () => resolve(instance));
   });
@@ -76,6 +77,7 @@ test('savings goals API authenticates users and scopes create, update, contribut
     });
     assert.equal(preflight.status, 204);
     assert.equal(preflight.headers.get('access-control-allow-origin'), previewOrigin);
+    assert.equal(preflight.headers.get('access-control-allow-credentials'), 'true');
   }
   t.after(async () => {
     if (apiServer.listening) await new Promise((resolve) => apiServer.close(resolve));
@@ -90,16 +92,17 @@ test('savings goals API authenticates users and scopes create, update, contribut
   });
   assert.equal(loginResponse.status, 200);
   assert.equal((await loginResponse.json()).user.id, owner.user.id);
+  const ownerLoginCookie = loginResponse.headers.get('set-cookie').split(';')[0];
   assert.equal((await fetch(`${origin}/api/auth/login`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: 'goal-owner@example.test', password: 'wrong-password' }),
   })).status, 401);
-  const invalidResponse = await request(origin, '/api/savings-goals', owner.token, 'POST', {
+  const invalidResponse = await request(origin, '/api/savings-goals', ownerLoginCookie, 'POST', {
     name: 'School fees', target_amount: 10000, current_amount: 11000, target_date: '2026-12-01',
   });
   assert.equal(invalidResponse.status, 400);
 
-  const createdResponse = await request(origin, '/api/savings-goals', owner.token, 'POST', {
+  const createdResponse = await request(origin, '/api/savings-goals', ownerLoginCookie, 'POST', {
     name: 'School fees', target_amount: 10000, current_amount: 2500, target_date: '2026-12-01',
   });
   assert.equal(createdResponse.status, 201);
@@ -108,20 +111,20 @@ test('savings goals API authenticates users and scopes create, update, contribut
   assert.equal(created.contributions[0].amount, 2500);
   assert.equal(created.contributions[0].entry_type, 'initial');
 
-  const hiddenFromOther = await request(origin, '/api/savings-goals', otherUser.token);
+  const hiddenFromOther = await request(origin, '/api/savings-goals', otherUser.cookie);
   assert.deepEqual((await hiddenFromOther.json()).goals, []);
-  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, otherUser.token, 'PUT', { status: 'paused' })).status, 404);
-  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, otherUser.token, 'DELETE')).status, 404);
+  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, otherUser.cookie, 'PUT', { status: 'paused' })).status, 404);
+  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, otherUser.cookie, 'DELETE')).status, 404);
 
-  const contributionResponse = await request(origin, `/api/savings-goals/${created.id}/contributions`, owner.token, 'POST', { amount: 7500 });
+  const contributionResponse = await request(origin, `/api/savings-goals/${created.id}/contributions`, ownerLoginCookie, 'POST', { amount: 7500 });
   assert.equal(contributionResponse.status, 201);
   const contributed = (await contributionResponse.json()).goal;
   assert.equal(contributed.current_amount, 10000);
   assert.equal(contributed.status, 'completed');
   assert.equal(contributed.contributions.reduce((sum, item) => sum + item.amount, 0), 10000);
-  assert.equal((await request(origin, `/api/savings-goals/${created.id}/contributions`, owner.token, 'POST', { amount: 1 })).status, 409);
+  assert.equal((await request(origin, `/api/savings-goals/${created.id}/contributions`, ownerLoginCookie, 'POST', { amount: 1 })).status, 409);
 
-  const updatedResponse = await request(origin, `/api/savings-goals/${created.id}`, owner.token, 'PUT', {
+  const updatedResponse = await request(origin, `/api/savings-goals/${created.id}`, ownerLoginCookie, 'PUT', {
     name: 'School fees fund', target_amount: 12000, target_date: '2027-02-01', status: 'paused',
   });
   assert.equal(updatedResponse.status, 200);
@@ -129,9 +132,9 @@ test('savings goals API authenticates users and scopes create, update, contribut
   assert.equal(updated.name, 'School fees fund');
   assert.equal(updated.current_amount, 10000);
   assert.equal(updated.status, 'paused');
-  assert.equal((await request(origin, `/api/savings-goals/${created.id}/contributions`, owner.token, 'POST', { amount: 100 })).status, 409);
-  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, owner.token, 'DELETE')).status, 200);
-  assert.deepEqual((await (await request(origin, '/api/savings-goals', owner.token)).json()).goals, []);
+  assert.equal((await request(origin, `/api/savings-goals/${created.id}/contributions`, ownerLoginCookie, 'POST', { amount: 100 })).status, 409);
+  assert.equal((await request(origin, `/api/savings-goals/${created.id}`, ownerLoginCookie, 'DELETE')).status, 200);
+  assert.deepEqual((await (await request(origin, '/api/savings-goals', ownerLoginCookie)).json()).goals, []);
 });
 
 async function register(origin, name, email) {
@@ -140,7 +143,7 @@ async function register(origin, name, email) {
     body: JSON.stringify({ name, email, password: 'ValidTestPassword123' }),
   });
   assert.equal(response.status, 201);
-  return response.json();
+  return { user: await response.json().then((body) => body.user), cookie: response.headers.get('set-cookie').split(';')[0] };
 }
 
 function runDb(sql, params = []) {
@@ -160,10 +163,10 @@ function queryDatabase(file, sql) {
   });
 }
 
-function request(origin, route, token, method = 'GET', body) {
+function request(origin, route, cookie, method = 'GET', body) {
   return fetch(`${origin}${route}`, {
     method,
-    headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+    headers: { Cookie: cookie, ...(body ? { 'Content-Type': 'application/json' } : {}) },
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
 }
