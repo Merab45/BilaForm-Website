@@ -24,8 +24,8 @@
       <div class="sidebar-profile"><span class="avatar" data-avatar>BF</span><div><strong data-sidebar-name>My account</strong><small data-sidebar-email></small></div></div>
       <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="dashboard-navigation" aria-expanded="false">Dashboard menu <span aria-hidden="true">☰</span></button>
       <nav class="dashboard-nav" id="dashboard-navigation" aria-label="Dashboard navigation">
-        <div class="dashboard-nav-group"><strong>DASHBOARD</strong><a href="account.html?view=overview" data-account-view="overview"><span aria-hidden="true">◫</span>Overview</a><a href="account.html?view=activity" data-account-view="activity"><span aria-hidden="true">◷</span>My Activities</a></div>
-        <div class="dashboard-nav-group"><strong>PLANNING</strong><a href="account.html?view=plans" data-account-view="plans"><span aria-hidden="true">▤</span>Saved Budgets</a><a href="account.html?view=goals" data-account-view="goals"><span aria-hidden="true">◎</span>Savings Goals</a></div>
+        <div class="dashboard-nav-group"><strong>DASHBOARD</strong><a href="account.html?view=overview" data-account-view="overview"><span aria-hidden="true">◫</span>Overview</a></div>
+        <div class="dashboard-nav-group"><strong>PLANNING</strong><a href="account.html?view=plans" data-account-view="plans"><span aria-hidden="true">▤</span>My Plans &amp; History</a><a href="account.html?view=goals" data-account-view="goals"><span aria-hidden="true">◎</span>Savings Goals</a></div>
         <div class="dashboard-nav-group"><strong>ACCOUNT</strong><a href="account.html?view=settings" data-account-view="settings"><span aria-hidden="true">⚙</span>Profile &amp; Settings</a><a href="account.html?view=security" data-account-view="security"><span aria-hidden="true">⌑</span>Security</a></div>
         <div class="dashboard-nav-group"><strong>SUPPORT</strong><a href="how-it-works.html"><span aria-hidden="true">?</span>Help Center</a><a href="contact.html"><span aria-hidden="true">✉</span>Contact Support</a></div>
         <div class="dashboard-nav-group"><strong>LOGOUT</strong><button type="button" data-account-logout><span aria-hidden="true">↪</span>Sign out</button></div>
@@ -57,7 +57,7 @@
             <p class="empty-copy" data-budget-empty>You haven’t saved a PangaSiku plan yet. Add one to see your daily runway here.</p>
           </article>
           <article class="dashboard-card profile-quick"><span class="account-kicker">YOUR PROFILE</span><h3>Quick details</h3><dl><div><dt>Name</dt><dd data-profile-name>Loading…</dd></div><div><dt>Email</dt><dd data-profile-email>Loading…</dd></div><div><dt>Member since</dt><dd data-profile-date>—</dd></div></dl><a class="subtle-button" href="account.html?view=settings">Manage profile</a></article>
-          <article class="dashboard-card activity-quick"><div class="card-heading"><div><span class="account-kicker">LATEST SAVED PLANS</span><h3>Recent activity</h3></div><a href="account.html?view=activity">View all</a></div><ul data-recent-activity class="activity-list"></ul><p data-recent-activity-empty class="empty-copy" hidden>No saved plan activity yet.</p></article>
+          <article class="dashboard-card activity-quick"><div class="card-heading"><div><span class="account-kicker">LATEST SAVED PLANS</span><h3>Recent activity</h3></div><a href="account.html?view=plans">View all plans</a></div><ul data-recent-activity class="activity-list"></ul><p data-recent-activity-empty class="empty-copy" hidden>No saved plan activity yet.</p></article>
         </div>
       </section>
 
@@ -85,8 +85,8 @@
         <article class="dashboard-card savings-goals-empty" data-goal-empty><span class="goal-empty-mark" aria-hidden="true">◎</span><h3>Start with one goal</h3><p>Choose something that matters to you, set a realistic KES target and add what you have already saved.</p></article>
       </section>
 
-      <section class="dashboard-panel" id="panel-plans" aria-label="Saved budgets" data-account-panel="plans" hidden>
-          <div class="panel-heading"><div><span class="account-kicker">YOUR SAVED NUMBERS</span><h2>Saved budgets</h2><p>Review or remove calculations saved to your account.</p></div><a class="dashboard-cta" href="services/pangasiku.html#calculator">New PangaSiku plan</a></div>
+      <section class="dashboard-panel" id="panel-plans" aria-label="My plans and planning history" data-account-panel="plans" hidden>
+          <div class="panel-heading"><div><span class="account-kicker">YOUR SAVED NUMBERS</span><h2>My plans &amp; history</h2><p>Review, manage or remove your saved PangaSiku calculations and VukaMonth allocations, sorted by date.</p></div><a class="dashboard-cta" href="services/pangasiku.html#calculator">New PangaSiku plan</a></div>
         <div class="dashboard-card vuka-save-card">
           <div class="card-heading"><div><span class="account-kicker">MONTHLY ESSENTIALS</span><h3>Save a VukaMonth plan</h3></div><span class="mini-badge">KES planner</span></div>
           <form class="vuka-form" data-vuka-form>
@@ -103,12 +103,7 @@
             <div class="field-wide form-actions"><button class="dashboard-cta" type="submit">Save VukaMonth plan</button><span role="status" data-vuka-status></span></div>
           </form>
         </div>
-        <div class="saved-plans-list"><div class="card-heading"><div><span class="account-kicker">PLAN HISTORY</span><h3>Your saved plans</h3></div></div><div class="plan-list" data-plan-list></div><p class="empty-copy" data-plans-empty hidden>No saved calculations yet. Save a PangaSiku plan or create a VukaMonth plan above.</p></div>
-      </section>
-
-      <section class="dashboard-panel" id="panel-activity" aria-label="My activities" data-account-panel="activity" hidden>
-        <div class="panel-heading"><div><span class="account-kicker">YOUR PLANNING HISTORY</span><h2>My activities</h2><p>Recent PangaSiku and VukaMonth plans saved to your account.</p></div></div>
-        <div class="dashboard-card"><div class="activity-history" data-activity-full></div><p class="empty-copy" data-activity-empty hidden>No saved plan activity yet. Create a plan to see it here.</p></div>
+        <div class="saved-plans-list"><div class="card-heading"><div><span class="account-kicker">PLANNING HISTORY</span><h3>Saved plans, newest first</h3></div></div><div class="plan-list" data-plan-list></div><p class="empty-copy" data-plans-empty hidden>No saved calculations yet. Save a PangaSiku plan or create a VukaMonth plan above.</p></div>
       </section>
 
       <section class="dashboard-panel" id="panel-settings" aria-label="Profile and settings" data-account-panel="settings" hidden>

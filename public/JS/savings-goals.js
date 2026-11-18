@@ -51,6 +51,7 @@
     async function api(route, options = {}) {
       let response;
       try {
+        if (globalRef.BILAFORM_API_CONFIG_ERROR) throw new Error(globalRef.BILAFORM_API_CONFIG_ERROR);
         response = await globalRef.fetch(`${globalRef.BILAFORM_API_ROOT || '/api'}${route}`, {
           ...options,
           headers: {
@@ -59,7 +60,8 @@
             ...options.headers,
           },
         });
-      } catch {
+      } catch (error) {
+        if (error.message !== 'Failed to fetch') throw error;
         throw new Error('BilaForm could not reach its API. Your goal changes have not been saved.');
       }
       const payload = (response.headers.get('content-type') || '').includes('application/json') ? await response.json() : {};

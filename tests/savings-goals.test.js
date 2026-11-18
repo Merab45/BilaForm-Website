@@ -75,6 +75,16 @@ test('savings goals API authenticates users and scopes create, update, contribut
   assert.equal((await fetch(`${origin}/api/savings-goals`)).status, 401);
   const owner = await register(origin, 'Goal Owner', 'goal-owner@example.test');
   const otherUser = await register(origin, 'Another User', 'goal-other@example.test');
+  const loginResponse = await fetch(`${origin}/api/auth/login`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'goal-owner@example.test', password: 'ValidTestPassword123' }),
+  });
+  assert.equal(loginResponse.status, 200);
+  assert.equal((await loginResponse.json()).user.id, owner.user.id);
+  assert.equal((await fetch(`${origin}/api/auth/login`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'goal-owner@example.test', password: 'wrong-password' }),
+  })).status, 401);
   const invalidResponse = await request(origin, '/api/savings-goals', owner.token, 'POST', {
     name: 'School fees', target_amount: 10000, current_amount: 11000, target_date: '2026-12-01',
   });

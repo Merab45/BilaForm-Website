@@ -53,6 +53,7 @@
     submit.disabled = true;
     setFeedback(mode === 'register' ? 'Creating your account…' : 'Signing you in…');
     try {
+      if (window.BILAFORM_API_CONFIG_ERROR) throw new Error(window.BILAFORM_API_CONFIG_ERROR);
       const response = await fetch(`${API_ROOT}/auth/${mode === 'register' ? 'register' : 'login'}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
@@ -64,9 +65,17 @@
       const returnTarget = new URLSearchParams(location.search).get('return');
       location.assign(returnTarget === 'pangasiku'
         ? 'services/pangasiku.html?resume=1'
-        : returnTarget === 'goals' ? 'account.html?view=goals' : 'account.html');
+        : returnTarget === 'goals' ? 'account.html?view=goals'
+          : returnTarget === 'plans' ? 'account.html?view=plans' : 'account.html');
     } catch (error) {
-      setFeedback(error.message || 'BilaForm could not reach its API. Please try again.', true);
+      const connectionMessage = API_ROOT.startsWith('http://127.0.0.1:8000')
+        ? 'The local BilaForm API is not running. From the project folder, run “npm start” and open http://127.0.0.1:8000.'
+        : /^https?:\/\//i.test(API_ROOT)
+          ? 'Could not reach the configured BilaForm API. Check that the host is online over HTTPS and allows this site in its CORS_ORIGIN setting.'
+          : 'Could not connect to BilaForm’s account server. Check your connection and try again.';
+      setFeedback(error.message === 'Failed to fetch'
+        ? connectionMessage
+        : error.message || 'BilaForm could not reach its API. Please try again.', true);
     } finally {
       submit.disabled = false;
     }

@@ -23,7 +23,9 @@
   function returnToLogin() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    const returnTarget = new URLSearchParams(window.location.search).get('view') === 'goals' ? '&return=goals' : '';
+    const requestedView = new URLSearchParams(window.location.search).get('view');
+    const returnTarget = requestedView === 'goals' ? '&return=goals'
+      : ['plans', 'activity'].includes(requestedView) ? '&return=plans' : '';
     window.location.replace(`auth.html?auth=login${returnTarget}`);
   }
 
@@ -32,6 +34,7 @@
   async function api(path, options = {}) {
     let response;
     try {
+      if (window.BILAFORM_API_CONFIG_ERROR) throw new Error(window.BILAFORM_API_CONFIG_ERROR);
       response = await fetch(`${apiRoot}${path}`, {
         ...options,
         headers: {
@@ -40,7 +43,8 @@
           ...options.headers,
         },
       });
-    } catch {
+    } catch (error) {
+      if (error.message !== 'Failed to fetch') throw error;
       throw new Error('BilaForm could not reach its API. Open the app at http://127.0.0.1:8000 or run “BilaForm: Start API” in VS Code.');
     }
     const isJson = (response.headers.get('content-type') || '').includes('application/json');
@@ -50,9 +54,11 @@
     return result;
   }
 
-  const dashboardViews = new Set(['overview', 'activity', 'plans', 'goals', 'settings', 'security']);
+  const dashboardViews = new Set(['overview', 'plans', 'goals', 'settings', 'security']);
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  const activeView = dashboardViews.has(requestedView) ? requestedView : 'overview';
+  // Keep old activity URLs working after combining duplicate plan and activity lists.
+  const resolvedView = requestedView === 'activity' ? 'plans' : requestedView;
+  const activeView = dashboardViews.has(resolvedView) ? resolvedView : 'overview';
   document.querySelectorAll('[data-account-panel]').forEach((panel) => {
     panel.hidden = panel.dataset.accountPanel !== activeView;
   });
@@ -60,7 +66,7 @@
     if (link.dataset.accountView === activeView) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
-  const viewTitles = { overview: 'Overview', activity: 'My Activities', plans: 'Saved Budgets', goals: 'Savings Goals', settings: 'Profile & Settings', security: 'Security' };
+  const viewTitles = { overview: 'Overview', plans: 'My Plans & History', goals: 'Savings Goals', settings: 'Profile & Settings', security: 'Security' };
   document.title = `${viewTitles[activeView]} | My BilaForm Dashboard`;
 
   const sidebar = document.querySelector('.dashboard-sidebar');
@@ -168,9 +174,10 @@
       ...budgets.map((budget) => ({ date: budget.updated_at, title: `PangaSiku · ${budget.days} day runway`, detail: `${money(budget.daily_safe)} daily guide` })),
       ...plans.map((plan) => ({ date: plan.created_at, title: `VukaMonth · ${plan.name}`, detail: `${money(plan.data.income)} monthly income` })),
     ].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-    const renderActivity = (container, entries) => {
+    const renderRecentActivity = (entries) => {
+      const container = document.querySelector('[data-recent-activity]');
       container.replaceChildren();
-      entries.forEach((entry) => {
+      entries.slice(0, 4).forEach((entry) => {
         const item = document.createElement('li');
         const title = document.createElement('strong');
         const detail = document.createElement('span');
@@ -182,10 +189,8 @@
         container.append(item);
       });
     };
-    renderActivity(document.querySelector('[data-recent-activity]'), activity.slice(0, 4));
-    renderActivity(document.querySelector('[data-activity-full]'), activity);
+    renderRecentActivity(activity);
     document.querySelector('[data-recent-activity-empty]').hidden = activity.length > 0;
-    document.querySelector('[data-activity-empty]').hidden = activity.length > 0;
   }
 
   async function loadData() {
