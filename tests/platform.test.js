@@ -111,7 +111,8 @@ test('GitHub Pages explains missing API configuration and accepts a configured A
   vm.runInNewContext(source, { window: serverWindow, location: { hostname: '127.0.0.1', port: '8000' } });
   assert.equal(serverWindow.BILAFORM_API_ROOT, '/api');
   const authScript = read('JS/auth.js');
-  assert.match(authScript, /local BilaForm API is not running/);
+  assert.match(authScript, /local BilaForm account API is not running/);
+  assert.match(authScript, /Terminal → Run Task → BilaForm: Start API/);
   assert.match(authScript, /CORS_ORIGIN setting/);
 });
 

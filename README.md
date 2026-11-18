@@ -45,6 +45,10 @@ npm start
 
 Open `http://127.0.0.1:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
 
+### VS Code Live Server
+
+Live Server serves the static frontend, while account login and saved plans/goals require the Node API. When this workspace opens in VS Code, allow the **BilaForm: Start API** folder task if prompted. It starts the API on `http://127.0.0.1:8000` and safely reuses an already-running BilaForm API. Then open the site with Live Server (configured for port 5501). If automatic tasks are disabled, choose **Terminal → Run Task → BilaForm: Start API** and leave that terminal running while using Live Server. The development API accepts localhost preview origins.
+
 For production, set a long random `JWT_SECRET` environment variable before starting the server. The development fallback secret is only for local use. Set `CORS_ORIGIN` only if a separate trusted frontend origin needs API access. Do not commit production secrets or the database file.
 
 ## Backend endpoints

@@ -4,12 +4,26 @@
     {
       "label": "BilaForm: Start API",
       "type": "shell",
-      "command": "pnpm",
-      "args": ["start"],
+      "command": "node",
+      "args": ["scripts/start-local-api.js"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": [],
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "pattern": { "regexp": "^$" },
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": "^Starting BilaForm API$",
+            "endsPattern": "^BilaForm is available at http://127\\.0\\.0\\.1:8000$"
+          }
+        }
+      ],
+      "runOptions": {
+        "runOn": "folderOpen",
+        "instanceLimit": 1
+      },
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
