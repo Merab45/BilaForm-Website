@@ -1,5 +1,6 @@
 // BilaForm API and static site server. SQLite creates its database on first run.
 const path = require('node:path');
+const { randomBytes, createHash } = require('node:crypto');
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -9,9 +10,10 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATABASE_FILE = path.join(__dirname, 'bilaform.db');
+const DATABASE_FILE = process.env.BILAFORM_DB_PATH || path.join(__dirname, 'bilaform.db');
 const production = process.env.NODE_ENV === 'production';
 const JWT_SECRET = process.env.JWT_SECRET || (production ? '' : 'local-development-secret-change-before-deploy');
+const SESSION_COOKIE = 'bilaform_session';
 
 if (!JWT_SECRET) {
   console.error('Set JWT_SECRET before running BilaForm in production.');
@@ -35,15 +37,29 @@ const run = (sql, params = []) => new Promise((resolve, reject) => {
 const get = (sql, params = []) => new Promise((resolve, reject) => {
   db.get(sql, params, (error, row) => error ? reject(error) : resolve(row));
 });
+const all = (sql, params = []) => new Promise((resolve, reject) => {
+  db.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows));
+});
 
 async function initializeDatabase() {
+  const existingUsers = await get("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
   await run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE COLLATE NOCASE,
     password_hash TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    token_version INTEGER NOT NULL DEFAULT 0 CHECK (token_version >= 0)
   )`);
+  if (!existingUsers) {
+    await run(`CREATE TABLE password_reset_tokens (
+      token_hash TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )`);
+    await run('CREATE INDEX password_reset_tokens_user_latest ON password_reset_tokens(user_id, created_at DESC)');
+  }
   await run(`CREATE TABLE IF NOT EXISTS budgets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -71,19 +87,22 @@ async function initializeDatabase() {
     message TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`);
+  const userColumns = await new Promise((resolve, reject) => db.all('PRAGMA table_info(users)', (error, rows) => error ? reject(error) : resolve(rows)));
+  const resetTable = await get("SELECT name FROM sqlite_master WHERE type='table' AND name='password_reset_tokens'");
+  if (!userColumns.some((column) => column.name === 'token_version') || !resetTable) {
+    throw new Error('The existing database needs the backed-up authentication migration. Stop the API and run `npm run db:migrate:auth-security`, then start it again.');
+  }
 }
 
 // Only allow configured cross-origin clients; same-origin browser requests need no CORS headers.
 const allowedOrigin = process.env.CORS_ORIGIN || '';
-const localPreviewOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):(?:5500|5501)$/;
+const localPreviewOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
+const isAllowedOrigin = (origin) => !origin || origin === allowedOrigin || (!production && localPreviewOrigin.test(origin));
 app.use(cors({
   origin(origin, callback) {
-    // Same-origin calls need no CORS header; local Live Server previews do.
-    const isAllowed = !origin || origin === allowedOrigin
-      || (!production && localPreviewOrigin.test(origin));
-    callback(null, isAllowed);
+    callback(null, isAllowedOrigin(origin));
   },
-  credentials: false,
+  credentials: true,
 }));
 app.use(express.json({ limit: '12kb', type: 'application/json' }));
 app.disable('x-powered-by');
@@ -121,11 +140,31 @@ function rateLimit({ limit, windowMs }) {
 }
 
 const authRateLimit = rateLimit({ limit: 12, windowMs: 15 * 60 * 1000 });
+const passwordResetRateLimit = rateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
 const contactRateLimit = rateLimit({ limit: 5, windowMs: 10 * 60 * 1000 });
 const cleanText = (value) => typeof value === 'string' ? value.trim() : '';
 const normalizeEmail = (value) => cleanText(value).toLowerCase();
 const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
 const validAmount = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000_000;
+const validGoalDate = (value) => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+
+function readSavingsGoal(body) {
+  const name = cleanText(body?.name);
+  const { target_amount: targetAmount, current_amount: currentAmount = 0, target_date: targetDate } = body || {};
+  if (!name || name.length > 80) return { error: 'Goal name must be 1 to 80 characters.' };
+  if (!Number.isSafeInteger(targetAmount) || targetAmount < 1 || targetAmount > 1_000_000_000) {
+    return { error: 'Enter a whole-number target between KES 1 and KES 1,000,000,000.' };
+  }
+  if (!validAmount(currentAmount) || currentAmount > targetAmount) {
+    return { error: 'Amount already saved must be a whole KES amount no greater than the target.' };
+  }
+  if (!validGoalDate(targetDate)) return { error: 'Choose a valid target date.' };
+  return { name, target_amount: targetAmount, current_amount: currentAmount, target_date: targetDate };
+}
 
 function readBudget(body) {
   const { cash, essentials, buffer, days } = body || {};
@@ -141,20 +180,58 @@ function readBudget(body) {
 }
 
 function signToken(user) {
-  return jwt.sign({ sub: String(user.id), name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '7d', issuer: 'bilaform' });
+  return jwt.sign({ sub: String(user.id), name: user.name, email: user.email, ver: user.token_version || 0 }, JWT_SECRET, { expiresIn: '7d', issuer: 'bilaform' });
 }
 
-function requireAuth(req, res, next) {
-  const [scheme, token] = (req.get('authorization') || '').split(' ');
-  if (scheme !== 'Bearer' || !token) return res.status(401).json({ error: 'Sign in to use this feature.' });
+function setSessionCookie(res, token) {
+  const secure = production ? '; Secure' : '';
+  const sameSite = production ? 'None' : 'Lax';
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${sameSite}${secure}`);
+}
+
+function clearSessionCookie(res) {
+  const secure = production ? '; Secure' : '';
+  const sameSite = production ? 'None' : 'Lax';
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=${sameSite}${secure}`);
+}
+
+async function requireAuth(req, res, next) {
+  const [scheme, bearerToken] = (req.get('authorization') || '').split(' ');
+  const cookieToken = (req.get('cookie') || '').split(';').map((part) => part.trim()).find((part) => part.startsWith(`${SESSION_COOKIE}=`))?.slice(SESSION_COOKIE.length + 1);
+  const token = scheme === 'Bearer' && bearerToken ? bearerToken : cookieToken;
+  if (!token) return res.status(401).json({ error: 'Sign in to use this feature.' });
+  if (!(scheme === 'Bearer' && bearerToken) && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
+    && req.get('origin') && !isAllowedOrigin(req.get('origin'))) {
+    return res.status(403).json({ error: 'This request origin is not allowed.' });
+  }
+  let payload;
   try {
-    const payload = jwt.verify(token, JWT_SECRET, { issuer: 'bilaform' });
-    req.user = { id: Number(payload.sub), name: payload.name, email: payload.email };
-    if (!Number.isSafeInteger(req.user.id) || req.user.id < 1) throw new Error('Invalid account');
-    return next();
+    payload = jwt.verify(token, JWT_SECRET, { issuer: 'bilaform' });
   } catch {
     return res.status(401).json({ error: 'Your session has expired. Please sign in again.' });
   }
+  const id = Number(payload.sub);
+  const tokenVersion = payload.ver === undefined ? 0 : payload.ver;
+  if (!Number.isSafeInteger(id) || id < 1 || !Number.isSafeInteger(tokenVersion)) {
+    return res.status(401).json({ error: 'Your session is no longer valid. Please sign in again.' });
+  }
+  try {
+    const session = await get('SELECT token_version FROM users WHERE id = ?', [id]);
+    if (!session || session.token_version !== tokenVersion) return res.status(401).json({ error: 'Your session is no longer valid. Please sign in again.' });
+    req.user = { id, name: payload.name, email: payload.email };
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+function requireSavingsGoalsSchema(req, res, next) {
+  all("SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('savings_goals', 'savings_contributions')")
+    .then((tables) => {
+      if (tables.length !== 2) return res.status(503).json({ error: 'Savings Goals is not set up on this server yet. Apply the backed-up database migration first.' });
+      return next();
+    })
+    .catch(next);
 }
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'bilaform-api' }));
@@ -176,8 +253,9 @@ app.post('/api/auth/register', authRateLimit, async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 12);
     const result = await run('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)', [name, email, passwordHash]);
-    const user = { id: result.id, name, email };
-    return res.status(201).json({ token: signToken(user), user });
+    const user = { id: result.id, name, email, token_version: 0 };
+    setSessionCookie(res, signToken(user));
+    return res.status(201).json({ user });
   } catch (error) {
     if (error.code === 'SQLITE_CONSTRAINT') return res.status(409).json({ error: 'An account with that email already exists.' });
     return next(error);
@@ -189,13 +267,98 @@ app.post('/api/auth/login', authRateLimit, async (req, res, next) => {
     const email = normalizeEmail(req.body?.email);
     const password = typeof req.body?.password === 'string' ? req.body.password : '';
     if (!validEmail(email) || !password || Buffer.byteLength(password, 'utf8') > 72) return res.status(400).json({ error: 'Enter your email and password.' });
-    const row = await get('SELECT id, name, email, password_hash FROM users WHERE email = ?', [email]);
+    const row = await get('SELECT id, name, email, password_hash, token_version FROM users WHERE email = ?', [email]);
     if (!row || !(await bcrypt.compare(password, row.password_hash))) return res.status(401).json({ error: 'Email or password is incorrect.' });
-    const user = { id: row.id, name: row.name, email: row.email };
-    return res.json({ token: signToken(user), user });
+    const user = { id: row.id, name: row.name, email: row.email, token_version: row.token_version };
+    setSessionCookie(res, signToken(user));
+    return res.json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     return next(error);
   }
+});
+
+app.post('/api/auth/logout', requireAuth, async (req, res, next) => {
+  try {
+    await run('UPDATE users SET token_version = token_version + 1 WHERE id = ?', [req.user.id]);
+    clearSessionCookie(res);
+    return res.json({ logged_out: true });
+  } catch (error) { return next(error); }
+});
+
+const passwordResetEmailConfigured = () => Boolean(
+  process.env.RESEND_API_KEY && process.env.PASSWORD_RESET_FROM && process.env.PUBLIC_APP_URL,
+);
+
+async function sendPasswordResetEmail(email, token) {
+  const resetUrl = new URL('auth.html?auth=reset', process.env.PUBLIC_APP_URL);
+  resetUrl.hash = token;
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: process.env.PASSWORD_RESET_FROM,
+      to: [email],
+      subject: 'Reset your BilaForm password',
+      text: `Use this one-time link within one hour to reset your BilaForm password: ${resetUrl.toString()}\n\nIf you did not request this, you can ignore this email.`,
+      html: `<p>Use this one-time link within one hour to reset your BilaForm password:</p><p><a href="${resetUrl.toString()}">Reset your password</a></p><p>If you did not request this, you can ignore this email.</p>`,
+    }),
+  });
+  if (!response.ok) throw new Error(`Email delivery failed with status ${response.status}.`);
+}
+
+app.post('/api/auth/password-reset/request', passwordResetRateLimit, async (req, res, next) => {
+  try {
+    const email = normalizeEmail(req.body?.email);
+    if (!validEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    if (!passwordResetEmailConfigured()) {
+      return res.status(503).json({ error: 'Password recovery is not configured on this server yet. Please contact BilaForm support.' });
+    }
+    const user = await get('SELECT id, email FROM users WHERE email = ?', [email]);
+    if (!user) return res.status(202).json({ message: 'If an account exists for that address, a password reset link will be sent.' });
+
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const expiresAt = Math.floor(Date.now() / 1000) + 60 * 60;
+    await run('DELETE FROM password_reset_tokens WHERE user_id = ?', [user.id]);
+    await run('INSERT INTO password_reset_tokens (token_hash, user_id, expires_at) VALUES (?, ?, ?)', [tokenHash, user.id, expiresAt]);
+    try {
+      await sendPasswordResetEmail(user.email, token);
+    } catch (error) {
+      await run('DELETE FROM password_reset_tokens WHERE token_hash = ?', [tokenHash]);
+      console.error('BilaForm password reset email delivery failed. Check the mail provider configuration.');
+      return res.status(502).json({ error: 'BilaForm could not send a password reset email. Please try again later or contact support.' });
+    }
+    return res.status(202).json({ message: 'If an account exists for that address, a password reset link will be sent.' });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/auth/password-reset/complete', passwordResetRateLimit, async (req, res, next) => {
+  try {
+    const token = typeof req.body?.token === 'string' ? req.body.token : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (!/^[a-f0-9]{64}$/i.test(token)) return res.status(400).json({ error: 'This password reset link is invalid or expired. Request a new link.' });
+    if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters and no more than 72 bytes.' });
+    }
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const passwordHash = await bcrypt.hash(password, 12);
+    await run('BEGIN IMMEDIATE');
+    try {
+      const reset = await get('SELECT user_id FROM password_reset_tokens WHERE token_hash = ? AND expires_at > ? LIMIT 1', [tokenHash, Math.floor(Date.now() / 1000)]);
+      if (!reset) {
+        await run('ROLLBACK');
+        return res.status(400).json({ error: 'This password reset link is invalid or expired. Request a new link.' });
+      }
+      await run('UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?', [passwordHash, reset.user_id]);
+      await run('DELETE FROM password_reset_tokens WHERE user_id = ?', [reset.user_id]);
+      await run('COMMIT');
+      clearSessionCookie(res);
+      return res.json({ password_reset: true });
+    } catch (error) {
+      await run('ROLLBACK').catch(() => {});
+      throw error;
+    }
+  } catch (error) { return next(error); }
 });
 
 app.patch('/api/auth/profile', requireAuth, async (req, res, next) => {
@@ -306,6 +469,86 @@ app.delete('/api/plans/:id', requireAuth, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
+async function savingsGoalForUser(id, userId) {
+  const goal = await get('SELECT id, name, target_amount, current_amount, target_date, status, created_at, updated_at FROM savings_goals WHERE id = ? AND user_id = ?', [id, userId]);
+  if (!goal) return null;
+  goal.contributions = await all('SELECT id, amount, entry_type, created_at FROM savings_contributions WHERE goal_id = ? AND user_id = ? ORDER BY created_at DESC, id DESC', [id, userId]);
+  return goal;
+}
+
+app.get('/api/savings-goals', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const goals = await all("SELECT id, name, target_amount, current_amount, target_date, status, created_at, updated_at FROM savings_goals WHERE user_id = ? ORDER BY CASE status WHEN 'active' THEN 0 WHEN 'paused' THEN 1 ELSE 2 END, target_date, id DESC", [req.user.id]);
+    const contributions = await all('SELECT id, goal_id, amount, entry_type, created_at FROM savings_contributions WHERE user_id = ? ORDER BY created_at DESC, id DESC', [req.user.id]);
+    const grouped = new Map();
+    contributions.forEach((contribution) => {
+      const entries = grouped.get(contribution.goal_id) || [];
+      entries.push({ id: contribution.id, amount: contribution.amount, entry_type: contribution.entry_type, created_at: contribution.created_at });
+      grouped.set(contribution.goal_id, entries);
+    });
+    return res.json({ goals: goals.map((goal) => ({ ...goal, contributions: grouped.get(goal.id) || [] })) });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/savings-goals', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const goal = readSavingsGoal(req.body);
+    if (goal.error) return res.status(400).json({ error: goal.error });
+    const status = goal.current_amount >= goal.target_amount ? 'completed' : 'active';
+    const result = await run('INSERT INTO savings_goals (user_id, name, target_amount, current_amount, target_date, status) VALUES (?, ?, ?, ?, ?, ?)', [req.user.id, goal.name, goal.target_amount, goal.current_amount, goal.target_date, status]);
+    return res.status(201).json({ goal: await savingsGoalForUser(result.id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.put('/api/savings-goals/:id', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    const current = await get('SELECT id, current_amount, status FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!current) return res.status(404).json({ error: 'Savings goal not found.' });
+    const goal = readSavingsGoal({ ...req.body, current_amount: current.current_amount });
+    if (goal.error) return res.status(400).json({ error: goal.error });
+    if (goal.target_amount < current.current_amount) return res.status(400).json({ error: 'Target amount cannot be less than the amount already saved.' });
+    const requestedStatus = req.body?.status ?? current.status;
+    if (!['active', 'paused', 'completed'].includes(requestedStatus)) return res.status(400).json({ error: 'Choose active, paused or completed status.' });
+    const status = current.current_amount >= goal.target_amount ? 'completed' : requestedStatus;
+    const result = await run('UPDATE savings_goals SET name = ?, target_amount = ?, target_date = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ? AND current_amount <= ?', [goal.name, goal.target_amount, goal.target_date, status, id, req.user.id, goal.target_amount]);
+    if (!result.changes) return res.status(409).json({ error: 'The target must cover the amount already saved. Refresh and try again.' });
+    return res.json({ goal: await savingsGoalForUser(id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/savings-goals/:id/contributions', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const amount = req.body?.amount;
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1_000_000_000) return res.status(400).json({ error: 'Enter a whole-number contribution between KES 1 and KES 1,000,000,000.' });
+    const result = await run(`UPDATE savings_goals
+      SET current_amount = current_amount + ?,
+          status = CASE WHEN current_amount + ? >= target_amount THEN 'completed' ELSE status END,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND user_id = ? AND status = 'active' AND current_amount + ? <= target_amount`, [amount, amount, id, req.user.id, amount]);
+    if (!result.changes) {
+      const goal = await get('SELECT id, status, target_amount, current_amount FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+      if (!goal) return res.status(404).json({ error: 'Savings goal not found.' });
+      if (goal.status !== 'active') return res.status(409).json({ error: 'Resume this savings goal before adding a contribution.' });
+      return res.status(400).json({ error: `Contribution exceeds the remaining ${goal.target_amount - goal.current_amount} KES.` });
+    }
+    return res.status(201).json({ goal: await savingsGoalForUser(id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.delete('/api/savings-goals/:id', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    const result = await run('DELETE FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!result.changes) return res.status(404).json({ error: 'Savings goal not found.' });
+    return res.json({ deleted: true });
+  } catch (error) { return next(error); }
+});
+
 app.post('/api/contact', contactRateLimit, async (req, res, next) => {
   try {
     const name = cleanText(req.body?.name);
@@ -334,9 +577,15 @@ app.use((error, req, res, next) => {
   return res.status(500).json({ error: 'Something went wrong. Please try again.' });
 });
 
-initializeDatabase().then(() => {
-  app.listen(PORT, '0.0.0.0', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
-}).catch((error) => {
-  console.error('Could not initialize BilaForm database:', error.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  initializeDatabase().then(() => {
+    // Dual-stack loopback host spellings are needed when Live Server uses localhost
+    // while another preview uses 127.0.0.1.
+    app.listen(PORT, '::', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
+  }).catch((error) => {
+    console.error('Could not initialize BilaForm database:', error.message);
+    process.exit(1);
+  });
+} else {
+  module.exports = { app, db, initializeDatabase };
+}

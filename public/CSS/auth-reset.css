@@ -1,0 +1,11 @@
+.auth-tabs[hidden] { display: none; }
+.auth-back-button {
+  justify-self: center;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: #b6a7ff;
+  font: 700 11px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.auth-back-button:hover { color: #fff; }

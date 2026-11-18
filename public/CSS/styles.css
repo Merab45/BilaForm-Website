@@ -4415,3 +4415,51 @@ body {
   .site-header-inner { width: 100%; min-height: 68px; }
 }
 
+/* Shared sign-in and registration actions for the public navigation. */
+.public-account-actions { display:flex; flex:0 0 auto; align-items:center; gap:8px; }
+.public-account-actions .site-login { margin:0; }
+.site-register { display:inline-flex; min-height:39px; padding:0 14px; align-items:center; justify-content:center; border:1px solid #7957ff; border-radius:10px; background:linear-gradient(110deg,#7957ff,#398bff); color:#fff; font-size:12px; font-weight:800; box-shadow:0 7px 20px #7957ff30; }
+.site-register:hover { border-color:#a995ff; background:linear-gradient(110deg,#896cff,#4b96ff); color:#fff; }
+@media(max-width:850px) {
+  .public-account-actions { margin-left:auto; gap:6px; }
+  .public-account-actions .site-login,.public-account-actions .site-register { min-height:38px; padding-inline:10px; font-size:11px; }
+  .public-account-actions .site-login { margin-right:0; }
+}
+@media(max-width:850px) {
+  html:not(.has-nav-js) .site-header-inner { height:auto; min-height:68px; flex-wrap:wrap; gap:8px; padding-block:8px; }
+  html:not(.has-nav-js) .site-header-inner > nav { position:static!important; display:flex!important; order:4; flex:1 0 100%; flex-wrap:wrap; gap:4px!important; width:100%; max-width:none; height:auto; max-height:none; overflow:visible; padding:5px 0 8px; border:0; background:transparent; box-shadow:none; }
+  html:not(.has-nav-js) .site-header-inner > nav > a { min-height:40px; padding:8px; }
+  html:not(.has-nav-js) .site-header-inner .menu { display:none!important; }
+}
+@media(max-width:430px) {
+  .site-header-inner { gap:5px; }
+  .site-header-inner > .logo { gap:5px; }
+  .site-header-inner > .logo img { width:32px; height:32px; }
+  .site-header-inner > .logo .logo-word { font-size:16px; }
+  .public-account-actions .site-login,.public-account-actions .site-register { padding-inline:7px; font-size:10px; }
+}
+
+.micro-leak-section { background:#f5f8fa; }
+.micro-leak-layout { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr); align-items:start; gap:28px; }
+.micro-leak-layout h2 { margin:8px 0; color:#16374c; font:700 clamp(25px,3vw,34px)/1.1 'Space Grotesk',sans-serif; letter-spacing:-.04em; }
+.micro-leak-layout h2 em { color:#397953; font-style:normal; }
+.micro-leak-layout>div>p { max-width:650px; color:#65798a; font-size:13px; line-height:1.65; }
+.micro-leak-form { display:grid; grid-template-columns:1.1fr .8fr .8fr auto; align-items:end; gap:10px; margin-top:20px; padding:16px; border:1px solid #dce7e9; border-radius:15px; background:#fff; }
+.micro-leak-form label { display:grid; gap:6px; color:#40586b; font-size:11px; font-weight:700; }
+.micro-leak-form input,.micro-leak-form select { width:100%; min-height:42px; padding:0 10px; border:1px solid #d4e0e4; border-radius:9px; background:#fff; color:#16374c; font:500 12px 'DM Sans',sans-serif; }
+.micro-leak-form input:focus,.micro-leak-form select:focus { outline:3px solid #398bff35; border-color:#398bff; }
+.micro-leak-form .btn { min-height:42px; white-space:nowrap; }
+.micro-leak-status { min-height:18px; margin:9px 0; color:#397953; font-size:11px; }
+.micro-leak-empty { color:#65798a; font-size:12px; }
+.micro-leak-empty[hidden] { display:none; }
+.micro-leak-list { display:grid; gap:7px; margin:0; padding:0; list-style:none; }
+.micro-leak-list li { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 12px; border:1px solid #dce7e9; border-radius:10px; background:#fff; color:#16374c; font-size:12px; }
+.micro-leak-remove { flex:none; border:0; background:transparent; color:#8a3f35; font-size:11px; font-weight:700; cursor:pointer; }
+.micro-leak-summary { display:grid; gap:15px; padding:22px; border:1px solid #dce7e9; border-radius:16px; background:#fff; }
+.micro-leak-summary>div { display:grid; gap:5px; padding-top:12px; border-top:1px solid #e7eef0; }
+.micro-leak-summary>div span { color:#65798a; font-size:11px; }
+.micro-leak-summary>div strong { color:#16374c; font:700 23px 'Space Grotesk',sans-serif; }
+.micro-leak-summary>p { margin:0; color:#65798a; font-size:11px; line-height:1.6; }
+@media(max-width:900px) { .micro-leak-layout { grid-template-columns:1fr; } .micro-leak-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .micro-leak-summary>.eyebrow,.micro-leak-summary>p { grid-column:1/-1; } }
+@media(max-width:650px) { .micro-leak-form { grid-template-columns:1fr 1fr; } .micro-leak-form label:first-child { grid-column:1/-1; } .micro-leak-form .btn { grid-column:1/-1; } .micro-leak-summary { padding:17px; } .micro-leak-summary>div strong { font-size:18px; } }
+
