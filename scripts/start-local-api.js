@@ -22,7 +22,7 @@ function checkExistingApi() {
       });
     });
     request.on('timeout', () => request.destroy());
-    request.on('error', (error) => resolve(error.code === 'ECONNREFUSED' ? 'stopped' : 'occupied'));
+    request.on('error', (error) => resolve(error.code === 'ECONNREFUSED' ? 'stopped' : 'unavailable'));
   });
 }
 
@@ -38,6 +38,7 @@ async function start() {
     return;
   }
 
+  if (current === 'unavailable') console.log('Could not check for an existing API; trying to start BilaForm.');
   console.log('Starting BilaForm API');
   const server = spawn(process.execPath, [path.join(__dirname, '..', 'server.js')], {
     cwd: path.join(__dirname, '..'),
