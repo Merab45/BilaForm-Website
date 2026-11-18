@@ -9,7 +9,7 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const DATABASE_FILE = path.join(__dirname, 'bilaform.db');
+const DATABASE_FILE = process.env.BILAFORM_DB_PATH || path.join(__dirname, 'bilaform.db');
 const production = process.env.NODE_ENV === 'production';
 const JWT_SECRET = process.env.JWT_SECRET || (production ? '' : 'local-development-secret-change-before-deploy');
 
@@ -34,6 +34,9 @@ const run = (sql, params = []) => new Promise((resolve, reject) => {
 });
 const get = (sql, params = []) => new Promise((resolve, reject) => {
   db.get(sql, params, (error, row) => error ? reject(error) : resolve(row));
+});
+const all = (sql, params = []) => new Promise((resolve, reject) => {
+  db.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows));
 });
 
 async function initializeDatabase() {
@@ -126,6 +129,25 @@ const cleanText = (value) => typeof value === 'string' ? value.trim() : '';
 const normalizeEmail = (value) => cleanText(value).toLowerCase();
 const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
 const validAmount = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000_000;
+const validGoalDate = (value) => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+
+function readSavingsGoal(body) {
+  const name = cleanText(body?.name);
+  const { target_amount: targetAmount, current_amount: currentAmount = 0, target_date: targetDate } = body || {};
+  if (!name || name.length > 80) return { error: 'Goal name must be 1 to 80 characters.' };
+  if (!Number.isSafeInteger(targetAmount) || targetAmount < 1 || targetAmount > 1_000_000_000) {
+    return { error: 'Enter a whole-number target between KES 1 and KES 1,000,000,000.' };
+  }
+  if (!validAmount(currentAmount) || currentAmount > targetAmount) {
+    return { error: 'Amount already saved must be a whole KES amount no greater than the target.' };
+  }
+  if (!validGoalDate(targetDate)) return { error: 'Choose a valid target date.' };
+  return { name, target_amount: targetAmount, current_amount: currentAmount, target_date: targetDate };
+}
 
 function readBudget(body) {
   const { cash, essentials, buffer, days } = body || {};
@@ -155,6 +177,15 @@ function requireAuth(req, res, next) {
   } catch {
     return res.status(401).json({ error: 'Your session has expired. Please sign in again.' });
   }
+}
+
+function requireSavingsGoalsSchema(req, res, next) {
+  all("SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('savings_goals', 'savings_contributions')")
+    .then((tables) => {
+      if (tables.length !== 2) return res.status(503).json({ error: 'Savings Goals is not set up on this server yet. Apply the backed-up database migration first.' });
+      return next();
+    })
+    .catch(next);
 }
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'bilaform-api' }));
@@ -306,6 +337,86 @@ app.delete('/api/plans/:id', requireAuth, async (req, res, next) => {
   } catch (error) { return next(error); }
 });
 
+async function savingsGoalForUser(id, userId) {
+  const goal = await get('SELECT id, name, target_amount, current_amount, target_date, status, created_at, updated_at FROM savings_goals WHERE id = ? AND user_id = ?', [id, userId]);
+  if (!goal) return null;
+  goal.contributions = await all('SELECT id, amount, entry_type, created_at FROM savings_contributions WHERE goal_id = ? AND user_id = ? ORDER BY created_at DESC, id DESC', [id, userId]);
+  return goal;
+}
+
+app.get('/api/savings-goals', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const goals = await all("SELECT id, name, target_amount, current_amount, target_date, status, created_at, updated_at FROM savings_goals WHERE user_id = ? ORDER BY CASE status WHEN 'active' THEN 0 WHEN 'paused' THEN 1 ELSE 2 END, target_date, id DESC", [req.user.id]);
+    const contributions = await all('SELECT id, goal_id, amount, entry_type, created_at FROM savings_contributions WHERE user_id = ? ORDER BY created_at DESC, id DESC', [req.user.id]);
+    const grouped = new Map();
+    contributions.forEach((contribution) => {
+      const entries = grouped.get(contribution.goal_id) || [];
+      entries.push({ id: contribution.id, amount: contribution.amount, entry_type: contribution.entry_type, created_at: contribution.created_at });
+      grouped.set(contribution.goal_id, entries);
+    });
+    return res.json({ goals: goals.map((goal) => ({ ...goal, contributions: grouped.get(goal.id) || [] })) });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/savings-goals', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const goal = readSavingsGoal(req.body);
+    if (goal.error) return res.status(400).json({ error: goal.error });
+    const status = goal.current_amount >= goal.target_amount ? 'completed' : 'active';
+    const result = await run('INSERT INTO savings_goals (user_id, name, target_amount, current_amount, target_date, status) VALUES (?, ?, ?, ?, ?, ?)', [req.user.id, goal.name, goal.target_amount, goal.current_amount, goal.target_date, status]);
+    return res.status(201).json({ goal: await savingsGoalForUser(result.id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.put('/api/savings-goals/:id', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    const current = await get('SELECT id, current_amount, status FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!current) return res.status(404).json({ error: 'Savings goal not found.' });
+    const goal = readSavingsGoal({ ...req.body, current_amount: current.current_amount });
+    if (goal.error) return res.status(400).json({ error: goal.error });
+    if (goal.target_amount < current.current_amount) return res.status(400).json({ error: 'Target amount cannot be less than the amount already saved.' });
+    const requestedStatus = req.body?.status ?? current.status;
+    if (!['active', 'paused', 'completed'].includes(requestedStatus)) return res.status(400).json({ error: 'Choose active, paused or completed status.' });
+    const status = current.current_amount >= goal.target_amount ? 'completed' : requestedStatus;
+    const result = await run('UPDATE savings_goals SET name = ?, target_amount = ?, target_date = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ? AND current_amount <= ?', [goal.name, goal.target_amount, goal.target_date, status, id, req.user.id, goal.target_amount]);
+    if (!result.changes) return res.status(409).json({ error: 'The target must cover the amount already saved. Refresh and try again.' });
+    return res.json({ goal: await savingsGoalForUser(id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.post('/api/savings-goals/:id/contributions', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const amount = req.body?.amount;
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1_000_000_000) return res.status(400).json({ error: 'Enter a whole-number contribution between KES 1 and KES 1,000,000,000.' });
+    const result = await run(`UPDATE savings_goals
+      SET current_amount = current_amount + ?,
+          status = CASE WHEN current_amount + ? >= target_amount THEN 'completed' ELSE status END,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND user_id = ? AND status = 'active' AND current_amount + ? <= target_amount`, [amount, amount, id, req.user.id, amount]);
+    if (!result.changes) {
+      const goal = await get('SELECT id, status, target_amount, current_amount FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+      if (!goal) return res.status(404).json({ error: 'Savings goal not found.' });
+      if (goal.status !== 'active') return res.status(409).json({ error: 'Resume this savings goal before adding a contribution.' });
+      return res.status(400).json({ error: `Contribution exceeds the remaining ${goal.target_amount - goal.current_amount} KES.` });
+    }
+    return res.status(201).json({ goal: await savingsGoalForUser(id, req.user.id) });
+  } catch (error) { return next(error); }
+});
+
+app.delete('/api/savings-goals/:id', requireAuth, requireSavingsGoalsSchema, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid savings goal.' });
+    const result = await run('DELETE FROM savings_goals WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (!result.changes) return res.status(404).json({ error: 'Savings goal not found.' });
+    return res.json({ deleted: true });
+  } catch (error) { return next(error); }
+});
+
 app.post('/api/contact', contactRateLimit, async (req, res, next) => {
   try {
     const name = cleanText(req.body?.name);
@@ -334,9 +445,13 @@ app.use((error, req, res, next) => {
   return res.status(500).json({ error: 'Something went wrong. Please try again.' });
 });
 
-initializeDatabase().then(() => {
-  app.listen(PORT, '0.0.0.0', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
-}).catch((error) => {
-  console.error('Could not initialize BilaForm database:', error.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  initializeDatabase().then(() => {
+    app.listen(PORT, '0.0.0.0', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
+  }).catch((error) => {
+    console.error('Could not initialize BilaForm database:', error.message);
+    process.exit(1);
+  });
+} else {
+  module.exports = { app, db, initializeDatabase };
+}

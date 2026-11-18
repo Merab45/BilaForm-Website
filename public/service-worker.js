@@ -1,5 +1,5 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v35';
+const CACHE_NAME = 'bilaform-site-v37';
 const APP_FILES = [
   './',
   './index.html',
@@ -14,6 +14,8 @@ const APP_FILES = [
   './JS/pangasiku.js',
   './JS/auth.js',
   './JS/account.js',
+  './JS/api-config.js',
+  './JS/savings-goals.js',
   './manifest.webmanifest',
   './privacy.html',
   './terms.html',

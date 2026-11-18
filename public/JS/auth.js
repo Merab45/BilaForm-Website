@@ -1,7 +1,5 @@
 (() => {
-  const API_ROOT = ['5500', '5501'].includes(location.port)
-    && ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? 'http://127.0.0.1:8000/api' : '/api';
+  const API_ROOT = window.BILAFORM_API_ROOT || '/api';
   const feedback = document.querySelector('.auth-feedback');
   const title = document.querySelector('#auth-title');
   const intro = document.querySelector('[data-auth-intro]');
@@ -63,9 +61,10 @@
       if (!response.ok) throw new Error(payload.error || 'The request could not be completed.');
       localStorage.setItem('bilaform.auth.token', payload.token);
       localStorage.setItem('bilaform.auth.user', JSON.stringify(payload.user));
-      location.assign(new URLSearchParams(location.search).get('return') === 'pangasiku'
+      const returnTarget = new URLSearchParams(location.search).get('return');
+      location.assign(returnTarget === 'pangasiku'
         ? 'services/pangasiku.html?resume=1'
-        : 'account.html');
+        : returnTarget === 'goals' ? 'account.html?view=goals' : 'account.html');
     } catch (error) {
       setFeedback(error.message || 'BilaForm could not reach its API. Please try again.', true);
     } finally {

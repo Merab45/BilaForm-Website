@@ -3,10 +3,7 @@ const byId = (id) => document.getElementById(id);
 const money = (value) => `KES ${Math.floor(Math.max(0, value)).toLocaleString('en-KE')}`;
 // VS Code Live Server is a static preview on port 5501. Route its API calls
 // to Express; normal npm-start browsing stays same-origin.
-const API_ROOT = ['5500', '5501'].includes(location.port)
-  && ['localhost', '127.0.0.1'].includes(location.hostname)
-  ? 'http://127.0.0.1:8000/api'
-  : '/api';
+const API_ROOT = window.BILAFORM_API_ROOT || '/api';
 const inputIds = ['cash', 'essentials', 'buffer', 'days'];
 const calcError = byId('calc-error');
 const resultPanel = document.querySelector('.calc .result');

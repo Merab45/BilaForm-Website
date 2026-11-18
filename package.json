@@ -5,7 +5,9 @@
   "description": "KES daily money runway and personal finance planner",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "db:migrate:savings-goals": "node scripts/migrate-savings-goals.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

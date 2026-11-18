@@ -36,8 +36,9 @@ test('account navigation uses refresh-safe protected view URLs', () => {
 });
 
 test('authentication retains the fixed PangaSiku resume destination', () => {
-  assert.match(read('JS/auth.js'), /get\('return'\) === 'pangasiku'/);
+  assert.match(read('JS/auth.js'), /returnTarget === 'pangasiku'/);
   assert.match(read('JS/auth.js'), /services\/pangasiku\.html\?resume=1/);
+  assert.match(read('JS/auth.js'), /returnTarget === 'goals'.*account\.html\?view=goals/s);
   assert.match(read('JS/pangasiku.js'), /sessionStorage/);
 });
 

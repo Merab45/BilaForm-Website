@@ -3,8 +3,7 @@
   const TOKEN_KEY = 'bilaform.auth.token';
   const USER_KEY = 'bilaform.auth.user';
   const token = localStorage.getItem(TOKEN_KEY);
-  const apiRoot = ['5500', '5501'].includes(location.port) && ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? 'http://127.0.0.1:8000/api' : '/api';
+  const apiRoot = window.BILAFORM_API_ROOT || '/api';
   const message = document.querySelector('[data-account-message]');
   const money = (value) => `KES ${Number(value || 0).toLocaleString('en-KE')}`;
   const dateLabel = (value) => {
@@ -24,7 +23,8 @@
   function returnToLogin() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    window.location.replace('auth.html?auth=login');
+    const returnTarget = new URLSearchParams(window.location.search).get('view') === 'goals' ? '&return=goals' : '';
+    window.location.replace(`auth.html?auth=login${returnTarget}`);
   }
 
   if (!token) { returnToLogin(); return; }
@@ -50,7 +50,7 @@
     return result;
   }
 
-  const dashboardViews = new Set(['overview', 'activity', 'plans', 'settings', 'security']);
+  const dashboardViews = new Set(['overview', 'activity', 'plans', 'goals', 'settings', 'security']);
   const requestedView = new URLSearchParams(window.location.search).get('view');
   const activeView = dashboardViews.has(requestedView) ? requestedView : 'overview';
   document.querySelectorAll('[data-account-panel]').forEach((panel) => {
@@ -60,7 +60,7 @@
     if (link.dataset.accountView === activeView) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
-  const viewTitles = { overview: 'Overview', activity: 'My Activities', plans: 'Saved Budgets', settings: 'Profile & Settings', security: 'Security' };
+  const viewTitles = { overview: 'Overview', activity: 'My Activities', plans: 'Saved Budgets', goals: 'Savings Goals', settings: 'Profile & Settings', security: 'Security' };
   document.title = `${viewTitles[activeView]} | My BilaForm Dashboard`;
 
   const sidebar = document.querySelector('.dashboard-sidebar');

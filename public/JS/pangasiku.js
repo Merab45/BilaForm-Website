@@ -10,8 +10,7 @@
   const loginLink = document.querySelector('[data-pangasiku-login]');
   const saveButton = document.querySelector('[data-save-plan]');
   const token = () => localStorage.getItem(TOKEN_KEY) || '';
-  const apiRoot = ['5500', '5501'].includes(location.port) && ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? 'http://127.0.0.1:8000/api' : '/api';
+  const apiRoot = window.BILAFORM_API_ROOT || '/api';
   let requestSequence = 0;
   let requestTimer;
 

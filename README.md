@@ -56,6 +56,7 @@ For production, set a long random `JWT_SECRET` environment variable before start
 - `POST /api/budgets`, `GET /api/budgets`, `GET /api/budgets/latest`, and `DELETE /api/budgets/:id` — save, list, retrieve and remove PangaSiku budgets.
 - `GET /api/plans`, `POST /api/plans`, and `DELETE /api/plans/:id` — save, list and remove VukaMonth plans.
 - `POST /api/contact` — validate and store a contact message.
+- `GET/POST /api/savings-goals`, `PUT/DELETE /api/savings-goals/:id`, and `POST /api/savings-goals/:id/contributions` — manage signed-in users’ savings goals and contribution history. These routes return `503` until the additive schema migration has been applied.
 
 Money inputs are whole KES amounts. The daily guide is `floor(max(0, cash - essentials - buffer) / days)`. The browser calculates immediately and uses the API when it is reachable, so the planner remains available offline. Account and contact features need the Node server.
 
@@ -74,6 +75,12 @@ Place website images and illustrations in `public/Assets/`. Journal content and 
 The public site uses a shared navigation hierarchy for About, Services, Get Started, News & Articles, Resources, Contact, and the Client Portal. Service pages describe PangaSiku, Can I afford this?, Micro-leak finder, and VukaMonth. The announcements page displays an empty state until there is an actual update to publish. Resource links point to the Journal, privacy policy, and terms; unsupported downloads and testimonials are not fabricated.
 
 The account portal reads and updates profile details, lists/removes saved PangaSiku calculations, and saves/lists/removes VukaMonth allocations. Display preferences are stored locally in the browser.
+
+### Savings goals schema
+
+Savings goals use two additive SQLite tables. Existing databases are not changed automatically at server startup. Before enabling the feature on an existing installation, stop writes to the database and make a verified backup, then run `npm run db:migrate:savings-goals` with `BILAFORM_DB_PATH` set to that database file. The command first creates a timestamped SQLite backup beside the database, then adds the tables, indexes and triggers in a transaction. It refuses to proceed if the schema is partial or the backup path already exists. No migration is run as part of deployment by this repository. Keep a separate post-migration backup before accepting goal data; restoring the pre-migration backup later would also discard goals created after it.
+
+If GitHub Pages hosts the frontend, configure a separate HTTPS Node API host with persistent SQLite storage. In `public/JS/api-config.js`, set `window.BILAFORM_API_BASE_URL` to that host before the configuration code runs (for example, `https://api.example.com`); the frontend appends `/api`. Configure the backend `CORS_ORIGIN` to the exact frontend origin, such as `https://merab45.github.io`, and set a production `JWT_SECRET`. The API host, credentials, persistence and CORS settings must be supplied by the site owner; this repository does not create or verify external hosting.
 
 ## Deployment
 
