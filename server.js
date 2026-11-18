@@ -579,10 +579,9 @@ app.use((error, req, res, next) => {
 
 if (require.main === module) {
   initializeDatabase().then(() => {
-    // Bind publicly on hosted environments; keep local development dual-stack so
-    // Live Server works with both localhost and 127.0.0.1.
-    const host = production ? '0.0.0.0' : '::';
-    app.listen(PORT, host, () => console.log(`BilaForm is available on port ${PORT}`));
+    // Dual-stack loopback host spellings are needed when Live Server uses localhost
+    // while another preview uses 127.0.0.1.
+    app.listen(PORT, '::', () => console.log(`BilaForm is available at http://127.0.0.1:${PORT}`));
   }).catch((error) => {
     console.error('Could not initialize BilaForm database:', error.message);
     process.exit(1);

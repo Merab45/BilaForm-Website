@@ -95,4 +95,3 @@ If GitHub Pages hosts the frontend, configure a separate HTTPS Node API host wit
 
 Deploy the Node application to a host that supports persistent disk storage for SQLite. Set `NODE_ENV=production`, `JWT_SECRET`, and `PORT` through the host’s environment settings. Ensure the database path is on persistent storage, configure HTTPS and backups, and update canonical / Open Graph URLs if the domain changes. GitHub Pages can host the static pages only; its static hosting cannot run this API or persist accounts and contact messages.
 
-For the prepared Render Blueprint, deployment steps, persistent database setup, and GitHub Pages API configuration, see [`docs/deploy-render.md`](docs/deploy-render.md).
