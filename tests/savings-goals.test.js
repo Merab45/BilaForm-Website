@@ -7,6 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'bilaform-goals-'));
 process.env.BILAFORM_DB_PATH = path.join(temporary, 'test.db');
 process.env.JWT_SECRET = 'test-only-secret-long-enough-for-local-api-tests';
+process.env.NODE_ENV = 'test';
 const { app, db, initializeDatabase } = require('../server.js');
 const { migrateSavingsGoals } = require('../server/migrations/savings-goals.js');
 const { calculateGoalProgress } = require('../public/JS/savings-goals.js');
@@ -68,6 +69,14 @@ test('savings goals API authenticates users and scopes create, update, contribut
     const instance = app.listen(0, '127.0.0.1', () => resolve(instance));
   });
   const origin = `http://127.0.0.1:${apiServer.address().port}`;
+  for (const previewOrigin of ['http://127.0.0.1:5173', 'http://localhost:3000']) {
+    const preflight = await fetch(`${origin}/api/auth/register`, {
+      method: 'OPTIONS',
+      headers: { Origin: previewOrigin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type' },
+    });
+    assert.equal(preflight.status, 204);
+    assert.equal(preflight.headers.get('access-control-allow-origin'), previewOrigin);
+  }
   t.after(async () => {
     if (apiServer.listening) await new Promise((resolve) => apiServer.close(resolve));
   });

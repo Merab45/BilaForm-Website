@@ -4,7 +4,7 @@ window.BILAFORM_API_BASE_URL = window.BILAFORM_API_BASE_URL || '';
 (() => {
   const configuredHost = typeof window.BILAFORM_API_BASE_URL === 'string'
     ? window.BILAFORM_API_BASE_URL.trim().replace(/\/+$/, '') : '';
-  const isLocalPreview = ['5500', '5501'].includes(location.port)
+  const isLocalPreview = location.port !== '8000'
     && ['localhost', '127.0.0.1'].includes(location.hostname);
   const isGitHubPages = location.hostname === 'merab45.github.io';
   const localApi = 'http://127.0.0.1:8000/api';

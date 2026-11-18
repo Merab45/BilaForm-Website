@@ -104,6 +104,12 @@ test('GitHub Pages explains missing API configuration and accepts a configured A
   vm.runInNewContext(source, { window: configuredWindow, location: { hostname: 'merab45.github.io', port: '' } });
   assert.equal(configuredWindow.BILAFORM_API_ROOT, 'https://api.example.test/api');
   assert.equal(configuredWindow.BILAFORM_API_CONFIG_ERROR, '');
+  const previewWindow = {};
+  vm.runInNewContext(source, { window: previewWindow, location: { hostname: 'localhost', port: '5173' } });
+  assert.equal(previewWindow.BILAFORM_API_ROOT, 'http://127.0.0.1:8000/api');
+  const serverWindow = {};
+  vm.runInNewContext(source, { window: serverWindow, location: { hostname: '127.0.0.1', port: '8000' } });
+  assert.equal(serverWindow.BILAFORM_API_ROOT, '/api');
   const authScript = read('JS/auth.js');
   assert.match(authScript, /local BilaForm API is not running/);
   assert.match(authScript, /CORS_ORIGIN setting/);

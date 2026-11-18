@@ -78,7 +78,7 @@ async function initializeDatabase() {
 
 // Only allow configured cross-origin clients; same-origin browser requests need no CORS headers.
 const allowedOrigin = process.env.CORS_ORIGIN || '';
-const localPreviewOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):(?:5500|5501)$/;
+const localPreviewOrigin = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
 app.use(cors({
   origin(origin, callback) {
     // Same-origin calls need no CORS header; local Live Server previews do.
