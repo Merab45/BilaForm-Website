@@ -37,7 +37,8 @@ test('account navigation uses refresh-safe protected view URLs', () => {
   assert.match(read('JS/account.js'), /URLSearchParams\(window\.location\.search\)/);
   assert.match(read('JS/account.js'), /dashboardViews = new Set/);
   assert.match(read('JS/account.js'), /\['plans', 'activity'\]\.includes\(requestedView\)/);
-  assert.match(account, /data-sidebar-toggle/);
+  assert.doesNotMatch(account, /data-sidebar-toggle|☰/);
+  assert.match(read('CSS/account.css'), /@media\(max-width:720px\)\{\.dashboard-nav\{display:grid/);
 });
 
 test('public pages use one consistent main navigation and separate account actions', () => {
@@ -51,7 +52,7 @@ test('public pages use one consistent main navigation and separate account actio
     for (const href of ['index.html', 'services.html', 'blog/index.html', 'about.html', 'contact.html']) {
       assert.ok(nav.includes(href), `${path.relative(publicRoot, file)} navigation links to ${href}`);
     }
-    assert.match(html, /aria-controls="primary-navigation"/);
+    assert.doesNotMatch(html, /class="menu"/);
   }
 });
 
@@ -93,33 +94,21 @@ test('authentication retains the fixed PangaSiku resume destination', () => {
   assert.match(read('JS/pangasiku.js'), /sessionStorage/);
 });
 
-test('GitHub Pages explains missing API configuration and accepts a configured API host', () => {
-  const source = read('JS/api-config.js');
-  const unconfiguredWindow = {};
-  vm.runInNewContext(source, { window: unconfiguredWindow, location: { hostname: 'merab45.github.io', port: '' } });
-  assert.equal(unconfiguredWindow.BILAFORM_API_ROOT, '/api');
-  assert.match(unconfiguredWindow.BILAFORM_API_CONFIG_ERROR, /accounts are not connected/i);
-
-  const configuredWindow = { BILAFORM_API_BASE_URL: 'https://api.example.test/' };
-  vm.runInNewContext(source, { window: configuredWindow, location: { hostname: 'merab45.github.io', port: '' } });
-  assert.equal(configuredWindow.BILAFORM_API_ROOT, 'https://api.example.test/api');
-  assert.equal(configuredWindow.BILAFORM_API_CONFIG_ERROR, '');
-  const previewWindow = {};
-  vm.runInNewContext(source, { window: previewWindow, location: { hostname: 'localhost', port: '5173' } });
-  assert.equal(previewWindow.BILAFORM_API_ROOT, 'http://localhost:8000/api');
-  const serverWindow = {};
-  vm.runInNewContext(source, { window: serverWindow, location: { hostname: '127.0.0.1', port: '8000' } });
-  assert.equal(serverWindow.BILAFORM_API_ROOT, '/api');
+test('browser-first Supabase authentication and private data setup remain configured', () => {
+  const client = read('JS/supabase-client.js');
   const authScript = read('JS/auth.js');
   const authPage = read('auth.html');
-  assert.match(authScript, /local BilaForm account API is not responding/);
-  assert.match(authScript, /isLocalHost && API_ROOT === '\/api'/);
-  assert.match(authScript, /Terminal → Run Task → BilaForm: Start API/);
-  assert.match(authScript, /CORS_ORIGIN setting/);
-  assert.match(authScript, /credentials: 'include'/);
-  assert.match(authPage, /data-auth-form="reset-request"/);
-  assert.match(authPage, /data-auth-form="reset-complete"/);
-  assert.match(authPage, /auth\.js\?v=auth-20261118-7/);
+  const dataAdapter = read('JS/bilaform-data.js');
+  assert.match(client, /sdk\.createClient/);
+  assert.match(client, /persistSession:\s*true/);
+  assert.match(authScript, /client\.auth\.signUp/);
+  assert.match(authScript, /client\.auth\.signInWithPassword/);
+  assert.match(authScript, /services\/pangasiku\.html\?resume=1/);
+  assert.match(authScript, /data-auth-form="reset-request"/);
+  assert.match(authScript, /data-auth-form="reset-complete"/);
+  assert.match(authPage, /supabase-client\.js/);
+  assert.match(dataAdapter, /from\('daily_spending'\)/);
+  assert.match(read('../supabase/migrations/20261119_pangasiku_guided_plan.sql'), /enable row level security/);
 });
 
 test('existing signed-in announcement remains account-only', () => {

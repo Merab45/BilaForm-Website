@@ -282,16 +282,7 @@ apiRequest('/auth/me').then(({ user }) => {
 const requestedAuthMode = new URLSearchParams(window.location.search).get('auth');
 if (requestedAuthMode === 'login' || requestedAuthMode === 'register') showAuth(requestedAuthMode);
 
-// Keep the mobile menu's visual and accessibility state synchronized.
-const menuButton = document.querySelector('.menu');
 const nav = document.querySelector('#primary-navigation');
-function closeMenu() { nav.classList.remove('open'); menuButton.setAttribute('aria-expanded', 'false'); }
-menuButton.addEventListener('click', () => {
-  const open = nav.classList.toggle('open');
-  menuButton.setAttribute('aria-expanded', String(open));
-});
-nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
-document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menuButton.focus(); } });
 
 // Mark the current homepage section in the navigation as it enters view.
 const sectionLinks = [...nav.querySelectorAll('a[href^="#"]')];
@@ -365,11 +356,8 @@ syncBackToTop();
 // The install action appears only when the browser offers a PWA install prompt.
 const installButton = document.querySelector('.install-button');
 const headerActions = document.querySelector('.header-actions');
-const installInMobileMenu = window.matchMedia('(max-width: 650px)');
 let installPrompt;
-function placeInstallButton() { (installInMobileMenu.matches ? nav : headerActions).append(installButton); }
-placeInstallButton();
-installInMobileMenu.addEventListener('change', placeInstallButton);
+if (headerActions && installButton) headerActions.append(installButton);
 window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); installPrompt = event; installButton.hidden = false; });
 installButton.addEventListener('click', async () => {
   if (!installPrompt) return;

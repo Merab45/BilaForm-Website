@@ -1,5 +1,5 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v47-supabase-configured';
+const CACHE_NAME = 'bilaform-site-v51-guided-planning';
 const APP_FILES = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_FILES = [
   './CSS/auth.css',
   './CSS/auth-reset.css',
   './CSS/account.css',
+  './CSS/pangasiku-guide.css',
   './JS/site.js',
   './JS/portal.js',
   './JS/pangasiku.js',
@@ -44,7 +45,6 @@ const APP_FILES = [
   './blog/blog.js',
   './blog/blog-home.js',
   './blog/article.js',
-  './blog/nav.js',
   './blog/articles/how-to-budget-on-a-small-salary.html',
   './blog/articles/how-to-save-money-every-month.html',
   './blog/articles/surviving-the-last-week-before-payday.html',
@@ -132,6 +132,3 @@ self.addEventListener('fetch', (event) => {
     }),
   );
 });
-
-
-

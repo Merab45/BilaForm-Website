@@ -42,23 +42,6 @@
   const viewTitles = { overview: 'Overview', plans: 'My Plans & History', goals: 'Savings Goals', settings: 'Profile & Settings', security: 'Security' };
   document.title = `${viewTitles[activeView]} | My BilaForm Dashboard`;
 
-  const sidebar = document.querySelector('.dashboard-sidebar');
-  const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
-  const closeSidebar = (restoreFocus = false) => {
-    sidebar.classList.remove('is-open');
-    sidebarToggle.setAttribute('aria-expanded', 'false');
-    if (restoreFocus) sidebarToggle.focus();
-  };
-  sidebarToggle.addEventListener('click', () => {
-    const open = sidebar.classList.toggle('is-open');
-    sidebarToggle.setAttribute('aria-expanded', String(open));
-    if (open) sidebar.querySelector('[data-account-view]')?.focus();
-  });
-  sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => closeSidebar()));
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && sidebar.classList.contains('is-open')) closeSidebar(true);
-  });
-
   function setProfile(user) {
     currentUser = user;
     document.querySelector('.account-announcement').hidden = false;
@@ -164,16 +147,29 @@
     renderRecentActivity(activity);
     document.querySelector('[data-recent-activity-empty]').hidden = activity.length > 0;
   }
+  function renderSpending(entries) {
+    const total = entries.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+    const latest = budgets[0];
+    const guide = Number(latest?.daily_safe || 0);
+    const percent = guide > 0 ? Math.min(100, Math.round(total / guide * 100)) : 0;
+    document.querySelector('[data-dashboard-spending]').textContent = entries.length ? `${money(total)} logged today across ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}.` : 'No spending entries logged today.';
+    const progress = document.querySelector('[data-dashboard-spending-progress]');
+    progress.setAttribute('aria-valuenow', String(percent)); progress.querySelector('span').style.width = `${percent}%`;
+    document.querySelector('[data-dashboard-spending-note]').textContent = guide > 0
+      ? total > guide ? `Today’s entries are ${money(total - guide)} above the saved daily guide. Review your plan if useful.` : `${money(Math.max(0, guide - total))} of the saved daily guide remains before other costs.`
+      : 'Save a PangaSiku plan to compare today’s spending with a daily guide.';
+  }
 
   async function loadData() {
-    const [profile, latest, history, savedPlans] = await Promise.all([
-      api('/auth/me'), api('/budgets/latest'), api('/budgets'), api('/plans'),
+    const [profile, latest, history, savedPlans, spending] = await Promise.all([
+      api('/auth/me'), api('/budgets/latest'), api('/budgets'), api('/plans'), api('/daily-spending'),
     ]);
     setProfile(profile.user);
     budgets = history.budgets || [];
     if (!budgets.length && latest.budget) budgets = [latest.budget];
     plans = savedPlans.plans || [];
     renderBudgets();
+    renderSpending(spending.entries || []);
   }
 
   document.querySelectorAll('[data-account-logout]').forEach((button) => button.addEventListener('click', async () => {
@@ -242,6 +238,3 @@
     if (!message.textContent) showMessage(error.message, true);
   });
 })();
-
-
-

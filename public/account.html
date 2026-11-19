@@ -7,12 +7,12 @@
   <meta name="description" content="Your BilaForm dashboard for KES budgets, monthly essentials and account settings.">
   <title>My BilaForm Dashboard</title>
   <link rel="icon" href="Assets/Assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="CSS/styles.css?v=dashboard-20261118">
-  <link rel="stylesheet" href="CSS/account.css?v=dashboard-20261118"><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="CSS/styles.css?v=nav-horizontal-20261119">
+  <link rel="stylesheet" href="CSS/account.css?v=spending-progress-20261119"><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="JS/supabase-config.js?v=supabase-20261118-2"></script>
   <script defer src="JS/supabase-client.js?v=supabase-20261118-2"></script>
   <script defer src="JS/bilaform-data.js?v=supabase-20261118-2"></script>
-  <script defer src="JS/account.js?v=supabase-20261118-2"></script>
+  <script defer src="JS/account.js?v=spending-progress-20261119"></script>
   <script defer src="JS/savings-goals.js?v=supabase-20261118-2"></script>
 </head>
 <body class="account-page theme-dark">
@@ -24,7 +24,6 @@
   <main class="dashboard-shell">
     <aside class="dashboard-sidebar" aria-label="Account sections">
       <div class="sidebar-profile"><span class="avatar" data-avatar>BF</span><div><strong data-sidebar-name>My account</strong><small data-sidebar-email></small></div></div>
-      <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="dashboard-navigation" aria-expanded="false">Dashboard menu <span aria-hidden="true">☰</span></button>
       <nav class="dashboard-nav" id="dashboard-navigation" aria-label="Dashboard navigation">
         <div class="dashboard-nav-group"><strong>DASHBOARD</strong><a href="account.html?view=overview" data-account-view="overview"><span aria-hidden="true">◫</span>Overview</a></div>
         <div class="dashboard-nav-group"><strong>PLANNING</strong><a href="account.html?view=plans" data-account-view="plans"><span aria-hidden="true">▤</span>My Plans &amp; History</a><a href="account.html?view=goals" data-account-view="goals"><span aria-hidden="true">◎</span>Savings Goals</a></div>
@@ -58,6 +57,7 @@
             <div class="runway-details"><div><span>Money available</span><strong data-budget-cash>—</strong></div><div><span>Essentials set aside</span><strong data-budget-essentials>—</strong></div><div><span>Buffer kept</span><strong data-budget-buffer>—</strong></div><div><span>Days to payday</span><strong data-budget-days>—</strong></div></div>
             <p class="empty-copy" data-budget-empty>You haven’t saved a PangaSiku plan yet. Add one to see your daily runway here.</p>
           </article>
+          <article class="dashboard-card spending-progress-card"><div class="card-heading"><div><span class="account-kicker">TODAY</span><h3>Daily spending check-in</h3></div><a href="services/pangasiku.html#spending-title">Log spending</a></div><p data-dashboard-spending>Loading today’s entries…</p><div class="spending-progress-track" role="progressbar" aria-label="Spending logged compared with daily guide" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-dashboard-spending-progress><span></span></div><small data-dashboard-spending-note>Log actual expenses from your PangaSiku page to compare them with your guide.</small></article>
           <article class="dashboard-card profile-quick"><span class="account-kicker">YOUR PROFILE</span><h3>Quick details</h3><dl><div><dt>Name</dt><dd data-profile-name>Loading…</dd></div><div><dt>Email</dt><dd data-profile-email>Loading…</dd></div><div><dt>Member since</dt><dd data-profile-date>—</dd></div></dl><a class="subtle-button" href="account.html?view=settings">Manage profile</a></article>
           <article class="dashboard-card activity-quick"><div class="card-heading"><div><span class="account-kicker">LATEST SAVED PLANS</span><h3>Recent activity</h3></div><a href="account.html?view=plans">View all plans</a></div><ul data-recent-activity class="activity-list"></ul><p data-recent-activity-empty class="empty-copy" hidden>No saved plan activity yet.</p></article>
         </div>
@@ -129,6 +129,3 @@
   </main>
 </body>
 </html>
-
-
-

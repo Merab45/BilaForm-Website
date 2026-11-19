@@ -37,15 +37,13 @@ test('returns no route for empty or unrelated tool-finder queries', () => {
 
 test('keeps the responsive navigation and account routes in the landing page', () => {
   assert.match(homeHtml, /id="primary-navigation"/);
-  assert.match(homeHtml, /class="menu"[^>]*aria-controls="primary-navigation"[^>]*aria-expanded="false"/);
+  assert.doesNotMatch(homeHtml, /class="menu"|aria-controls="primary-navigation"/);
   assert.match(homeHtml, /auth\.html\?auth=login/);
   assert.match(homeHtml, /auth\.html\?auth=register/);
-  assert.match(fs.readFileSync(portalPath, 'utf8'), /has-bubble-menu/);
+  assert.doesNotMatch(fs.readFileSync(portalPath, 'utf8'), /initMenu|has-bubble-menu/);
   const landingCss = fs.readFileSync(path.join(publicPath, 'CSS', 'premium.css'), 'utf8');
-  assert.match(landingCss, /\.landing-page \.header>nav\{position:static/);
-  assert.match(landingCss, /\.has-bubble-menu \.landing-page \.header>nav\{position:absolute/);
-  assert.match(landingCss, /@media\(max-width:740px\)\{\.has-bubble-menu \.landing-page \.header>nav\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
-  assert.match(landingCss, /@media\(max-width:400px\)\{\.has-bubble-menu \.landing-page \.header>nav\{grid-template-columns:1fr\}\}/);
+  assert.match(landingCss, /\.landing-page \.header > nav \{/);
+  assert.match(landingCss, /grid-template-areas: "brand actions" "nav nav"/);
   assert.match(landingCss, /prefers-reduced-motion:reduce/);
 });
 
@@ -64,6 +62,12 @@ test('keeps destination tools and support content on their focused pages', () =>
   assert.match(fs.readFileSync(path.join(publicPath, 'contact.html'), 'utf8'), /id="contact-form"/);
   assert.match(fs.readFileSync(path.join(publicPath, 'how-it-works.html'), 'utf8'), /id="faq"/);
   assert.equal([...homeHtml.matchAll(/class="feature-card"/g)].length, 4);
+  assert.equal([...homeHtml.matchAll(/class="benefit-card"/g)].length, 4);
+  assert.match(homeHtml, /What is BilaForm\?/);
+  assert.match(homeHtml, /Does BilaForm connect to my bank or mobile wallet\?/);
+  const pangaHtml = fs.readFileSync(path.join(publicPath, 'services', 'pangasiku.html'), 'utf8');
+  assert.match(pangaHtml, /data-expense-items/);
+  assert.match(pangaHtml, /data-spending-form/);
   assert.doesNotMatch(homeHtml, /data-service-deck|data-deck-card|data-deck-controls/);
   assert.doesNotMatch(fs.readFileSync(portalPath, 'utf8'), /initServiceDeck/);
 });
@@ -82,4 +86,3 @@ test('all local landing-page assets and navigation destinations exist', () => {
   });
   assert.deepEqual(missing, []);
 });
-

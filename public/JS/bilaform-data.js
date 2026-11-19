@@ -20,16 +20,27 @@
     }
     if (path === '/auth/logout') { const { error } = await client.auth.signOut(); if (error) throw error; return {}; }
     if (path === '/budgets' && method === 'POST') {
-      const user = await requireClient(); const remaining = Number(body.cash) - Number(body.essentials) - Number(body.buffer);
-      const row = { user_id: user.id, cash: body.cash, essentials: body.essentials, buffer: body.buffer, days: body.days, daily_safe: Math.floor(Math.max(0, remaining) / body.days) };
+      const user = await requireClient(); const remaining = Number(body.cash) + Number(body.other_income || 0) - Number(body.essentials) - Number(body.buffer);
+      const row = { user_id: user.id, cash: body.cash, essentials: body.essentials, buffer: body.buffer, days: body.days, daily_safe: Math.floor(Math.max(0, remaining) / body.days), other_income: body.other_income || 0, cash_location: body.cash_location || null, payday_date: body.payday_date || null, expense_items: body.expense_items || [] };
       const { data, error } = await client.from('budgets').insert(row).select().single(); if (error) throw error; return { budget: data };
     }
+    const budgetUpdate = path.match(/^\/budgets\/(\d+)$/);
+    if (budgetUpdate && method === 'PATCH') {
+      const user = await requireClient(); const remaining = Number(body.cash) + Number(body.other_income || 0) - Number(body.essentials) - Number(body.buffer);
+      const patch = { cash: body.cash, essentials: body.essentials, buffer: body.buffer, days: body.days, daily_safe: Math.floor(Math.max(0, remaining) / body.days), other_income: body.other_income || 0, cash_location: body.cash_location || null, payday_date: body.payday_date || null, expense_items: body.expense_items || [], updated_at: new Date().toISOString() };
+      const { data, error } = await client.from('budgets').update(patch).eq('id', Number(budgetUpdate[1])).eq('user_id', user.id).select().single(); if (error) throw error; return { budget: data };
+    }
     if (path === '/budgets' && method === 'GET' || path.startsWith('/budgets/latest')) {
-      const user = await requireClient(); const { data, error } = await client.from('budgets').select('id,cash,essentials,buffer,days,daily_safe,updated_at').eq('user_id', user.id).order('updated_at', { ascending: false }).order('id', { ascending: false }); if (error) throw error;
+      const user = await requireClient(); const { data, error } = await client.from('budgets').select('id,cash,essentials,buffer,days,daily_safe,other_income,cash_location,payday_date,expense_items,updated_at').eq('user_id', user.id).order('updated_at', { ascending: false }).order('id', { ascending: false }); if (error) throw error;
       return path.includes('/latest') ? { budget: data[0] || null } : { budgets: data };
     }
     const budgetDelete = path.match(/^\/budgets\/(\d+)$/);
     if (budgetDelete && method === 'DELETE') { await requireClient(); const { error } = await client.from('budgets').delete().eq('id', Number(budgetDelete[1])); if (error) throw error; return {}; }
+    const localDate = () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`; };
+    if (path === '/daily-spending' && method === 'GET') { const user = await requireClient(); const { data, error } = await client.from('daily_spending').select('id,budget_id,description,amount,spent_on,created_at').eq('user_id', user.id).eq('spent_on', localDate()).order('id', { ascending: false }); if (error) throw error; return { entries: data }; }
+    if (path === '/daily-spending' && method === 'POST') { const user = await requireClient(); const row = { user_id: user.id, budget_id: body.budget_id || null, description: String(body.description || '').trim(), amount: Number(body.amount), spent_on: localDate() }; const { data, error } = await client.from('daily_spending').insert(row).select('id,budget_id,description,amount,spent_on,created_at').single(); if (error) throw error; return { entry: data }; }
+    const spendingDelete = path.match(/^\/daily-spending\/(\d+)$/);
+    if (spendingDelete && method === 'DELETE') { const user = await requireClient(); const { error } = await client.from('daily_spending').delete().eq('id', Number(spendingDelete[1])).eq('user_id', user.id); if (error) throw error; return {}; }
     if (path === '/plans' && method === 'GET') { const user = await requireClient(); const { data, error } = await client.from('plans').select('id,type,name,data,created_at').eq('user_id', user.id).order('created_at', { ascending: false }); if (error) throw error; return { plans: data }; }
     if (path === '/plans' && method === 'POST') { const user = await requireClient(); const { data, error } = await client.from('plans').insert({ user_id: user.id, type: body.type || 'vukamonth', name: body.name, data: body.data }).select().single(); if (error) throw error; return { plan: data }; }
     const planDelete = path.match(/^\/plans\/(\d+)$/);

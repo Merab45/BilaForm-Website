@@ -1,97 +1,33 @@
-# BilaForm Full Stack
+# BilaForm
 
-BilaForm is a KES-focused personal finance planner for everyday choices between paydays. The responsive static frontend is served by a small Express API. The API creates a local SQLite database automatically for accounts, saved PangaSiku plans and contact messages.
-
-## Project structure
-
-```text
-.
-├── package.json
-├── server.js
-├── bilaform.db                 # created automatically when the server starts
-└── public/
-    ├── index.html
-    ├── about.html
-    ├── services.html
-    ├── services/                # Dedicated BilaForm tool pages
-    ├── how-it-works.html
-    ├── articles.html
-    ├── announcements.html
-    ├── resources.html
-    ├── contact.html
-    ├── account.html             # Signed-in client portal
-    ├── CSS/styles.css
-    ├── CSS/account.css
-    ├── JS/site.js
-    ├── JS/account.js
-    ├── JS/contact.js
-    ├── JS/navigation.js
-    ├── Assets/                 # BilaForm images, illustrations and icons
-    ├── blog/                   # Journal directory and article pages
-    ├── manifest.webmanifest
-    ├── service-worker.js
-    ├── privacy.html
-    └── terms.html
-```
+BilaForm is a static KES personal money planning website. The pages use the Supabase JavaScript client directly for authentication and account data; no local Node API is required for the current frontend.
 
 ## Run locally
 
-Install Node.js 18 or newer, then from the project root run:
+1. Configure `public/JS/supabase-config.js` with the Supabase project URL and browser-safe publishable key. Never put a service-role key in frontend code.
+2. In the Supabase Dashboard, run `supabase/migrations/20261118_bilaform_schema.sql` in the SQL Editor if the project does not have the initial BilaForm tables yet.
+3. Run `supabase/migrations/20261119_pangasiku_guided_plan.sql` to add guided PangaSiku fields and private daily spending entries. It preserves existing budget rows. The daily guide works locally without this migration, but saving its new fields and tracking daily spending require it.
+4. In Supabase Authentication → URL Configuration, include the local Live Server origin (commonly `http://127.0.0.1:5501`) and the deployed site URL in the allowed redirect URLs.
+5. Open the project `public` folder with VS Code Live Server, or serve that folder with any static HTTP server. Do not use `file://` URLs.
 
-```sh
-npm install
-npm start
-```
+The site can also be hosted on GitHub Pages. Configure Supabase Authentication redirect URLs for the deployed BilaForm pages. Contact form submissions are stored in Supabase; no email delivery is configured by this repository.
 
-Open `http://127.0.0.1:8000`. Change the port with `PORT=3000` (PowerShell: `$env:PORT=3000; npm start`). SQLite creates `bilaform.db` and the required tables on first startup; no manual database setup is needed.
+## Product notes
 
-For an existing database, stop the API and run `npm run db:migrate:auth-security` before restarting it. The migration creates and integrity-checks a timestamped SQLite backup before adding the session-revocation field and password-reset table. It is safe to rerun after success. Keep the backup outside production web roots and verify a separate restore procedure before deploying. Existing installations with the savings-goals feature must also apply `npm run db:migrate:savings-goals` if that earlier migration has not been run.
+- Guests can calculate a PangaSiku estimate in their browser. Signing in is required to save plans and daily spending entries.
+- A guest plan is held in session storage only while the sign-in redirect is completed.
+- Saved budgets, daily spending, savings goals, and profile data are protected by Supabase Row Level Security policies in the migrations.
+- BilaForm does not import bank or mobile wallet data. Calculations use only the amounts and dates entered by the user and are planning estimates.
+- There are no fabricated testimonials or financial performance claims.
 
-### VS Code Live Server
+## Project structure
 
-Live Server serves the static frontend, while account login and saved plans/goals require the Node API. When this workspace opens in VS Code, allow the **BilaForm: Start API** folder task if prompted. It starts the API on `http://127.0.0.1:8000` and safely reuses an already-running BilaForm API. Then open the site with Live Server (configured for port 5501). If automatic tasks are disabled, choose **Terminal → Run Task → BilaForm: Start API** and leave that terminal running while using Live Server. The development API accepts localhost preview origins.
+- `public/`: static website pages, styles, scripts, assets and service worker.
+- `public/JS/supabase-config.js`: project URL and publishable key configuration.
+- `public/JS/bilaform-data.js`: small data adapter that uses the Supabase client.
+- `supabase/migrations/`: SQL schema and additive changes to run in the Supabase SQL Editor.
+- `tests/`: repository checks; some legacy tests still target the retired local API and need migration to the browser-first architecture.
 
-For production, set a long random `JWT_SECRET` environment variable before starting the server. The development fallback secret is only for local use. Set `CORS_ORIGIN` only if a separate trusted frontend origin needs API access. Do not commit production secrets or the database file.
+## Data migrations
 
-## Backend endpoints
-
-- `GET /api/health` — service health.
-- `POST /api/runway` — validate and calculate a PangaSiku daily allowance.
-- `POST /api/auth/register` and `POST /api/auth/login` — create an account or sign in; passwords are bcrypt-hashed and a seven-day HttpOnly cookie is set. No bearer token is returned to JavaScript.
-- `GET /api/auth/me`, `POST /api/auth/logout`, and `PATCH /api/auth/profile` — validate/revoke the session and read or update the signed-in profile.
-- `POST /api/auth/password-reset/request` and `/api/auth/password-reset/complete` — send a one-hour, single-use password reset link and replace the password. Reset requests do not disclose whether an email is registered.
-- `POST /api/budgets`, `GET /api/budgets`, `GET /api/budgets/latest`, and `DELETE /api/budgets/:id` — save, list, retrieve and remove PangaSiku budgets.
-- `GET /api/plans`, `POST /api/plans`, and `DELETE /api/plans/:id` — save, list and remove VukaMonth plans.
-- `POST /api/contact` — validate and store a contact message.
-- `GET/POST /api/savings-goals`, `PUT/DELETE /api/savings-goals/:id`, and `POST /api/savings-goals/:id/contributions` — manage signed-in users’ savings goals and contribution history. These routes return `503` until the additive schema migration has been applied.
-
-Money inputs are whole KES amounts. The daily guide is `floor(max(0, cash - essentials - buffer) / days)`. The browser calculates immediately and uses the API when it is reachable, so the planner remains available offline. Account and contact features need the Node server.
-
-## Privacy and production notes
-
-Sessions use an HttpOnly, SameSite cookie and are checked against the user's token version on protected API calls. Logout and password reset revoke existing sessions. Older browser-stored JWTs are removed by the refreshed frontend; users with those old sessions need to sign in again. Saved budgets and submitted messages are stored in SQLite; protect database backups and use HTTPS in production. Contact messages are stored but are not emailed or forwarded automatically.
-
-Password reset email uses Resend's HTTPS API and is deliberately disabled until configured. Set `RESEND_API_KEY`, `PASSWORD_RESET_FROM` to an address verified with Resend, and `PUBLIC_APP_URL` to the full frontend base URL (including the trailing slash for a GitHub Pages project path). Configure these in the API host environment; `.env.example` only documents the names. Also set `CORS_ORIGIN` to the exact frontend origin, use a production `JWT_SECRET` of at least 32 bytes, and deploy the API on HTTPS. For production cookie authentication, the browser must allow the API's cross-site cookie; a custom frontend/API domain arrangement on the same site is recommended. Without email configuration, the reset request clearly reports that password recovery is unavailable and no reset is claimed to have been sent.
-
-This app does not connect to banks or mobile money, move funds, or provide regulated financial advice. Example dashboard numbers are illustrative. Calculations are planning estimates.
-
-## Assets and Journal
-
-Place website images and illustrations in `public/Assets/`. Journal content and curated `popular` / `featured` flags are in `public/blog/blog-data.js`; individual static article pages are in `public/blog/articles/`.
-
-## Website pages
-
-The public site uses a shared navigation hierarchy for About, Services, Get Started, News & Articles, Resources, Contact, and the Client Portal. Service pages describe PangaSiku, Can I afford this?, Micro-leak finder, and VukaMonth. The announcements page displays an empty state until there is an actual update to publish. Resource links point to the Journal, privacy policy, and terms; unsupported downloads and testimonials are not fabricated.
-
-The account portal reads and updates profile details, lists/removes saved PangaSiku calculations, and saves/lists/removes VukaMonth allocations. Display preferences are stored locally in the browser.
-
-### Savings goals schema
-
-Savings goals use two additive SQLite tables. Existing databases are not changed automatically at server startup. Before enabling the feature on an existing installation, stop writes to the database and make a verified backup, then run `npm run db:migrate:savings-goals` with `BILAFORM_DB_PATH` set to that database file. The command first creates a timestamped SQLite backup beside the database, then adds the tables, indexes and triggers in a transaction. It refuses to proceed if the schema is partial or the backup path already exists. No migration is run as part of deployment by this repository. Keep a separate post-migration backup before accepting goal data; restoring the pre-migration backup later would also discard goals created after it.
-
-If GitHub Pages hosts the frontend, configure a separate HTTPS Node API host with persistent SQLite storage. Set `window.BILAFORM_API_BASE_URL` to that host before `JS/api-config.js` executes (for example, from a small configuration script loaded before `api-config.js`); the frontend appends `/api`. Configure the backend `CORS_ORIGIN` to the exact frontend origin, `https://merab45.github.io`, and set a production `JWT_SECRET`. Without that host setting, the sign-in page now explains the missing backend instead of displaying the browser’s generic “Failed to fetch” message. The API host, credentials, persistence and CORS settings must be supplied by the site owner; this repository does not create or verify external hosting.
-
-## Deployment
-
-Deploy the Node application to a host that supports persistent disk storage for SQLite. Set `NODE_ENV=production`, `JWT_SECRET`, and `PORT` through the host’s environment settings. Ensure the database path is on persistent storage, configure HTTPS and backups, and update canonical / Open Graph URLs if the domain changes. GitHub Pages can host the static pages only; its static hosting cannot run this API or persist accounts and contact messages.
-
+Run migrations manually in Supabase SQL Editor, in filename order. The second migration is additive: it adds optional PangaSiku context fields and creates `daily_spending`; it does not rewrite or delete existing plans. Review the SQL and keep a backup/export of production data before schema changes. Never expose the Supabase secret/service-role key to the browser.
