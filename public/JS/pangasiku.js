@@ -8,25 +8,14 @@
   const status = document.querySelector('[data-save-status]');
   const loginLink = document.querySelector('[data-pangasiku-login]');
   const saveButton = document.querySelector('[data-save-plan]');
-  const apiRoot = window.BILAFORM_API_ROOT || '/api';
-  localStorage.removeItem('bilaform.auth.token');
-  let sessionPromise;
-  let requestSequence = 0;
-  let requestTimer;
+  const dataApi = window.BilaFormData;
 
   function money(value) { return `KES ${Math.floor(Math.max(0, value)).toLocaleString('en-KE')}`; }
 
-  function hasSession() {
-    if (!sessionPromise) {
-      sessionPromise = fetch(`${apiRoot}/auth/me`, { credentials: 'include' }).then((response) => {
-        if (response.ok) return true;
-        if (response.status === 401) localStorage.removeItem(USER_KEY);
-        return false;
-      }).catch(() => false);
-    }
-    return sessionPromise;
+  async function hasSession() {
+    try { if (!dataApi) throw new Error(window.BILAFORM_SUPABASE_ERROR || 'Supabase is not configured.'); await dataApi.requireUser(); return true; }
+    catch { return false; }
   }
-
   function readBudget() {
     fields.forEach((input) => input.setAttribute('aria-invalid', String(!input.value.trim() || !input.validity.valid)));
     const invalid = fields.find((input) => !input.value.trim() || !input.validity.valid);
@@ -62,25 +51,11 @@
   }
 
   function updateRunway() {
-    const sequence = ++requestSequence;
-    clearTimeout(requestTimer);
     const budget = readBudget();
     if (!budget) return;
     showBudget(budget);
-    requestTimer = setTimeout(async () => {
-      result.setAttribute('aria-busy', 'true');
-      try {
-        const response = await fetch(`${apiRoot}/runway`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budget) });
-        if (!response.ok) return;
-        const data = await response.json();
-        if (sequence !== requestSequence) return;
-        document.getElementById('daily').textContent = money(data.daily_safe);
-        const badge = document.getElementById('badge');
-        badge.textContent = data.needs_reset ? 'PLAN NEEDS A RESET' : 'BUFFER KEPT ✓';
-        badge.classList.toggle('reset', data.needs_reset);
-      } catch { /* Local results remain available offline. */ }
-      finally { if (sequence === requestSequence) result.setAttribute('aria-busy', 'false'); }
-    }, 120);
+    // The runway calculation is deterministic and runs locally; no server call is needed.
+
   }
 
   function updatePurchase(budget = readBudget(), daily = null) {
@@ -114,16 +89,9 @@
   }
 
   async function request(path, options = {}) {
-    const response = await fetch(`${apiRoot}${path}`, {
-      ...options,
-      credentials: 'include',
-      headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers },
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw Object.assign(new Error(data.error || 'The request could not be completed.'), { status: response.status });
-    return data;
+    if (!dataApi) throw new Error(window.BILAFORM_SUPABASE_ERROR || 'Supabase is not configured.');
+    return dataApi.request(path, options);
   }
-
   async function saveBudget(budget = readBudget()) {
     if (!budget) return;
     loginLink.hidden = true;
@@ -185,3 +153,6 @@
     }
   } else loadLatestBudget();
 })();
+
+
+

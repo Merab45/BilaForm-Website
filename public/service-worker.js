@@ -1,5 +1,5 @@
 // Bump this when changing cached app code so installed clients receive the fix.
-const CACHE_NAME = 'bilaform-site-v45';
+const CACHE_NAME = 'bilaform-site-v47-supabase-configured';
 const APP_FILES = [
   './',
   './index.html',
@@ -15,7 +15,9 @@ const APP_FILES = [
   './JS/pangasiku.js',
   './JS/auth.js',
   './JS/account.js',
-  './JS/api-config.js',
+  './JS/supabase-config.js',
+  './JS/supabase-client.js',
+  './JS/bilaform-data.js',
   './JS/savings-goals.js',
   './JS/micro-leaks.js',
   './manifest.webmanifest',
@@ -101,8 +103,6 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  // Account and contact API data must always go directly to the network.
-  if (url.pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
@@ -132,3 +132,6 @@ self.addEventListener('fetch', (event) => {
     }),
   );
 });
+
+
+

@@ -3,7 +3,6 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (global && global.document) api.initialize(global.document);
 }(typeof globalThis !== 'undefined' ? globalThis : this, function createSavingsGoals(globalRef) {
-  const USER_KEY = 'bilaform.auth.user';
   const money = (value) => `KES ${Number(value || 0).toLocaleString('en-KE')}`;
 
   function calculateGoalProgress(goal, todayValue = new Date().toISOString().slice(0, 10)) {
@@ -30,7 +29,6 @@
   function initialize(documentRef) {
     const panel = documentRef.querySelector('[data-savings-goals]');
     if (!panel || panel.hidden) return;
-    globalRef.localStorage.removeItem('bilaform.auth.token');
 
     const form = panel.querySelector('[data-goal-form]');
     const status = panel.querySelector('[data-goal-status]');
@@ -47,30 +45,13 @@
     }
 
     async function api(route, options = {}) {
-      let response;
-      try {
-        if (globalRef.BILAFORM_API_CONFIG_ERROR) throw new Error(globalRef.BILAFORM_API_CONFIG_ERROR);
-        response = await globalRef.fetch(`${globalRef.BILAFORM_API_ROOT || '/api'}${route}`, {
-          ...options,
-          credentials: 'include',
-          headers: {
-            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-            ...options.headers,
-          },
-        });
-      } catch (error) {
-        if (error.message !== 'Failed to fetch') throw error;
-        throw new Error('BilaForm could not reach its API. Your goal changes have not been saved.');
+      if (!globalRef.BilaFormData) throw new Error(globalRef.BILAFORM_SUPABASE_ERROR || 'Supabase is not configured.');
+      try { return await globalRef.BilaFormData.request(route, options); }
+      catch (error) {
+        if (error.status === 401) globalRef.location.assign('auth.html?auth=login&return=goals');
+        throw error;
       }
-      const payload = (response.headers.get('content-type') || '').includes('application/json') ? await response.json() : {};
-      if (response.status === 401) {
-        globalRef.localStorage.removeItem(USER_KEY);
-        globalRef.location.assign('auth.html?auth=login&return=goals');
-      }
-      if (!response.ok) throw new Error(payload.error || 'Your savings goal could not be saved.');
-      return payload;
     }
-
     function resetForm() {
       form.reset();
       form.dataset.goalId = '';
@@ -235,3 +216,5 @@
 
   return { calculateGoalProgress, initialize };
 }));
+
+

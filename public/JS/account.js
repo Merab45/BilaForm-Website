@@ -1,8 +1,6 @@
 // Account dashboard: fetch the signed-in profile, budgets and saved monthly plans.
 (() => {
-  const TOKEN_KEY = 'bilaform.auth.token';
-  const USER_KEY = 'bilaform.auth.user';
-  const apiRoot = window.BILAFORM_API_ROOT || '/api';
+  const dataApi = window.BilaFormData;
   const message = document.querySelector('[data-account-message]');
   const money = (value) => `KES ${Number(value || 0).toLocaleString('en-KE')}`;
   const dateLabel = (value) => {
@@ -20,42 +18,15 @@
   }
 
   function returnToLogin() {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
     const requestedView = new URLSearchParams(window.location.search).get('view');
-    const returnTarget = requestedView === 'goals' ? '&return=goals'
-      : ['plans', 'activity'].includes(requestedView) ? '&return=plans' : '';
+    const returnTarget = requestedView === 'goals' ? '&return=goals' : ['plans', 'activity'].includes(requestedView) ? '&return=plans' : '';
     window.location.replace(`auth.html?auth=login${returnTarget}`);
   }
-
-  // Migrate old browser-stored bearer tokens out of localStorage. The API now
-  // authenticates with an HttpOnly session cookie.
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
-
   async function api(path, options = {}) {
-    let response;
-    try {
-      if (window.BILAFORM_API_CONFIG_ERROR) throw new Error(window.BILAFORM_API_CONFIG_ERROR);
-      response = await fetch(`${apiRoot}${path}`, {
-        ...options,
-        credentials: 'include',
-        headers: {
-          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-          ...options.headers,
-        },
-      });
-    } catch (error) {
-      if (error.message !== 'Failed to fetch') throw error;
-      throw new Error('BilaForm could not reach its API. Open the app at http://127.0.0.1:8000 or run “BilaForm: Start API” in VS Code.');
-    }
-    const isJson = (response.headers.get('content-type') || '').includes('application/json');
-    const result = isJson ? await response.json() : {};
-    if (response.status === 401) { returnToLogin(); throw new Error(result.error || 'Please sign in again.'); }
-    if (!response.ok) throw new Error(result.error || 'The request could not be completed.');
-    return result;
+    if (!dataApi) throw new Error(window.BILAFORM_SUPABASE_ERROR || 'Supabase is not configured.');
+    try { return await dataApi.request(path, options); }
+    catch (error) { if (error.status === 401) returnToLogin(); throw error; }
   }
-
   const dashboardViews = new Set(['overview', 'plans', 'goals', 'settings', 'security']);
   const requestedView = new URLSearchParams(window.location.search).get('view');
   // Keep old activity URLs working after combining duplicate plan and activity lists.
@@ -207,10 +178,8 @@
 
   document.querySelectorAll('[data-account-logout]').forEach((button) => button.addEventListener('click', async () => {
     try {
-      await fetch(`${apiRoot}/auth/logout`, { method: 'POST', credentials: 'include' });
+      await dataApi.request('/auth/logout', { method: 'POST' });
     } catch { /* Local sign-out must work even when the API is offline. */ }
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
     window.location.assign('index.html');
   }));
 
@@ -236,7 +205,7 @@
     submit.disabled = true; status.textContent = 'Saving…';
     try {
       const data = Object.fromEntries(new FormData(event.currentTarget).entries());
-      const result = await api('/auth/profile', { method: 'PATCH', body: JSON.stringify(data) });
+      const result = await api('/auth/profile', { method: 'PATCH', body: JSON.stringify({ name: data.name }) });
       setProfile(result.user); status.textContent = 'Profile updated.';
     } catch (error) { status.textContent = error.message; }
     finally { submit.disabled = false; }
@@ -273,3 +242,6 @@
     if (!message.textContent) showMessage(error.message, true);
   });
 })();
+
+
+
